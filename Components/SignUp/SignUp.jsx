@@ -23,9 +23,10 @@ export default function Login() {
     const [invalidEmail, setInvalidEmail] = useState(false);
 
   //Second Page
-    const [birthday, setBirthday] = useState();
-    const [country, setCountry] = useState("LB");
-    const [gender, setGender] = useState('Male');
+    const [birthday, setBirthday] = useState(new Date);
+    const [country, setCountry] = useState();
+    const [gender, setGender] = useState('male');
+    const [invalidCountry, setInvalidCountry] = useState(false)
 
     const [invalidPassword, setInvalidPassword] = useState(false);
     const [changePage, setChangePage] = useState(0);
@@ -38,35 +39,54 @@ export default function Login() {
   const [signUpProgress, setSignUpProgress] = useState(0)
 
   const validate = () => {
-    let usernameGood = false;
-    let emailGood = false;
-    let passwordGood = false;
+    if(changePage==0){
+      let usernameGood = false;
+      let emailGood = false;
+      let passwordGood = false;
 
-    if((password&&password.length<8)||!password){
-        setInvalidPassword(true)
+      if((password&&password.length<8)||!password){
+          setInvalidPassword(true)
+      }else{
+          setInvalidPassword(false)
+          usernameGood = true;
+      }
+      if(!email||(email&&!email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))){
+          setInvalidEmail(true)
+      }else{
+          setInvalidEmail(false)
+          emailGood = true;
+      }
+      if((username&&username.length<3)||!username){
+          setInvalidUsername(true)
+      }else{
+          setInvalidUsername(false)
+          passwordGood = true;
+      }
+      if(usernameGood&&emailGood&&passwordGood){
+        setChangingPage(true)
+        setTimeout(function() {
+          setChangePage(1);
+          setChangingPage(false)
+        }, 500); // 1000 milliseconds = 1 second
+      } 
     }else{
-        setInvalidPassword(false)
-        usernameGood = true;
+      let goodCountry = false;
+      if(!country){
+        setInvalidCountry(true);
+      }else{
+        setInvalidCountry(false);
+        goodCountry = true;
+      }
+
+      if(goodCountry){
+        setChangingPage(true)
+        setTimeout(function() {
+          setChangePage(2);
+          setChangingPage(false)
+        }, 500); // 1000 milliseconds = 1 second
+      }
     }
-    if(!email||(email&&!email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))){
-        setInvalidEmail(true)
-    }else{
-        setInvalidEmail(false)
-        emailGood = true;
-    }
-    if((username&&username.length<3)||!username){
-        setInvalidUsername(true)
-    }else{
-        setInvalidUsername(false)
-        passwordGood = true;
-    }
-    if(usernameGood&&emailGood&&passwordGood){
-      setChangingPage(true)
-      setTimeout(function() {
-        setChangePage(1);
-        setChangingPage(false)
-      }, 500); // 1000 milliseconds = 1 second
-    }
+    
   }
 
   if (!fontsLoaded) {
@@ -94,37 +114,42 @@ export default function Login() {
                 {changePage==0?
                 <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
                   <FirstPage
-                  username={username}
-                  setUsername={setUsername}
-                  email={email}
-                  setEmail={setEmail}
-                  password={password}
-                  setPassword={setPassword}
-                  invalidUsername={invalidUsername}
-                  setInvalidUsername={setInvalidUsername}
-                  invalidEmail={invalidEmail}
-                  setInvalidEmail={setInvalidEmail}
-                  invalidPassword={invalidPassword}
-                  setInvalidPassword={setInvalidPassword}
+                    username={username}
+                    setUsername={setUsername}
+                    email={email}
+                    setEmail={setEmail}
+                    password={password}
+                    setPassword={setPassword}
+                    invalidUsername={invalidUsername}
+                    setInvalidUsername={setInvalidUsername}
+                    invalidEmail={invalidEmail}
+                    setInvalidEmail={setInvalidEmail}
+                    invalidPassword={invalidPassword}
+                    setInvalidPassword={setInvalidPassword}
+                    signUpProgress={signUpProgress}
+                    setSignUpProgress={setSignUpProgress}
+                    changePage={changePage}
+                    setChangePage={setChangePage}
+                  />
+                </Animatable.View>
+              :changePage==1?
+              <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
+                <SecondPage
+                  birthday={birthday}
+                  setBirthday={setBirthday}
+                  country={country}
+                  setCountry={setCountry}
+                  gender={gender}
+                  setGender={setGender}
                   signUpProgress={signUpProgress}
                   setSignUpProgress={setSignUpProgress}
                   changePage={changePage}
                   setChangePage={setChangePage}
-                  />
-                </Animatable.View>
-              :changePage==1?
-              <SecondPage
-                birthday={birthday}
-                setBirthday={setBirthday}
-                country={country}
-                setCountry={setCountry}
-                gender={gender}
-                setGender={setGender}
-                signUpProgress={signUpProgress}
-                setSignUpProgress={setSignUpProgress}
-                changePage={changePage}
-                setChangePage={setChangePage}
-              />:<View><Text>NOFUGHDHOHOUFDHVOTUIEHGVDUOFBHVDFUOVBDFUVKBFSKJVDFHVKHSGBHJKDFGYUIEVG{console.log('hello')}</Text></View>}
+                  invalidCountry={invalidCountry}
+                  setInvalidCountry={setInvalidCountry}
+                />
+              </Animatable.View>
+              :<View><Text>NO</Text></View>}
 
               <FormControl m={10} pt={50}>
                 <Button
