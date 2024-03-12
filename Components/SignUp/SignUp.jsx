@@ -1,5 +1,5 @@
-import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, View } from '@gluestack-ui/themed';
-import React, { Fragment, useState } from 'react';
+import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, View } from '@gluestack-ui/themed';
+import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { useFonts } from 'expo-font';
 import { AppLoading } from 'expo';
 import { HStack } from '@gluestack-ui/themed';
@@ -10,15 +10,51 @@ import FirstPage from './FirstPage';
 // import { NavigationContainer } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import SecondPage from './SecondPage';
+import ThirdPage from './ThirdPage';
+import { StyleSheet } from 'react-native';
+import { Camera, CameraType } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
+import Buttons from './Buttons';
+import FourthPage from './FourthPage'
+import { useToast, Toast } from '@gluestack-ui/themed';
+import { VStack } from '@gluestack-ui/themed';
 
 const Stack = createStackNavigator();
 
+let goodOTP = false;
+
 export default function Login() {
+  const toast = useToast()
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
+  const cameraRef = useRef(null);
+
+  useEffect(() => {
+    (async () => {
+        MediaLibrary.requestPermissionsAsync();
+        const cameraStatus = await Camera.requestCameraPermissionsAsync();
+        setHasCameraPermission(cameraStatus.status === 'granted');
+    })();
+  }, [])
+
+  const takePicture = async () => {
+    if(cameraRef) {
+      try {
+        const data = await cameraRef.current.takePictureAsync();
+        console.log(data)
+        setImage(data.uri)
+      } catch (error) {
+        console.log(e)
+      }
+    }
+  }
 
   //First Page
     const [username, setUsername] = useState();
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
+    const [invalidPassword, setInvalidPassword] = useState(false);
     const [invalidUsername, setInvalidUsername] = useState(false);
     const [invalidEmail, setInvalidEmail] = useState(false);
 
@@ -28,7 +64,15 @@ export default function Login() {
     const [gender, setGender] = useState('male');
     const [invalidCountry, setInvalidCountry] = useState(false)
 
-    const [invalidPassword, setInvalidPassword] = useState(false);
+
+  //Third Page
+    const [image, setImage] = useState(null);
+    const [invalidImage, setInvalidImage] = useState(false)
+
+  //Fourth Page
+    const [OTP, setOTP] = useState(null);
+    const [invalidOTP, setInvalidOTP] = useState(false);
+    
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
   
@@ -48,7 +92,7 @@ export default function Login() {
           setInvalidPassword(true)
       }else{
           setInvalidPassword(false)
-          usernameGood = true;
+          passwordGood = true;
       }
       if(!email||(email&&!email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))){
           setInvalidEmail(true)
@@ -60,7 +104,7 @@ export default function Login() {
           setInvalidUsername(true)
       }else{
           setInvalidUsername(false)
-          passwordGood = true;
+          usernameGood = true;
       }
       if(usernameGood&&emailGood&&passwordGood){
         setChangingPage(true)
@@ -69,7 +113,7 @@ export default function Login() {
           setChangingPage(false)
         }, 500); // 1000 milliseconds = 1 second
       } 
-    }else{
+    }else if(changePage==1){
       let goodCountry = false;
       if(!country){
         setInvalidCountry(true);
@@ -85,6 +129,53 @@ export default function Login() {
           setChangingPage(false)
         }, 500); // 1000 milliseconds = 1 second
       }
+    }else if(changePage==2){
+      let goodImage = true; // temporary true until imagepicker is fixed
+      if(!image){
+        setInvalidImage(true);
+      }else{
+        setInvalidImage(false);
+        goodImage = true;
+      }
+      if(goodImage){
+        setChangingPage(true)
+        setTimeout(function() {
+          setChangePage(3);
+          setChangingPage(false)
+        }, 500); // 1000 milliseconds = 1 second
+      }
+    }else if(changePage==3){
+      if(!OTP){
+        setInvalidOTP(true);
+      }else{
+        setInvalidOTP(false);
+        goodOTP = true;
+      }
+
+      if(goodOTP){
+        setChangingPage(true)
+        toast.show({
+          duration: 1000,
+          placement: "top",
+          render: ({ id }) => {
+              const toastId = "toast-" + id
+              return (
+              <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+                  <VStack space="xs">
+                  <ToastTitle>Welcome Aboard</ToastTitle>
+                  <ToastDescription>
+                      Your account has been succesfully created!
+                  </ToastDescription>
+                  </VStack>
+              </Toast>
+              )
+          },
+          })
+        setTimeout(function() {
+          setChangePage(4);
+          setChangingPage(false)
+        }, 2000); // 1000 milliseconds = 1 second
+      }
     }
     
   }
@@ -96,6 +187,7 @@ export default function Login() {
       </HStack>
     ) 
   }
+
   return (
     <Animatable.View animation="fadeIn">
         <View>
@@ -149,7 +241,29 @@ export default function Login() {
                   setInvalidCountry={setInvalidCountry}
                 />
               </Animatable.View>
-              :<View><Text>NO</Text></View>}
+              :changePage==2?
+              <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
+              <ThirdPage
+                image={image}
+                setImage={setImage}
+                invalidImage={invalidImage}
+                setInvalidImage={setInvalidImage}
+                signUpProgress={signUpProgress}
+                setSignUpProgress={setSignUpProgress}
+                changePage={changePage}
+                setChangePage={setChangePage}
+              />
+            </Animatable.View>
+            :
+            <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
+              <FourthPage
+                email={email}
+                OTP={OTP}
+                setOTP={setOTP}
+                invalidOTP={invalidOTP}
+                setInvalidOTP={setInvalidOTP}
+              />
+            </Animatable.View>}
 
               <FormControl m={10} pt={50}>
                 <Button
@@ -184,51 +298,33 @@ export default function Login() {
             </Center>
         </View>
     </Animatable.View>
+    // <View style={styles.container}>
+    //   <Camera
+    //       style={styles.camera}
+    //       type={type}
+    //       flasMode={flash}
+    //       ref={cameraRef}
+    //   >
+    //       <View style={{top:  '95%', margin: "0px 100px"}}>
+    //           <Buttons title={'Take a picture'} icon="camera" onPress={takePicture}/> 
+    //       </View>
+    //   </Camera>
+    // </View>
     )
-  // return (
-  //   <Animatable.View animation="fadeIn">
-  //     <FirstPage
-  //         username={username}
-  //         setUsername={setUsername}
-  //         email={email}
-  //         setEmail={setEmail}
-  //         password={password}
-  //         setPassword={setPassword}
-  //         invalidUsername={invalidUsername}
-  //         setInvalidUsername={setInvalidUsername}
-  //         invalidEmail={invalidEmail}
-  //         setInvalidEmail={setInvalidEmail}
-  //         invalidPassword={invalidPassword}
-  //         setInvalidPassword={setInvalidPassword}
-  //         signUpProgress={signUpProgress}
-  //         setSignUpProgress={setSignUpProgress}
-  //         changePage={changePage}
-  //         setChangePage={setChangePage}
-  //       />
-  //     </Animatable.View>
-  // );else{
-  //   return(
-  //     <Animatable.View animation="fadeIn">
-  //       <SecondPage
-  //         username={username}
-  //         setUsername={setUsername}
-  //         email={email}
-  //         setEmail={setEmail}
-  //         password={password}
-  //         setPassword={setPassword}
-  //         invalidUsername={invalidUsername}
-  //         setInvalidUsername={setInvalidUsername}
-  //         invalidEmail={invalidEmail}
-  //         setInvalidEmail={setInvalidEmail}
-  //         invalidPassword={invalidPassword}
-  //         setInvalidPassword={setInvalidPassword}
-  //         signUpProgress={signUpProgress}
-  //         setSignUpProgress={setSignUpProgress}
-  //         changePage={changePage}
-  //         setChangePage={setChangePage}
-  //       />
-  //     </Animatable.View>
-  //   )
-  // }
-  
 }
+
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      justifyContent: 'center',
+      paddingBottom: 20,
+      width: '100%'
+  },
+  camera: {
+      flex: 1,
+      borderRadius: 20,
+      aspectRatio: 7/9
+
+  }
+})

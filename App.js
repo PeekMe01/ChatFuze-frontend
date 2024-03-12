@@ -6,21 +6,22 @@ import Login from './Components/Login/Login';
 import { config } from "@gluestack-ui/config"
 import { ImageBackground } from 'react-native'
 import SignUp from './Components/SignUp/SignUp';
-
+import { StatusBar } from 'react-native';
 export default function App() {
   return (
     <GluestackUIProvider config={config}>
       <View flex={1}>
+        {/* <StatusBar/> */}
         <ImageBackground
             source={require('./assets/img/LoginSignUp1.png')}
             style={{ flex:1 ,resizeMode: 'cover', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
           >
 
         {/* LOGIN FROM */}
-        {/* <Login/> */}
+        <Login/>
 
         {/* SIGN UP FORM  */}
-        <SignUp/>
+        {/* <SignUp/> */}
 
         {/* For later use */}
         {/* Embed the 3D scene component */}
