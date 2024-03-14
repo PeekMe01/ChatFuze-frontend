@@ -13,6 +13,8 @@ export default function FirstPage(props) {
   }
 
   const { 
+    validateUsername,
+    validateEmail,
     username, 
     setUsername, 
     email, 
@@ -67,6 +69,7 @@ export default function FirstPage(props) {
                   onChange={(newValue)=>{
                       setUsername(newValue.nativeEvent.text);
                       setInvalidUsername(false);
+                      validateUsername(newValue.nativeEvent.text);
                   }}
                 />
               </Input>
@@ -102,6 +105,7 @@ export default function FirstPage(props) {
                   onChange={(newValue)=>{
                       setEmail(newValue.nativeEvent.text);
                       setInvalidEmail(false);
+                      validateEmail(newValue.nativeEvent.text);
                   }}
                 />
               </Input>

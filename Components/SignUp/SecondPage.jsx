@@ -128,7 +128,7 @@ export default function SecondPage(props) {
               
             <Select style={{ borderWidth: 2, borderColor: invalidCountry?'rgba(255,0,0,0.8)':'rgba(255,255,255,0.8)', backgroundColor: 'rgba(255,255,255,0.2)',borderRadius: 5}}
               selectedValue={country}
-              onValueChange={setCountry}
+              onValueChange={(value)=>{setCountry(value); setInvalidCountry(false)}}
             >
               {console.log(country)}
               <SelectTrigger size="md" borderColor='rgba(255,255,255,0)'>

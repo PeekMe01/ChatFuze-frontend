@@ -19,16 +19,25 @@ import FourthPage from './FourthPage'
 import { useToast, Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
 
+import debounce from 'lodash.debounce';
+import axios from 'axios';
+
 const Stack = createStackNavigator();
 
 let goodOTP = false;
 
-export default function Login() {
+export default function Login(props) {
+
   const toast = useToast()
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const cameraRef = useRef(null);
+
+  const {
+    setLoginPage,
+    setSignupPage
+  } = props
 
   useEffect(() => {
     (async () => {
@@ -75,14 +84,53 @@ export default function Login() {
     
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
-  
+
+    const validateUsername = debounce(async (tmpUsername) => {
+      if (tmpUsername&&tmpUsername.length > 3) {
+        const data = {tmpUsername}
+        try {
+          // const response = await axios.post('http://localhost:3001/login', data);
+          const response = await axios.post('http://192.168.0.102:3001/accounts/validate_username', data);
+          if(response){
+            if(response.data.available){
+              // Good shit
+            }else{
+              setInvalidUsername(true);
+            }
+          }
+        } catch (error) {
+            console.log(error);
+        }
+      }
+    }, 1000); // Adjust the debounce duration as needed
+
+    const validateEmail = debounce(async (tmpEmail) => {
+      if (tmpEmail&&tmpEmail.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
+        
+        const data = {tmpEmail}
+      try {
+        // const response = await axios.post('http://localhost:3001/login', data);
+        const response = await axios.post('http://192.168.0.102:3001/accounts/validate_email', data);
+        if(response){
+          if(response.data.available){
+            // Good shit
+          }else{
+            setInvalidEmail(true);
+          }
+        }
+      } catch (error) {
+          console.log(error);
+      }
+      }
+    }, 2000); // Adjust the debounce duration as needed
+    
   const [fontsLoaded] = useFonts({
     'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
   });
 
   const [signUpProgress, setSignUpProgress] = useState(0)
 
-  const validate = () => {
+  const validate = async () => {
     if(changePage==0){
       let usernameGood = false;
       let emailGood = false;
@@ -138,6 +186,13 @@ export default function Login() {
         goodImage = true;
       }
       if(goodImage){
+        // send the otp
+        const data = {email}
+        try {
+          const response = await axios.post('http://192.168.0.102:3001/accounts/send_otp', data);
+        } catch (error) {
+          
+        }
         setChangingPage(true)
         setTimeout(function() {
           setChangePage(3);
@@ -206,6 +261,8 @@ export default function Login() {
                 {changePage==0?
                 <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
                   <FirstPage
+                    validateEmail={validateEmail}
+                    validateUsername={validateUsername}
                     username={username}
                     setUsername={setUsername}
                     email={email}
@@ -290,7 +347,7 @@ export default function Login() {
 
                 <FormControlHelper style={{ alignItems: 'center', justifyContent: 'center'}}>
                   <FormControlHelperText  color='rgba(255,255,255,0.7)' >
-                      Already have an account? <FormControlHelperText color='#2cb5d6' fontWeight='$semibold' onPress={()=>console.log('Pressed login')}>Login</FormControlHelperText>
+                      Already have an account? <FormControlHelperText color='#2cb5d6' fontWeight='$semibold' onPress={()=>{setSignupPage(false);setLoginPage(true)}}>Login</FormControlHelperText>
                   </FormControlHelperText>
                 </FormControlHelper>
               </FormControl>

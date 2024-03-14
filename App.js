@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useState } from 'react';
 import { GluestackUIProvider, View, Text } from '@gluestack-ui/themed';
 import BubbleScene from './Components/Background/BubbleScene';
 import Login from './Components/Login/Login';
@@ -7,7 +7,12 @@ import { config } from "@gluestack-ui/config"
 import { ImageBackground } from 'react-native'
 import SignUp from './Components/SignUp/SignUp';
 import { StatusBar } from 'react-native';
+import { useScroll } from '@react-three/drei';
 export default function App() {
+
+  const [loginPage, setLoginPage] = useState(true);
+  const [signupPage, setSignupPage] = useState(false);
+
   return (
     <GluestackUIProvider config={config}>
       <View flex={1}>
@@ -18,10 +23,10 @@ export default function App() {
           >
 
         {/* LOGIN FROM */}
-        <Login/>
+        {loginPage&&<Login setLoginPage={setLoginPage} setSignupPage={setSignupPage}/>}
 
         {/* SIGN UP FORM  */}
-        {/* <SignUp/> */}
+        {signupPage&&<SignUp setLoginPage={setLoginPage} setSignupPage={setSignupPage}/>}
 
         {/* For later use */}
         {/* Embed the 3D scene component */}
