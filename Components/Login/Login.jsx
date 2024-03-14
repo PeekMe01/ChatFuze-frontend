@@ -7,8 +7,10 @@ import { Spinner } from '@gluestack-ui/themed';
 import axios from 'axios';
 import * as Animatable from 'react-native-animatable';
 import { useToast, Toast } from '@gluestack-ui/themed';
+import API_URL from '../Config'
 
 export default function Login(props) {
+  console.log(API_URL)
   const toast = useToast()
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -55,7 +57,7 @@ export default function Login(props) {
       const data = {email, password}
       try {
         // const response = await axios.post('http://localhost:3001/login', data);
-        const response = await axios.post('http://192.168.0.102:3001/accounts/login', data);
+        const response = await axios.post(`${API_URL}/accounts/login`, data);
         if(response){
           toast.show({
             duration: 5000,

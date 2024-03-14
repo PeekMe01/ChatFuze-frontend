@@ -24,17 +24,20 @@ export default function SecondPage(props) {
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || Date;
+    setDateOfBirth(currentDate)
     setShow(Platform.OS==='ios');
     selectedDate(currentDate);
+    
 
-    let tempDate = new Date(currentDate);
+    
+    console.log(dateOfBirth)
     let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() +1) + '/' + tempDate.getFullYear();
 
   }
 
   const { 
-    birthday,
-    setBirthday,
+    dateOfBirth,
+    setDateOfBirth,
     country,
     setCountry,
     gender,
@@ -92,7 +95,7 @@ export default function SecondPage(props) {
               {show && (
                 <DateTimePicker
                 testID='dateTimePicker'
-                value = {birthday}
+                value = {dateOfBirth}
                 mode='date'
                 display='default'
                 onChange={onChange}

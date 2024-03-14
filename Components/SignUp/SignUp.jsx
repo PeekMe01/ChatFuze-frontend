@@ -21,6 +21,7 @@ import { VStack } from '@gluestack-ui/themed';
 
 import debounce from 'lodash.debounce';
 import axios from 'axios';
+import API_URL from '../Config'
 
 const Stack = createStackNavigator();
 
@@ -68,7 +69,7 @@ export default function Login(props) {
     const [invalidEmail, setInvalidEmail] = useState(false);
 
   //Second Page
-    const [birthday, setBirthday] = useState(new Date);
+    const [dateOfBirth, setDateOfBirth] = useState(new Date);
     const [country, setCountry] = useState();
     const [gender, setGender] = useState('male');
     const [invalidCountry, setInvalidCountry] = useState(false)
@@ -84,13 +85,15 @@ export default function Login(props) {
     
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
+    const [actualOTP, setActualOTP] = useState(null);
+    const [attemptingSignup, setAttemptingSignup] = useState(false);
 
     const validateUsername = debounce(async (tmpUsername) => {
       if (tmpUsername&&tmpUsername.length > 3) {
         const data = {tmpUsername}
         try {
           // const response = await axios.post('http://localhost:3001/login', data);
-          const response = await axios.post('http://192.168.0.102:3001/accounts/validate_username', data);
+          const response = await axios.post(`${API_URL}/accounts/validate_username`, data);
           if(response){
             if(response.data.available){
               // Good shit
@@ -110,7 +113,7 @@ export default function Login(props) {
         const data = {tmpEmail}
       try {
         // const response = await axios.post('http://localhost:3001/login', data);
-        const response = await axios.post('http://192.168.0.102:3001/accounts/validate_email', data);
+        const response = await axios.post(`${API_URL}/accounts/validate_email`, data);
         if(response){
           if(response.data.available){
             // Good shit
@@ -189,7 +192,8 @@ export default function Login(props) {
         // send the otp
         const data = {email}
         try {
-          const response = await axios.post('http://192.168.0.102:3001/accounts/send_otp', data);
+          const response = await axios.post(`${API_URL}/accounts/sendOTP`, data);
+          setActualOTP(response.data.otp)
         } catch (error) {
           
         }
@@ -200,7 +204,9 @@ export default function Login(props) {
         }, 500); // 1000 milliseconds = 1 second
       }
     }else if(changePage==3){
-      if(!OTP){
+      console.log(OTP)
+      console.log(actualOTP)
+      if(!OTP||OTP!==actualOTP){
         setInvalidOTP(true);
       }else{
         setInvalidOTP(false);
@@ -208,28 +214,39 @@ export default function Login(props) {
       }
 
       if(goodOTP){
-        setChangingPage(true)
-        toast.show({
-          duration: 1000,
-          placement: "top",
-          render: ({ id }) => {
-              const toastId = "toast-" + id
-              return (
-              <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
-                  <VStack space="xs">
-                  <ToastTitle>Welcome Aboard</ToastTitle>
-                  <ToastDescription>
-                      Your account has been succesfully created!
-                  </ToastDescription>
-                  </VStack>
-              </Toast>
-              )
-          },
-          })
-        setTimeout(function() {
-          setChangePage(4);
-          setChangingPage(false)
-        }, 2000); // 1000 milliseconds = 1 second
+        setAttemptingSignup(true);
+        const data = {email, username, password, dateOfBirth, country, gender};
+
+        try {
+          const response = await axios.post(`${API_URL}/accounts/register`, data);
+          console.log(response.data)
+          setChangingPage(true)
+          toast.show({
+            duration: 3000,
+            placement: "top",
+            render: ({ id }) => {
+                const toastId = "toast-" + id
+                return (
+                <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+                    <VStack space="xs">
+                    <ToastTitle>Welcome Aboard</ToastTitle>
+                    <ToastDescription>
+                        Your account has been succesfully created!
+                    </ToastDescription>
+                    </VStack>
+                </Toast>
+                )
+            },
+            })
+          setTimeout(function() {
+            setChangePage(4);
+            setChangingPage(false);
+            setAttemptingSignup(false)
+          }, 3000); // 1000 milliseconds = 1 second
+
+        } catch (error) {
+          // halla2 bzabbit
+        }
       }
     }
     
@@ -284,8 +301,8 @@ export default function Login(props) {
               :changePage==1?
               <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
                 <SecondPage
-                  birthday={birthday}
-                  setBirthday={setBirthday}
+                  dateOfBirth={dateOfBirth}
+                  setDateOfBirth={setDateOfBirth}
                   country={country}
                   setCountry={setCountry}
                   gender={gender}
@@ -324,6 +341,7 @@ export default function Login(props) {
 
               <FormControl m={10} pt={50}>
                 <Button
+                  isDisabled={attemptingSignup}
                   size="lg"
                   mb="$4"
                   borderRadius={40}
