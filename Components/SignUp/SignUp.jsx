@@ -82,6 +82,9 @@ export default function Login(props) {
   //Fourth Page
     const [OTP, setOTP] = useState(null);
     const [invalidOTP, setInvalidOTP] = useState(false);
+
+  //Firth Page
+    const [changePageAfterOTP, setChangePageAfterOTP] = useState(false);
     
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
@@ -221,28 +224,29 @@ export default function Login(props) {
           const response = await axios.post(`${API_URL}/accounts/register`, data);
           console.log(response.data)
           setChangingPage(true)
-          toast.show({
-            duration: 3000,
-            placement: "top",
-            render: ({ id }) => {
-                const toastId = "toast-" + id
-                return (
-                <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
-                    <VStack space="xs">
-                    <ToastTitle>Welcome Aboard</ToastTitle>
-                    <ToastDescription>
-                        Your account has been succesfully created!
-                    </ToastDescription>
-                    </VStack>
-                </Toast>
-                )
-            },
-            })
+          // toast.show({
+          //   duration: 3000,
+          //   placement: "top",
+          //   render: ({ id }) => {
+          //       const toastId = "toast-" + id
+          //       return (
+          //       <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+          //           <VStack space="xs">
+          //           <ToastTitle>Welcome Aboard</ToastTitle>
+          //           <ToastDescription>
+          //               Your account has been succesfully created!
+          //           </ToastDescription>
+          //           </VStack>
+          //       </Toast>
+          //       )
+          //   },
+          //   })
+          setChangePage(4);
           setTimeout(function() {
-            setChangePage(4);
             setChangingPage(false);
             setAttemptingSignup(false)
-          }, 3000); // 1000 milliseconds = 1 second
+            setChangePageAfterOTP(true);
+          }, 500); // 1000 milliseconds = 1 second
 
         } catch (error) {
           // halla2 bzabbit
@@ -260,132 +264,177 @@ export default function Login(props) {
     ) 
   }
 
-  return (
-    <Animatable.View animation="fadeIn">
+  if(changePageAfterOTP){
+    return (
+      <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
         <View>
-            <Center>
-              {/* <FormControl m={10} pt={30}>
-                  <Progress.Bar progress={signUpProgress} width={300} color='#2cb5d6' height={8}/>
-              </FormControl> */}
-              <Animatable.Text animation="bounceIn" easing="ease-out">
-                <Text size='5xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-                  SIGN UP
-                </Text>
-              </Animatable.Text>
-              <Divider my="$10"/>
+          {/* <Center> */}
+            {/* <FormControl m={10} pt={30}>386154
+                <Progress.Bar progress={signUpProgress} width={300} color='#2cb5d6' height={8}/>
+            </FormControl> */}
+            <Animatable.Text animation="bounceIn" easing="ease-out">
+              <Text size='xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' >
+                Welcome aboard {username.length<=30?username:username.substring(0, 10)+'...'}!
+              </Text>
+            </Animatable.Text>
+            <Divider my="$10"/>
 
-              
-                {changePage==0?
+            <Button
+              isDisabled={attemptingSignup}
+              size="lg"
+              mb="$4"
+              borderRadius={40}
+              hardShadow='1'
+              bgColor="#2cb5d6"
+              $hover={{
+                  bg: "$green600",
+                  _text: {
+                  color: "$white",
+                  },
+              }}
+              $active={{
+                  bg: "#2c94d6",
+              }}
+              onPress={()=>console.log('pressed go to home page')}
+              >
+              <ButtonText fontSize="$xl" fontWeight="$medium">
+                Go to home page
+              </ButtonText>
+            </Button>
+
+          {/* </Center> */}
+        </View>
+      </Animatable.View>
+    )
+  }else{
+    return (
+      <Animatable.View animation={changePage==4?"fadeOut":"fadeIn"} duration={500}>
+          <View>
+              <Center>
+                {/* <FormControl m={10} pt={30}>
+                    <Progress.Bar progress={signUpProgress} width={300} color='#2cb5d6' height={8}/>
+                </FormControl> */}
+                <Animatable.Text animation="bounceIn" easing="ease-out">
+                  <Text size='5xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    SIGN UP
+                  </Text>
+                </Animatable.Text>
+                <Divider my="$10"/>
+  
+                
+                  {changePage==0?
+                  <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
+                    <FirstPage
+                      validateEmail={validateEmail}
+                      validateUsername={validateUsername}
+                      username={username}
+                      setUsername={setUsername}
+                      email={email}
+                      setEmail={setEmail}
+                      password={password}
+                      setPassword={setPassword}
+                      invalidUsername={invalidUsername}
+                      setInvalidUsername={setInvalidUsername}
+                      invalidEmail={invalidEmail}
+                      setInvalidEmail={setInvalidEmail}
+                      invalidPassword={invalidPassword}
+                      setInvalidPassword={setInvalidPassword}
+                      signUpProgress={signUpProgress}
+                      setSignUpProgress={setSignUpProgress}
+                      changePage={changePage}
+                      setChangePage={setChangePage}
+                    />
+                  </Animatable.View>
+                :changePage==1?
                 <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
-                  <FirstPage
-                    validateEmail={validateEmail}
-                    validateUsername={validateUsername}
-                    username={username}
-                    setUsername={setUsername}
-                    email={email}
-                    setEmail={setEmail}
-                    password={password}
-                    setPassword={setPassword}
-                    invalidUsername={invalidUsername}
-                    setInvalidUsername={setInvalidUsername}
-                    invalidEmail={invalidEmail}
-                    setInvalidEmail={setInvalidEmail}
-                    invalidPassword={invalidPassword}
-                    setInvalidPassword={setInvalidPassword}
+                  <SecondPage
+                    dateOfBirth={dateOfBirth}
+                    setDateOfBirth={setDateOfBirth}
+                    country={country}
+                    setCountry={setCountry}
+                    gender={gender}
+                    setGender={setGender}
                     signUpProgress={signUpProgress}
                     setSignUpProgress={setSignUpProgress}
                     changePage={changePage}
                     setChangePage={setChangePage}
+                    invalidCountry={invalidCountry}
+                    setInvalidCountry={setInvalidCountry}
                   />
                 </Animatable.View>
-              :changePage==1?
-              <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
-                <SecondPage
-                  dateOfBirth={dateOfBirth}
-                  setDateOfBirth={setDateOfBirth}
-                  country={country}
-                  setCountry={setCountry}
-                  gender={gender}
-                  setGender={setGender}
+                :changePage==2?
+                <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
+                <ThirdPage
+                  image={image}
+                  setImage={setImage}
+                  invalidImage={invalidImage}
+                  setInvalidImage={setInvalidImage}
                   signUpProgress={signUpProgress}
                   setSignUpProgress={setSignUpProgress}
                   changePage={changePage}
                   setChangePage={setChangePage}
-                  invalidCountry={invalidCountry}
-                  setInvalidCountry={setInvalidCountry}
                 />
               </Animatable.View>
-              :changePage==2?
+              :changePage==3||changePage==4?
               <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
-              <ThirdPage
-                image={image}
-                setImage={setImage}
-                invalidImage={invalidImage}
-                setInvalidImage={setInvalidImage}
-                signUpProgress={signUpProgress}
-                setSignUpProgress={setSignUpProgress}
-                changePage={changePage}
-                setChangePage={setChangePage}
-              />
-            </Animatable.View>
-            :
-            <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
-              <FourthPage
-                email={email}
-                OTP={OTP}
-                setOTP={setOTP}
-                invalidOTP={invalidOTP}
-                setInvalidOTP={setInvalidOTP}
-              />
-            </Animatable.View>}
-
-              <FormControl m={10} pt={50}>
-                <Button
-                  isDisabled={attemptingSignup}
-                  size="lg"
-                  mb="$4"
-                  borderRadius={40}
-                  hardShadow='1'
-                  bgColor="#2cb5d6"
-                  $hover={{
-                      bg: "$green600",
-                      _text: {
-                      color: "$white",
-                      },
-                  }}
-                  $active={{
-                      bg: "#2c94d6",
-                  }}
-                  onPress={validate}
-                  >
-                  <ButtonText fontSize="$xl" fontWeight="$medium">
-                    Next
-                  </ButtonText>
-                </Button>
-
-                <FormControlHelper style={{ alignItems: 'center', justifyContent: 'center'}}>
-                  <FormControlHelperText  color='rgba(255,255,255,0.7)' >
-                      Already have an account? <FormControlHelperText color='#2cb5d6' fontWeight='$semibold' onPress={()=>{setSignupPage(false);setLoginPage(true)}}>Login</FormControlHelperText>
-                  </FormControlHelperText>
-                </FormControlHelper>
-              </FormControl>
-
-            </Center>
-        </View>
-    </Animatable.View>
-    // <View style={styles.container}>
-    //   <Camera
-    //       style={styles.camera}
-    //       type={type}
-    //       flasMode={flash}
-    //       ref={cameraRef}
-    //   >
-    //       <View style={{top:  '95%', margin: "0px 100px"}}>
-    //           <Buttons title={'Take a picture'} icon="camera" onPress={takePicture}/> 
-    //       </View>
-    //   </Camera>
-    // </View>
-    )
+                <FourthPage
+                  email={email}
+                  OTP={OTP}
+                  setOTP={setOTP}
+                  invalidOTP={invalidOTP}
+                  setInvalidOTP={setInvalidOTP}
+                />
+              </Animatable.View>
+              :<></>}
+  
+                <FormControl m={10} pt={50}>
+                  <Button
+                    isDisabled={attemptingSignup}
+                    size="lg"
+                    mb="$4"
+                    borderRadius={40}
+                    hardShadow='1'
+                    bgColor="#2cb5d6"
+                    $hover={{
+                        bg: "$green600",
+                        _text: {
+                        color: "$white",
+                        },
+                    }}
+                    $active={{
+                        bg: "#2c94d6",
+                    }}
+                    onPress={validate}
+                    >
+                    <ButtonText fontSize="$xl" fontWeight="$medium">
+                      Next
+                    </ButtonText>
+                  </Button>
+  
+                  <FormControlHelper style={{ alignItems: 'center', justifyContent: 'center'}}>
+                    <FormControlHelperText  color='rgba(255,255,255,0.7)' >
+                        Already have an account? <FormControlHelperText color='#2cb5d6' fontWeight='$semibold' onPress={()=>{setSignupPage(false);setLoginPage(true)}}>Login</FormControlHelperText>
+                    </FormControlHelperText>
+                  </FormControlHelper>
+                </FormControl>
+  
+              </Center>
+          </View>
+      </Animatable.View>
+      // <View style={styles.container}>
+      //   <Camera
+      //       style={styles.camera}
+      //       type={type}
+      //       flasMode={flash}
+      //       ref={cameraRef}
+      //   >
+      //       <View style={{top:  '95%', margin: "0px 100px"}}>
+      //           <Buttons title={'Take a picture'} icon="camera" onPress={takePicture}/> 
+      //       </View>
+      //   </Camera>
+      // </View>
+      )
+  }
 }
 
 const styles = StyleSheet.create({
