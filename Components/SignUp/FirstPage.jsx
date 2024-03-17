@@ -13,6 +13,10 @@ export default function FirstPage(props) {
   }
 
   const { 
+    emailErrorText,
+    setEmailErrorText,
+    usernameErrorText,
+    setUsernameErrorText,
     validateUsername,
     validateEmail,
     username, 
@@ -69,7 +73,7 @@ export default function FirstPage(props) {
                   onChange={(newValue)=>{
                       setUsername(newValue.nativeEvent.text);
                       setInvalidUsername(false);
-                      validateUsername(newValue.nativeEvent.text);
+                      // validateUsername(newValue.nativeEvent.text);
                   }}
                 />
               </Input>
@@ -79,7 +83,7 @@ export default function FirstPage(props) {
                 as={AlertCircleIcon}
               />
               <FormControlErrorText>
-                Username Unavailable
+                {usernameErrorText}
               </FormControlErrorText>
             </FormControlError>
           </FormControl>
@@ -105,7 +109,7 @@ export default function FirstPage(props) {
                   onChange={(newValue)=>{
                       setEmail(newValue.nativeEvent.text);
                       setInvalidEmail(false);
-                      validateEmail(newValue.nativeEvent.text);
+                      // validateEmail(newValue.nativeEvent.text);
                   }}
                 />
               </Input>
@@ -115,7 +119,7 @@ export default function FirstPage(props) {
                 as={AlertCircleIcon}
               />
               <FormControlErrorText>
-                Invalid Email
+                {emailErrorText}
               </FormControlErrorText>
             </FormControlError>
           </FormControl>

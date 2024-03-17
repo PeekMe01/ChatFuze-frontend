@@ -1,6 +1,7 @@
 import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, VStack, View } from '@gluestack-ui/themed';
 import React, { useState } from 'react';
 import { useFonts } from 'expo-font';
+import { Image } from 'react-native';
 import { AppLoading } from 'expo';
 import { HStack } from '@gluestack-ui/themed';
 import { Spinner } from '@gluestack-ui/themed';
@@ -8,6 +9,7 @@ import axios from 'axios';
 import * as Animatable from 'react-native-animatable';
 import { useToast, Toast } from '@gluestack-ui/themed';
 import API_URL from '../Config'
+import logo from '../../assets/img/logo.png'
 
 export default function Login(props) {
   console.log(API_URL)
@@ -19,6 +21,7 @@ export default function Login(props) {
 
   const [attemptingLogin, setAttemptingLogin] = useState(false);
 
+
   const [onForgotPasswordPage, setOnForgotPasswordPage] = useState(false);
   const [changingPage, setChangingPage] = useState(false)
   const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState(false);
@@ -28,8 +31,12 @@ export default function Login(props) {
   });
 
   const {
+    loggedIn,
+    setLoggedIn,
     setLoginPage,
-    setSignupPage
+    setSignupPage,
+    setWelcomePage,
+    welcomePage
   } = props
 
   const [showPassword, setShowPassword] = useState(false)
@@ -46,17 +53,29 @@ export default function Login(props) {
     setTimeout(() => {
       setOnForgotPasswordPage(!onForgotPasswordPage);
       setChangingPage(false)
-    }, 1000);
+    }, 100);
   }
 
   const handlePasswordReset = () => {
-    setChangingPage(true);
+    let emailGood = false;
+
+    if(!email||(email&&!email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))){
+      setInvalidEmail(true)
+    }else{
+        setInvalidEmail(false)
+        emailGood = true;
+    }
+
+    if(emailGood){
+      setChangingPage(true);
     
-    setTimeout(() => {
-      setOnForgotPasswordPage(!onForgotPasswordPage);
-      setForgotPasswordSuccess(true);
-      setChangingPage(false)
-    }, 1000);
+      setTimeout(() => {
+        setOnForgotPasswordPage(!onForgotPasswordPage);
+        setForgotPasswordSuccess(true);
+        setChangingPage(false)
+      }, 100);
+    }
+    
   }
 
   const handleGoBackToLogin = () => {
@@ -66,7 +85,16 @@ export default function Login(props) {
       setOnForgotPasswordPage(false);
       setForgotPasswordSuccess(false);
       setChangingPage(false)
-    }, 1000);
+    }, 100);
+  }
+
+  const getStarted = () => {
+    setChangingPage(true);
+
+    setTimeout(()=>{
+      setWelcomePage(false)
+      setChangingPage(false)
+    }, 500)
   }
 
   const handleLogin = async () => {
@@ -92,6 +120,7 @@ export default function Login(props) {
         // const response = await axios.post('http://localhost:3001/login', data);
         const response = await axios.post(`${API_URL}/accounts/login`, data);
         if(response){
+          setChangingPage(true);
           toast.show({
             duration: 5000,
             placement: "top",
@@ -109,6 +138,11 @@ export default function Login(props) {
                 )
             },
             })
+          setTimeout(function() {
+            setLoggedIn(true);
+            setChangingPage(false);
+            setAttemptingLogin(false)
+          }, 100); // 1000 milliseconds = 1 second
         }
 
       } catch (error) {
@@ -276,7 +310,44 @@ export default function Login(props) {
         </View>
       </Animatable.View>
     )
-  } else {
+  } else if (welcomePage){
+    return (
+      <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
+      <View width={'100%'}>
+        <Box h="$56" w="$96" style={{ display: 'flex', gap: 30, justifyContent: 'center', alignItems: 'center'}}>
+        <Image source={logo}
+          style={{width: '100%', height: '100%'}}
+        />
+          <Button
+            isDisabled={attemptingLogin}
+            size="lg"
+            mb="$4"
+            width={'80%'}
+            borderRadius={40}
+            hardShadow='1'
+            top={'50%'}
+            bgColor="#2cb5d6"
+            $hover={{
+                bg: "$green600",
+                _text: {
+                color: "$white",
+                },
+            }}
+            $active={{
+                bg: "#2c94d6",
+            }}
+            onPress={()=>getStarted()}
+            >
+              <ButtonText fontSize="$xl" fontWeight="$medium">
+                Get Started
+              </ButtonText>
+          </Button>
+        </Box>
+      </View>
+      </Animatable.View>
+    )
+  }
+   else {
     return (
       <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
         <View>

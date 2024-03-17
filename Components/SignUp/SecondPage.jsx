@@ -16,26 +16,33 @@ import { CircleIcon } from '@gluestack-ui/themed';
 export default function SecondPage(props) {
 
   const [show, setShow] = useState(false)
+  
   // const [text, setText] = useState('Empty')
 
   const showMode = (currentMode) => {
-    setShow(true);
+    setShow(!show);
   }
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || Date;
-    setDateOfBirth(currentDate)
+    const minimumAgeDate = new Date();
+    minimumAgeDate.setFullYear(minimumAgeDate.getFullYear() - 18);
     setShow(Platform.OS==='ios');
-    selectedDate(currentDate);
-    
-
-    
-    console.log(dateOfBirth)
-    let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() +1) + '/' + tempDate.getFullYear();
-
+    if (currentDate < minimumAgeDate) {
+      setInvalidAge(false)
+      setDateOfBirth(currentDate)
+      selectedDate(currentDate);
+      console.log(dateOfBirth)
+      let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() +1) + '/' + tempDate.getFullYear();
+    } else {
+      setInvalidAge(true)
+      console.log("im too young")
+    }
   }
 
   const { 
+    invalidAge,
+    setInvalidAge,
     dateOfBirth,
     setDateOfBirth,
     country,
@@ -64,11 +71,11 @@ export default function SecondPage(props) {
     //         <Divider my="$10"/>                 
       
         <Box h="$32" w="$72" mb={50} style={{ display: 'flex', gap: 40 }}>
-        <FormControl isDisabled={false} isInvalid={false} isReadOnly={false} isRequired={true}>
+        <FormControl isDisabled={false} isInvalid={invalidAge} isReadOnly={false} isRequired={true}>
             {/* <FormControlLabel mb='$1'>
               <FormControlLabelText>Email</FormControlLabelText>
             </FormControlLabel> */}
-            <Animatable.View animation={null}>
+            <Animatable.View animation={invalidAge?"shake":null}>
               {/* <Input 
                 p={5}
                 borderWidth={2}
@@ -99,10 +106,17 @@ export default function SecondPage(props) {
                 mode='date'
                 display='default'
                 onChange={onChange}
-
               />)}
               
             </Animatable.View>
+            <FormControlError mb={-24}>
+              <FormControlErrorIcon
+                as={AlertCircleIcon}
+              />
+              <FormControlErrorText>
+                You must be over 18
+              </FormControlErrorText>
+            </FormControlError>
           </FormControl>
 
           <FormControl isDisabled={false} isInvalid={invalidCountry} isReadOnly={false} isRequired={true}>

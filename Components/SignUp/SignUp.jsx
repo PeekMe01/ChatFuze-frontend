@@ -35,9 +35,16 @@ export default function Login(props) {
   const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const cameraRef = useRef(null);
 
+  const [emailErrorText, setEmailErrorText] = useState(null);
+  const [usernameErrorText, setUsernameErrorText] = useState(null);
+
   const {
+    loggedIn,
+    setLoggedIn,
     setLoginPage,
-    setSignupPage
+    setSignupPage,
+    setWelcomePage,
+    welcomePage
   } = props
 
   useEffect(() => {
@@ -73,6 +80,7 @@ export default function Login(props) {
     const [country, setCountry] = useState();
     const [gender, setGender] = useState('male');
     const [invalidCountry, setInvalidCountry] = useState(false)
+    const [invalidAge, setInvalidAge] = useState(false)
 
 
   //Third Page
@@ -91,7 +99,8 @@ export default function Login(props) {
     const [actualOTP, setActualOTP] = useState(null);
     const [attemptingSignup, setAttemptingSignup] = useState(false);
 
-    const validateUsername = debounce(async (tmpUsername) => {
+    const validateUsername = async (tmpUsername) => {
+      setAttemptingSignup(true)
       if (tmpUsername&&tmpUsername.length > 3) {
         const data = {tmpUsername}
         try {
@@ -101,6 +110,7 @@ export default function Login(props) {
             if(response.data.available){
               // Good shit
             }else{
+              setUsernameErrorText("Username is already in use")
               setInvalidUsername(true);
             }
           }
@@ -108,9 +118,11 @@ export default function Login(props) {
             console.log(error);
         }
       }
-    }, 1000); // Adjust the debounce duration as needed
+      setAttemptingSignup(false)
+    };
 
-    const validateEmail = debounce(async (tmpEmail) => {
+    const validateEmail = async (tmpEmail) => {
+      setAttemptingSignup(true)
       if (tmpEmail&&tmpEmail.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
         
         const data = {tmpEmail}
@@ -121,6 +133,7 @@ export default function Login(props) {
           if(response.data.available){
             // Good shit
           }else{
+            setEmailErrorText("Email is already in use")
             setInvalidEmail(true);
           }
         }
@@ -128,7 +141,8 @@ export default function Login(props) {
           console.log(error);
       }
       }
-    }, 2000); // Adjust the debounce duration as needed
+      setAttemptingSignup(false)
+    }
     
   const [fontsLoaded] = useFonts({
     'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
@@ -142,19 +156,24 @@ export default function Login(props) {
       let emailGood = false;
       let passwordGood = false;
 
+      validateUsername(username);
+      validateEmail(email);
+
       if((password&&password.length<8)||!password){
           setInvalidPassword(true)
       }else{
           setInvalidPassword(false)
           passwordGood = true;
       }
-      if(!email||(email&&!email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))){
+      if(!email||(email&&!email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))||invalidEmail){
+          setEmailErrorText("Email is in wrong format")
           setInvalidEmail(true)
       }else{
           setInvalidEmail(false)
           emailGood = true;
       }
-      if((username&&username.length<3)||!username){
+      if((username&&username.length<3)||!username||invalidUsername){
+          setUsernameErrorText("Username is too short")
           setInvalidUsername(true)
       }else{
           setInvalidUsername(false)
@@ -165,7 +184,7 @@ export default function Login(props) {
         setTimeout(function() {
           setChangePage(1);
           setChangingPage(false)
-        }, 500); // 1000 milliseconds = 1 second
+        }, 100); // 1000 milliseconds = 1 second
       } 
     }else if(changePage==1){
       let goodCountry = false;
@@ -181,7 +200,7 @@ export default function Login(props) {
         setTimeout(function() {
           setChangePage(2);
           setChangingPage(false)
-        }, 500); // 1000 milliseconds = 1 second
+        }, 100); // 1000 milliseconds = 1 second
       }
     }else if(changePage==2){
       let goodImage = true; // temporary true until imagepicker is fixed
@@ -204,7 +223,7 @@ export default function Login(props) {
         setTimeout(function() {
           setChangePage(3);
           setChangingPage(false)
-        }, 500); // 1000 milliseconds = 1 second
+        }, 100); // 1000 milliseconds = 1 second
       }
     }else if(changePage==3){
       console.log(OTP)
@@ -243,10 +262,11 @@ export default function Login(props) {
           //   })
           setChangePage(4);
           setTimeout(function() {
+            setLoggedIn(true);
             setChangingPage(false);
             setAttemptingSignup(false)
             setChangePageAfterOTP(true);
-          }, 500); // 1000 milliseconds = 1 second
+          }, 100); // 1000 milliseconds = 1 second
 
         } catch (error) {
           // halla2 bzabbit
@@ -325,6 +345,10 @@ export default function Login(props) {
                   {changePage==0?
                   <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
                     <FirstPage
+                      emailErrorText={emailErrorText}
+                      setEmailErrorText={setEmailErrorText}
+                      usernameErrorText={usernameErrorText}
+                      setUsernameErrorText={setUsernameErrorText}
                       validateEmail={validateEmail}
                       validateUsername={validateUsername}
                       username={username}
@@ -348,6 +372,8 @@ export default function Login(props) {
                 :changePage==1?
                 <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
                   <SecondPage
+                    invalidAge={invalidAge}
+                    setInvalidAge={setInvalidAge}
                     dateOfBirth={dateOfBirth}
                     setDateOfBirth={setDateOfBirth}
                     country={country}
