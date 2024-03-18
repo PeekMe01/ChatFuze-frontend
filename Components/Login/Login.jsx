@@ -26,6 +26,8 @@ export default function Login(props) {
   const [changingPage, setChangingPage] = useState(false)
   const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState(false);
 
+  const [nextPressed, setNextPressed] = useState(false);
+
   const [fontsLoaded] = useFonts({
     'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
   });
@@ -56,8 +58,9 @@ export default function Login(props) {
     }, 100);
   }
 
-  const handlePasswordReset = () => {
+  const handlePasswordReset = async () => {
     let emailGood = false;
+    setNextPressed(true);
 
     if(!email||(email&&!email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))){
       setInvalidEmail(true)
@@ -67,14 +70,47 @@ export default function Login(props) {
     }
 
     if(emailGood){
-      setChangingPage(true);
+      try {
+        const data = {email}
+        // const response = await axios.post('http://localhost:3001/login', data);
+        const response = await axios.post(`${API_URL}/accounts/resetpassword`, data);
+        if(response){
+          setChangingPage(true);
     
-      setTimeout(() => {
-        setOnForgotPasswordPage(!onForgotPasswordPage);
-        setForgotPasswordSuccess(true);
-        setChangingPage(false)
-      }, 100);
+          setTimeout(() => {
+            setOnForgotPasswordPage(!onForgotPasswordPage);
+            setForgotPasswordSuccess(true);
+            setChangingPage(false)
+            setNextPressed(false);
+          }, 100);
+        }
+
+      } catch (error) {
+          console.log(error);
+          toast.show({
+            duration: 5000,
+            placement: "top",
+            render: ({ id }) => {
+                const toastId = "toast-" + id
+                return (
+                <Toast nativeID={toastId} action="error" variant="solid" marginTop={40}>
+                    <VStack space="xs">
+                    <ToastTitle>Error</ToastTitle>
+                    <ToastDescription>
+                        {error.response.data.error}
+                    </ToastDescription>
+                    </VStack>
+                </Toast>
+                )
+            },
+            })
+            setNextPressed(false);
+      }
     }
+
+    setTimeout(() => {
+      setNextPressed(false);
+    }, 1000);
     
   }
 
@@ -225,7 +261,7 @@ export default function Login(props) {
                 </FormControl>
               </Box>
               <Button
-                isDisabled={false}
+                isDisabled={nextPressed}
                 size="lg"
                 mb="$4"
                 w={'100%'}
@@ -248,7 +284,7 @@ export default function Login(props) {
                 </ButtonText>
               </Button>
               <Button
-                isDisabled={false}
+                isDisabled={nextPressed}
                 size="lg"
                 mb="$4"
                 w={'100%'}
