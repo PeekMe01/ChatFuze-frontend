@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, ScrollView, TouchableHighlight } from 'react-native';
 import SocialMedia from './SocialMedia';
 
-export default function EditSettings({navigation}) {
+export default function EditProfile({navigation}) {
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
@@ -37,13 +37,13 @@ export default function EditSettings({navigation}) {
             <View margin={30} marginBottom={100}>
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
                 <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={10}>
-                    Edit Settings
+                    Edit Profile
                 </Text>
                 <View w="$80" alignSelf='center' marginVertical={100}>
                     <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-                                Change Password
+                                Change Username
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
                         </View>
@@ -52,7 +52,7 @@ export default function EditSettings({navigation}) {
                     <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-                                Insights
+                                Change Country
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
                         </View>
@@ -61,7 +61,7 @@ export default function EditSettings({navigation}) {
                     <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-                                Language
+                                Edit Bio
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
                         </View>
@@ -70,33 +70,13 @@ export default function EditSettings({navigation}) {
                     <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-                                About us
-                            </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                    <Divider/>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
-                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-                                Feedback
-                            </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                    <Divider/>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
-                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-                                Logout
+                                Edit Social Media Links
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
                         </View>
                     </TouchableHighlight>
                     <Divider/>
                 </View>
-                
-
             </ScrollView>
             </View>
         </Animatable.View>

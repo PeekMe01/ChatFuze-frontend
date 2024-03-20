@@ -16,6 +16,9 @@ import Profile from './Components/Profile/Profile'
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
 import EditSettings from './Components/Profile/EditSettings';
+import EditProfile from './Components/Profile/EditProfile';
+import FriendsList from './Components/Profile/FriendsList';
+import ProfileVisit from './Components/Profile/ProfileVisit';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,7 +28,12 @@ export default function App() {
   function HomeScreen() {
     return (
       <View style={{ flex: 1}}>
+        <ImageBackground
+            source={require('./assets/img/HomePage1.png')}
+            style={{ flex:1 ,resizeMode: 'cover', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
+          >
           <Text>Home!</Text>
+        </ImageBackground>
       </View>
     );
   }
@@ -50,10 +58,13 @@ export default function App() {
     return (
       
       <View style={{ flex: 1}}>
-          <Stack.Navigator screenOptions={{ headerShown: false}} initialRouteName='ProfileMain'>
-            <Stack.Screen name="ProfileMain" component={Profile} />
-            <Stack.Screen name="EditSettings" component={EditSettings}/>
-          </Stack.Navigator>
+            <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal'}} initialRouteName='ProfileMain'>
+              <Stack.Screen name="ProfileMain" component={Profile} />
+              <Stack.Screen name="EditSettings" component={EditSettings}/>
+              <Stack.Screen name="EditProfile" component={EditProfile}/>
+              <Stack.Screen name="FriendsList" component={FriendsList}/>
+              <Stack.Screen name="ProfileVisit" component={ProfileVisit}/>
+            </Stack.Navigator>
        </View>
        
     );

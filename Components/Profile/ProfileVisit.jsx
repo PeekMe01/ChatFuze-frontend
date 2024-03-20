@@ -1,4 +1,5 @@
-import { AddIcon, HStack, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
+// This page is for visiting a friend's profile.
+import { AddIcon, Divider, HStack, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
 import React from 'react'
 import { useState } from 'react';
@@ -9,7 +10,7 @@ import { Button, ScrollView, TouchableHighlight } from 'react-native';
 import SocialMedia from './SocialMedia';
 import { RefreshControl } from '@gluestack-ui/themed';
 
-export default function Profile({navigation}) {
+export default function ProfileVisit({navigation}) {
 
     const [refreshing, setRefreshing] = React.useState(false);
     const [clickedButton, setClickedButton] = useState(false);
@@ -74,9 +75,6 @@ export default function Profile({navigation}) {
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
                 <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
-                <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={10}>
-                    Profile
-                </Text>
 
                 <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '15%' }}>
                     <Image
@@ -93,40 +91,26 @@ export default function Profile({navigation}) {
                         <Text color='white'>Rank</Text>
                     </View>
                     <View display='flex' flexDirection='row' justifyContent='center' alignItems='center' margin={20}>
-                        <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' >Ralph, 21</Text>
+                        <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' >Antoine, 19</Text>
                         <Icon name="verified" size={24} color="#2cd6d3"/>
                     </View>
                     
                 </View>
 
-                <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 50, marginTop: -30 }}>
-                    <TouchableHighlight onPress={()=>{handleEditSettings()}} style={{ borderRadius: 50 }} underlayColor={'#51209550'} disabled={clickedButton}>
-                        <View width={50} height={50} justifyContent='center' alignItems='center' backgroundColor='#51209530' borderRadius={50}>
-                            <Icon name="settings" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={()=>{handleEditProfile()}} style={{ borderRadius: 50, marginTop: 50}} underlayColor={'#51209550'} disabled={clickedButton}>
-                        <View width={50} height={50} justifyContent='center' alignItems='center' backgroundColor='#51209530' borderRadius={50}>
-                            <Icon name="edit" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                    <TouchableHighlight onPress={()=>{handleFriendsList()}} style={{ borderRadius: 50 }} underlayColor={'#51209550'} disabled={clickedButton}>
-                        <View width={50} height={50} justifyContent='center' alignItems='center' backgroundColor='#51209530' borderRadius={50}>
-                            <Icon name="people-alt" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                </View>
+                <Divider marginVertical={10}/>
 
-                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
+                <View style={{ alignItems: 'center', flexDirection: 'column', marginTop: 0, gap: 10}}>
                     <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                         Bio
                     </Text>
-                    <Text color='white' fontWeight='$light'>
+                    <Text color='white' fontWeight='$light' textAlign='center'>
                     We ordered the Among Us potion from the DarkWeb. And supposedly when you drink this Among Us potion. At 3 a.m. you turn into the Impostor from Among Us. And we’re gonna find out if it actually is real, or not if it’s not. And it better be real you guys. Cause i literally spent $500 and 69 cents.
                     </Text>
                 </View>
 
-                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
+                <Divider marginVertical={10}/>
+
+                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 10, gap: 10}}>
                     <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                         Country of residence
                     </Text>
@@ -140,11 +124,11 @@ export default function Profile({navigation}) {
                         Birthday
                     </Text>
                     <Text color='white' fontWeight='$light'>
-                        17 April 2003
+                        15 April 2004
                     </Text>
                 </View>
 
-                <SocialMedia instagram={"daher.ralph"} facebook={"Ralph Daher"}/>
+                <SocialMedia instagram={"ak"} facebook={null}/>
 
                 </ScrollView>
             </View>
