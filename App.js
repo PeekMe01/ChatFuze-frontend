@@ -16,7 +16,7 @@ import Profile from './Components/Profile/Profile'
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
 import EditSettings from './Components/Profile/EditSettings';
-
+import Leaderboard from './Components/Leaderboard/Leaderboard';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -40,9 +40,7 @@ export default function App() {
 
   function LeaderboardScreen() {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Eddy 5ara!</Text>
-      </View>
+      <Leaderboard/>
     );
   }
 
