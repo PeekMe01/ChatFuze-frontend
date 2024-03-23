@@ -122,7 +122,7 @@ export default function Profile({navigation}) {
                         Bio
                     </Text>
                     <Text color='white' fontWeight='$light'>
-                    We ordered the Among Us potion from the DarkWeb. And supposedly when you drink this Among Us potion. At 3 a.m. you turn into the Impostor from Among Us. And we’re gonna find out if it actually is real, or not if it’s not. And it better be real you guys. Cause i literally spent $500 and 69 cents.
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                     </Text>
                 </View>
 

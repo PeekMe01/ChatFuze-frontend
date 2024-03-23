@@ -19,6 +19,11 @@ import EditSettings from './Components/Profile/EditSettings';
 import EditProfile from './Components/Profile/EditProfile';
 import FriendsList from './Components/Profile/FriendsList';
 import ProfileVisit from './Components/Profile/ProfileVisit';
+import ChangePassword from './Components/Profile/EditSettings/ChangePassword';
+import Insights from './Components/Profile/EditSettings/Insights';
+import Language from './Components/Profile/EditSettings/Languague';
+import AboutUs from './Components/Profile/EditSettings/AboutUs';
+import Feedback from './Components/Profile/EditSettings/Feedback';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -64,6 +69,11 @@ export default function App() {
               <Stack.Screen name="EditProfile" component={EditProfile}/>
               <Stack.Screen name="FriendsList" component={FriendsList}/>
               <Stack.Screen name="ProfileVisit" component={ProfileVisit}/>
+              <Stack.Screen name="ChangePassword" component={ChangePassword}/>
+              <Stack.Screen name="Insights" component={Insights}/>
+              <Stack.Screen name="Language" component={Language}/>
+              <Stack.Screen name="AboutUs" component={AboutUs}/>
+              <Stack.Screen name="Feedback" component={Feedback}/>
             </Stack.Navigator>
        </View>
        
@@ -73,7 +83,7 @@ export default function App() {
   const [loginPage, setLoginPage] = useState(true);
   const [signupPage, setSignupPage] = useState(false);
   const [welcomePage, setWelcomePage] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   if(!loggedIn){
     return (

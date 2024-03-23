@@ -105,7 +105,7 @@ export default function Login(props) {
         const data = {tmpUsername}
         try {
           // const response = await axios.post('http://localhost:3001/login', data);
-          const response = await axios.post(`${API_URL}/accounts/validate_username`, data);
+          const response = await axios.post(`${API_URL}/Accounts/validate_username`, data);
           if(response){
             if(response.data.available){
               // Good shit
@@ -128,7 +128,7 @@ export default function Login(props) {
         const data = {tmpEmail}
       try {
         // const response = await axios.post('http://localhost:3001/login', data);
-        const response = await axios.post(`${API_URL}/accounts/validate_email`, data);
+        const response = await axios.post(`${API_URL}/Accounts/validate_email`, data);
         if(response){
           if(response.data.available){
             // Good shit
@@ -214,7 +214,7 @@ export default function Login(props) {
         // send the otp
         const data = {email}
         try {
-          const response = await axios.post(`${API_URL}/accounts/sendOTP`, data);
+          const response = await axios.post(`${API_URL}/Accounts/sendOTP`, data);
           setActualOTP(response.data.otp)
         } catch (error) {
           
@@ -240,7 +240,7 @@ export default function Login(props) {
         const data = {email, username, password, dateOfBirth, country, gender};
 
         try {
-          const response = await axios.post(`${API_URL}/accounts/register`, data);
+          const response = await axios.post(`${API_URL}/Accounts/register`, data);
           console.log(response.data)
           setChangingPage(true)
           // toast.show({

@@ -1,17 +1,22 @@
-import { AddIcon, Divider, HStack, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
+import { AddIcon, AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogFooter, Button, ButtonGroup, ButtonText, CloseIcon, Divider, HStack, Heading, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
 import React from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Button, ScrollView, TouchableHighlight } from 'react-native';
+import { ScrollView, TouchableHighlight } from 'react-native';
 import SocialMedia from './SocialMedia';
+import { AlertDialogContent } from '@gluestack-ui/themed';
+import { AlertDialogHeader } from '@gluestack-ui/themed';
+import { AlertDialogCloseButton } from '@gluestack-ui/themed';
 
 export default function EditSettings({navigation}) {
 
+    const [clickedButton, setClickedButton] = useState(false);
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
+    const [showAlertDialog, setShowAlertDialog] = useState(false)
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
@@ -28,19 +33,111 @@ export default function EditSettings({navigation}) {
         ) 
     }
 
+    const handleChangePasswordPage = () => {
+        navigation.push('ChangePassword');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
+    const handleInsightsPage = () => {
+        navigation.push('Insights');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
+    const handleLanguagePage = () => {
+        navigation.push('Language');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
+    const handleAboutUsPage = () => {
+        navigation.push('AboutUs');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
+    const handleFeedbackPage = () => {
+        navigation.push('Feedback');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
+    const handleLogoutPressed = () => {
+        setClickedButton(true);
+        setShowAlertDialog(true)
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
   return (
     <ImageBackground
         source={require('../../assets/img/HomePage1.png')}
         style={{ flex:1 ,resizeMode: 'cover'}}
     >
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
+        <AlertDialog
+            isOpen={showAlertDialog}
+            onClose={() => {
+            setShowAlertDialog(false)
+            }}
+        >
+            <AlertDialogBackdrop />
+            <AlertDialogContent>
+            <AlertDialogHeader>
+                <Heading size="lg" color='#512095'>Logout?</Heading>
+                <AlertDialogCloseButton>
+                <Icon as={CloseIcon} />
+                </AlertDialogCloseButton>
+            </AlertDialogHeader>
+            <AlertDialogBody>
+                <Text size="sm">
+                Are you sure you want to logout?
+                </Text>
+            </AlertDialogBody>
+            <AlertDialogFooter>
+                <ButtonGroup space="lg">
+                <Button
+                    variant="outline"
+                    action="secondary"
+                    borderWidth={2}
+                    onPress={() => {
+                    setShowAlertDialog(false)
+                    }}
+                >
+                    <ButtonText>Cancel</ButtonText>
+                </Button>
+                <Button
+                    bg="#512095"
+                    action="negative"
+                    onPress={() => {
+                    setShowAlertDialog(false)
+                    }}
+                >
+                    <ButtonText>Logout</ButtonText>
+                </Button>
+                </ButtonGroup>
+            </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
             <View margin={30} marginBottom={100}>
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
-                <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={10}>
+                <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
                     Edit Settings
                 </Text>
                 <View w="$80" alignSelf='center' marginVertical={100}>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                    <TouchableHighlight onPress={()=>{handleChangePasswordPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Change Password
@@ -49,7 +146,7 @@ export default function EditSettings({navigation}) {
                         </View>
                     </TouchableHighlight>
                     <Divider/>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                    <TouchableHighlight onPress={()=>{handleInsightsPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Insights
@@ -58,7 +155,7 @@ export default function EditSettings({navigation}) {
                         </View>
                     </TouchableHighlight>
                     <Divider/>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                    <TouchableHighlight onPress={()=>{handleLanguagePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Language
@@ -67,7 +164,7 @@ export default function EditSettings({navigation}) {
                         </View>
                     </TouchableHighlight>
                     <Divider/>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                    <TouchableHighlight onPress={()=>{handleAboutUsPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 About us
@@ -76,7 +173,7 @@ export default function EditSettings({navigation}) {
                         </View>
                     </TouchableHighlight>
                     <Divider/>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                    <TouchableHighlight onPress={()=>{handleFeedbackPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Feedback
@@ -85,7 +182,7 @@ export default function EditSettings({navigation}) {
                         </View>
                     </TouchableHighlight>
                     <Divider/>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                    <TouchableHighlight onPress={()=>{handleLogoutPressed()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Logout

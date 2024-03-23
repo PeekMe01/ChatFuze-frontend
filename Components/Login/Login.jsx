@@ -73,7 +73,7 @@ export default function Login(props) {
       try {
         const data = {email}
         // const response = await axios.post('http://localhost:3001/login', data);
-        const response = await axios.post(`${API_URL}/accounts/resetpassword`, data);
+        const response = await axios.post(`${API_URL}/Accounts/resetpassword`, data);
         if(response){
           setChangingPage(true);
     
@@ -154,7 +154,7 @@ export default function Login(props) {
       const data = {email, password}
       try {
         // const response = await axios.post('http://localhost:3001/login', data);
-        const response = await axios.post(`${API_URL}/accounts/login`, data);
+        const response = await axios.post(`${API_URL}/Accounts/login`, data);
         if(response){
           setChangingPage(true);
           toast.show({
