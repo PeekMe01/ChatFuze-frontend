@@ -16,7 +16,7 @@ import Profile from './Components/Profile/Profile'
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
 import EditSettings from './Components/Profile/EditSettings';
-import EditProfile from './Components/Profile/EditProfile';
+import Leaderboard from './Components/Leaderboard/Leaderboard';
 import FriendsList from './Components/Profile/FriendsList';
 import ProfileVisit from './Components/Profile/ProfileVisit';
 import ChangePassword from './Components/Profile/EditSettings/ChangePassword';
@@ -28,7 +28,7 @@ import ChangeUsername from './Components/Profile/EditProfile/ChangeUsername';
 import ChangeCountry from './Components/Profile/EditProfile/ChangeCountry';
 import EditBio from './Components/Profile/EditProfile/EditBio';
 import EditSocials from './Components/Profile/EditProfile/EditSocials';
-
+import EditProfile from './Components/Profile/EditProfile';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -57,9 +57,7 @@ export default function App() {
 
   function LeaderboardScreen() {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Eddy 5ara!</Text>
-      </View>
+      <Leaderboard/>
     );
   }
 
