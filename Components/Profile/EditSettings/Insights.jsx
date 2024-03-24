@@ -35,9 +35,12 @@ export default function Insights({navigation}) {
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
-                <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={10}>
-                    Edit Profile
-                </Text>
+                {/* <View flexDirection='row' backgroundColor='blue' alignItems='center'>
+                 */}
+                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
+                        Insights
+                    </Text>
+                {/* </View> */}
             </ScrollView>
             </View>
         </Animatable.View>

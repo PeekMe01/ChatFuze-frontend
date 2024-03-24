@@ -24,6 +24,10 @@ import Insights from './Components/Profile/EditSettings/Insights';
 import Language from './Components/Profile/EditSettings/Languague';
 import AboutUs from './Components/Profile/EditSettings/AboutUs';
 import Feedback from './Components/Profile/EditSettings/Feedback';
+import ChangeUsername from './Components/Profile/EditProfile/ChangeUsername';
+import ChangeCountry from './Components/Profile/EditProfile/ChangeCountry';
+import EditBio from './Components/Profile/EditProfile/EditBio';
+import EditSocials from './Components/Profile/EditProfile/EditSocials';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -74,6 +78,10 @@ export default function App() {
               <Stack.Screen name="Language" component={Language}/>
               <Stack.Screen name="AboutUs" component={AboutUs}/>
               <Stack.Screen name="Feedback" component={Feedback}/>
+              <Stack.Screen name="ChangeUsername" component={ChangeUsername}/>
+              <Stack.Screen name="ChangeCountry" component={ChangeCountry}/>
+              <Stack.Screen name="EditBio" component={EditBio}/>
+              <Stack.Screen name="EditSocials" component={EditSocials}/>
             </Stack.Navigator>
        </View>
        
@@ -83,7 +91,7 @@ export default function App() {
   const [loginPage, setLoginPage] = useState(true);
   const [signupPage, setSignupPage] = useState(false);
   const [welcomePage, setWelcomePage] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
 
   if(!loggedIn){
     return (

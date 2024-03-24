@@ -12,6 +12,7 @@ export default function EditProfile({navigation}) {
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
+    const [clickedButton, setClickedButton] = useState(false);
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
@@ -28,6 +29,39 @@ export default function EditProfile({navigation}) {
         ) 
     }
 
+    const handleChangeUsernamePage = () => {
+        navigation.push('ChangeUsername');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
+    const handleChangeCountryPage = () => {
+        navigation.push('ChangeCountry');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
+    const handleChangeBioPage = () => {
+        navigation.push('EditBio');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
+    
+    const handleChangeSocialsPage = () => {
+        navigation.push('EditSocials');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
   return (
     <ImageBackground
         source={require('../../assets/img/HomePage1.png')}
@@ -40,7 +74,7 @@ export default function EditProfile({navigation}) {
                     Edit Profile
                 </Text>
                 <View w="$80" alignSelf='center' marginVertical={100}>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                    <TouchableHighlight onPress={()=>{handleChangeUsernamePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Change Username
@@ -49,7 +83,7 @@ export default function EditProfile({navigation}) {
                         </View>
                     </TouchableHighlight>
                     <Divider/>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                    <TouchableHighlight onPress={()=>{handleChangeCountryPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Change Country
@@ -58,7 +92,7 @@ export default function EditProfile({navigation}) {
                         </View>
                     </TouchableHighlight>
                     <Divider/>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                    <TouchableHighlight onPress={()=>{handleChangeBioPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Edit Bio
@@ -67,7 +101,7 @@ export default function EditProfile({navigation}) {
                         </View>
                     </TouchableHighlight>
                     <Divider/>
-                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                    <TouchableHighlight onPress={()=>{handleChangeSocialsPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Edit Social Media Links

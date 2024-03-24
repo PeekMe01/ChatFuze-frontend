@@ -74,7 +74,7 @@ export default function ProfileVisit({navigation}) {
         {/* <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}> */}
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
-                <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
+                <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false} refreshControl={<RefreshControl  colors={["#321bb9"]} refreshing={refreshing} onRefresh={onRefresh}/>}>
 
                 <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '15%' }}>
                     <Image

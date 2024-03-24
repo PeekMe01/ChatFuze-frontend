@@ -9,6 +9,7 @@ import { Button, ScrollView, TouchableHighlight } from 'react-native';
 
 export default function Language({navigation}) {
 
+    const [clickedButton, setClickedButton] = useState(false);
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
     const [fontsLoaded] = useFonts({
@@ -35,9 +36,20 @@ export default function Language({navigation}) {
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
-                <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={10}>
-                    Edit Profile
+                <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
+                    Language
                 </Text>
+                <View w="$80" alignSelf='center' marginVertical={100}>
+                    <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
+                        <View justifyContent='center' alignItems='center' flexDirection='row'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                                English
+                            </Text>
+                            {/* <Icon name="keyboard-arrow-right" size={30} color="white"/> */}
+                        </View>
+                    </TouchableHighlight>
+                    <Divider/>
+                </View>
             </ScrollView>
             </View>
         </Animatable.View>

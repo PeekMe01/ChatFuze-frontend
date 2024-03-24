@@ -9,7 +9,7 @@ import axios from 'axios';
 import * as Animatable from 'react-native-animatable';
 import { useToast, Toast } from '@gluestack-ui/themed';
 import API_URL from '../Config'
-import logo from '../../assets/img/logo.png'
+import logo from '../../assets/img/Logo/Logo_WithoutBackground.png'
 
 export default function Login(props) {
   console.log(API_URL)
@@ -86,7 +86,7 @@ export default function Login(props) {
         }
 
       } catch (error) {
-          console.log(error);
+          // console.log(error);
           toast.show({
             duration: 5000,
             placement: "top",
@@ -97,7 +97,7 @@ export default function Login(props) {
                     <VStack space="xs">
                     <ToastTitle>Error</ToastTitle>
                     <ToastDescription>
-                        {error.response.data.error}
+                        There was an error send the reset email password!
                     </ToastDescription>
                     </VStack>
                 </Toast>
