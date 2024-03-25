@@ -112,8 +112,9 @@ export default function SecondPage(props) {
             <FormControlError mb={-24}>
               <FormControlErrorIcon
                 as={AlertCircleIcon}
+                color = "#512095"
               />
-              <FormControlErrorText>
+              <FormControlErrorText color = "#512095">
                 You must be over 18
               </FormControlErrorText>
             </FormControlError>
@@ -143,7 +144,7 @@ export default function SecondPage(props) {
                 />
               </Input> */}
               
-            <Select style={{ borderWidth: 2, borderColor: invalidCountry?'rgba(255,0,0,0.8)':'rgba(255,255,255,0.8)', backgroundColor: 'rgba(255,255,255,0.2)',borderRadius: 5}}
+            <Select style={{ borderWidth: 2, borderColor: invalidCountry?'#512095':'rgba(255,255,255,0.8)', backgroundColor: 'rgba(255,255,255,0.2)',borderRadius: 5}}
               selectedValue={country}
               onValueChange={(value)=>{setCountry(value); setInvalidCountry(false)}}
             >
@@ -162,14 +163,13 @@ export default function SecondPage(props) {
                   </SelectDragIndicatorWrapper>
 
                   {/* Here you put all the countries */}
-                  <SelectItem label="Lebanon" value="lb" />
-                  <SelectItem label="Syria" value="sr" />
-                  <SelectItem label="United States" value="us" />
-                  <SelectItem label="Canada" value="ca" />
-                  <SelectItem label="Japan" value="jp" />
-                  <SelectItem label="France" value="fr" />
-                  <SelectItem label="Russia" value="rs" />
-
+                  <SelectItem label="Lebanon" value="Lebanon" />
+                  <SelectItem label="Syria" value="Syria" />
+                  <SelectItem label="United States" value="United States" />
+                  <SelectItem label="Canada" value="Canada" />
+                  <SelectItem label="Japan" value="Japan" />
+                  <SelectItem label="France" value="France" />
+                  <SelectItem label="Russia" value="Russia" />
 
                 </SelectContent>
               </SelectPortal>
@@ -179,8 +179,9 @@ export default function SecondPage(props) {
             <FormControlError mb={-24}>
               <FormControlErrorIcon
                 as={AlertCircleIcon}
+                color='#512095'
               />
-              <FormControlErrorText>
+              <FormControlErrorText color='#512095'>
                 Invalid Country
               </FormControlErrorText>
             </FormControlError>

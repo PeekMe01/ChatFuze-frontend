@@ -18,10 +18,10 @@ import Buttons from './Buttons';
 import FourthPage from './FourthPage'
 import { useToast, Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
+import api from '../Config'
 
 import debounce from 'lodash.debounce';
-import axios from 'axios';
-import API_URL from '../Config'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
@@ -105,17 +105,20 @@ export default function Login(props) {
         const data = {tmpUsername}
         try {
           // const response = await axios.post('http://localhost:3001/login', data);
-          const response = await axios.post(`${API_URL}/Accounts/validate_username`, data);
+          // const response = await axios.post(`${API_URL}/Accounts/validate_username`, data);
+          const response = await api.post(`/Accounts/validate_username`, data);
           if(response){
             if(response.data.available){
-              // Good shit
+              return true;
             }else{
               setUsernameErrorText("Username is already in use")
               setInvalidUsername(true);
+              return false;
             }
           }
         } catch (error) {
             console.log(error);
+            return false;
         }
       }
       setAttemptingSignup(false)
@@ -128,17 +131,20 @@ export default function Login(props) {
         const data = {tmpEmail}
       try {
         // const response = await axios.post('http://localhost:3001/login', data);
-        const response = await axios.post(`${API_URL}/Accounts/validate_email`, data);
+        // const response = await axios.post(`${API_URL}/Accounts/validate_email`, data);
+        const response = await api.post(`/Accounts/validate_email`, data);
         if(response){
           if(response.data.available){
-            // Good shit
+            return true;
           }else{
             setEmailErrorText("Email is already in use")
             setInvalidEmail(true);
+            return false;
           }
         }
       } catch (error) {
           console.log(error);
+          return false;
       }
       }
       setAttemptingSignup(false)
@@ -151,15 +157,15 @@ export default function Login(props) {
   const [signUpProgress, setSignUpProgress] = useState(0)
 
   const validate = async () => {
+    setAttemptingSignup(true)
     if(changePage==0){
+      
       let usernameGood = false;
       let emailGood = false;
       let passwordGood = false;
 
-      validateUsername(username);
-      validateEmail(email);
-
       if((password&&password.length<8)||!password){
+          passwordGood = false;
           setInvalidPassword(true)
       }else{
           setInvalidPassword(false)
@@ -167,32 +173,55 @@ export default function Login(props) {
       }
       if(!email||(email&&!email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))||invalidEmail){
           setEmailErrorText("Email is in wrong format")
+          emailGood = false;
           setInvalidEmail(true)
       }else{
           setInvalidEmail(false)
           emailGood = true;
       }
       if((username&&username.length<3)||!username||invalidUsername){
+          usernameGood = false;
           setUsernameErrorText("Username is too short")
           setInvalidUsername(true)
       }else{
           setInvalidUsername(false)
           usernameGood = true;
       }
+      usernameGood = await validateUsername(username);
+      emailGood = await validateEmail(email);
+      
       if(usernameGood&&emailGood&&passwordGood){
         setChangingPage(true)
         setTimeout(function() {
           setChangePage(1);
-          setChangingPage(false)
+          setChangingPage(false);
         }, 100); // 1000 milliseconds = 1 second
-      } 
+      }
     }else if(changePage==1){
       let goodCountry = false;
+      let goodDateOfBirth = false;
       if(!country){
+        goodCountry = false;
         setInvalidCountry(true);
       }else{
         setInvalidCountry(false);
         goodCountry = true;
+      }
+
+      if(!dateOfBirth){
+        goodDateOfBirth = false;
+        setInvalidAge(true);
+      }else{
+        const currentDate =  dateOfBirth;
+        const minimumAgeDate = new Date();
+        minimumAgeDate.setFullYear(minimumAgeDate.getFullYear() - 18);
+        if (currentDate < minimumAgeDate) {
+          setInvalidAge(false)
+          goodDateOfBirth = true;
+        } else {
+          setInvalidAge(true)
+          console.log("im too young")
+        }
       }
 
       if(goodCountry){
@@ -214,7 +243,8 @@ export default function Login(props) {
         // send the otp
         const data = {email}
         try {
-          const response = await axios.post(`${API_URL}/Accounts/sendOTP`, data);
+          // const response = await axios.post(`${API_URL}/Accounts/sendOTP`, data);
+          const response = await api.post(`/Accounts/sendOTP`, data);
           setActualOTP(response.data.otp)
         } catch (error) {
           
@@ -240,28 +270,32 @@ export default function Login(props) {
         const data = {email, username, password, dateOfBirth, country, gender};
 
         try {
-          const response = await axios.post(`${API_URL}/Accounts/register`, data);
+          // const response = await axios.post(`${API_URL}/Accounts/register`, data);
+          const response = await api.post(`/Accounts/register`, data);
           console.log(response.data)
           setChangingPage(true)
-          // toast.show({
-          //   duration: 3000,
-          //   placement: "top",
-          //   render: ({ id }) => {
-          //       const toastId = "toast-" + id
-          //       return (
-          //       <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
-          //           <VStack space="xs">
-          //           <ToastTitle>Welcome Aboard</ToastTitle>
-          //           <ToastDescription>
-          //               Your account has been succesfully created!
-          //           </ToastDescription>
-          //           </VStack>
-          //       </Toast>
-          //       )
-          //   },
-          //   })
+          toast.show({
+            duration: 3000,
+            placement: "top",
+            render: ({ id }) => {
+                const toastId = "toast-" + id
+                return (
+                <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+                    <VStack space="xs">
+                    <ToastTitle>Welcome Aboard</ToastTitle>
+                    <ToastDescription>
+                        Your account has been succesfully created!
+                    </ToastDescription>
+                    </VStack>
+                </Toast>
+                )
+            },
+            })
           setChangePage(4);
-          setTimeout(function() {
+          setTimeout(async function() {
+            const { token, id } = response.data;
+            await AsyncStorage.setItem('userToken', token);
+            await AsyncStorage.setItem('id', String(id));
             setLoggedIn(true);
             setChangingPage(false);
             setAttemptingSignup(false)
@@ -269,10 +303,30 @@ export default function Login(props) {
           }, 100); // 1000 milliseconds = 1 second
 
         } catch (error) {
-          // halla2 bzabbit
+          toast.show({
+            duration: 3000,
+            placement: "top",
+            render: ({ id }) => {
+                const toastId = "toast-" + id
+                return (
+                <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+                    <VStack space="xs">
+                    <ToastTitle>Error</ToastTitle>
+                    <ToastDescription>
+                        There was an error creating your account.
+                    </ToastDescription>
+                    </VStack>
+                </Toast>
+                )
+            },
+            })
         }
       }
     }
+    setTimeout(() => {
+      setAttemptingSignup(false)
+    }, 1000);
+    
     
   }
 

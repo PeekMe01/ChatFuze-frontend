@@ -79,7 +79,8 @@ export default function SecondPage(props) {
                 p={5}
                 borderWidth={2}
                 backgroundColor='rgba(255,255,255,0.2)'
-                $focus-borderColor='white'
+                borderColor={invalidOTP?'#512095':'white'}
+                $focus-borderColor={invalidOTP?'#512095':'white'}
                 >
                 <InputField
                   keyboardType="number-pad"
@@ -98,8 +99,9 @@ export default function SecondPage(props) {
             <FormControlError mb={-24}>
               <FormControlErrorIcon
                 as={AlertCircleIcon}
+                color = "#512095"
               />
-              <FormControlErrorText>
+              <FormControlErrorText color = "#512095">
                 OTP is incorrect
               </FormControlErrorText>
             </FormControlError>

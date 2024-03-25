@@ -61,7 +61,8 @@ export default function FirstPage(props) {
                 p={5}
                 borderWidth={2}
                 backgroundColor='rgba(255,255,255,0.2)'
-                $focus-borderColor='white'
+                $focus-borderColor={invalidUsername?'#512095':'white'}
+                borderColor={invalidUsername?'#512095':'white'}
                 >
                 <InputField
                   type="text"
@@ -80,9 +81,10 @@ export default function FirstPage(props) {
             </Animatable.View>
             <FormControlError mb={-24}>
               <FormControlErrorIcon
+                color='#512095'
                 as={AlertCircleIcon}
               />
-              <FormControlErrorText>
+              <FormControlErrorText color='#512095'>
                 {usernameErrorText}
               </FormControlErrorText>
             </FormControlError>
@@ -96,8 +98,9 @@ export default function FirstPage(props) {
               <Input 
                 p={5}
                 borderWidth={2}
+                borderColor={invalidEmail?'#512095':'white'}
                 backgroundColor='rgba(255,255,255,0.2)'
-                $focus-borderColor='white'
+                $focus-borderColor={invalidEmail?'#512095':'white'}
                 >
                 <InputField
                   type="email"
@@ -116,9 +119,10 @@ export default function FirstPage(props) {
             </Animatable.View>
             <FormControlError mb={-24}>
               <FormControlErrorIcon
+                color='#512095'
                 as={AlertCircleIcon}
               />
-              <FormControlErrorText>
+              <FormControlErrorText color='#512095'>
                 {emailErrorText}
               </FormControlErrorText>
             </FormControlError>
@@ -133,7 +137,8 @@ export default function FirstPage(props) {
                 p={5} 
                 backgroundColor='rgba(255,255,255,0.2)'
                 borderWidth={2}
-                $focus-borderColor='white'
+                borderColor={invalidPassword?'#512095':'white'}
+                $focus-borderColor={invalidPassword?'#512095':'white'}
                 >
                 <InputField
                   type={showPassword ? "text" : "password"}
@@ -158,9 +163,10 @@ export default function FirstPage(props) {
             </Animatable.View>
             <FormControlError mb={-24}>
               <FormControlErrorIcon
+                color='#512095'
                 as={AlertCircleIcon}
               />
-              <FormControlErrorText>
+              <FormControlErrorText color='#512095'>
                 At least 8 characters are required.
               </FormControlErrorText>
             </FormControlError>
