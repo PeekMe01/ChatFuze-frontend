@@ -1,6 +1,6 @@
 import { AddIcon, HStack, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
@@ -8,18 +8,54 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, ScrollView, TouchableHighlight } from 'react-native';
 import SocialMedia from './SocialMedia';
 import { RefreshControl } from '@gluestack-ui/themed';
+import api from '../Config'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Center } from '@gluestack-ui/themed';
+
+import beginnerRank from '../../assets/img/RankFrames/Beginner.png'
+import amateurRank from '../../assets/img/RankFrames/Amateur.png'
+import expertRank from '../../assets/img/RankFrames/Expert.png'
+import masterRank from '../../assets/img/RankFrames/Master.png'
+import champRank from '../../assets/img/RankFrames/Champ.png'
+import superstarRank from '../../assets/img/RankFrames/Superstar.png'
 
 export default function Profile({navigation}) {
 
     const [refreshing, setRefreshing] = React.useState(false);
     const [clickedButton, setClickedButton] = useState(false);
+    const [rankName, setRankName] = useState();
+    const [leaderboardnumber, setLeaderboardnumber] = useState();
+    const [roomCount, setRoomCount] = useState();
+
+    const [user, setUser] = useState();
+
+    async function fetchData(){
+        try {
+             const data = await AsyncStorage.getItem('id')
+             const response = await api.get(`/settings/getinsight/${data}`);
+             // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
+             setUser(response.data.user);
+             setRankName(response.data.rankname);
+             setLeaderboardnumber(response.data.leaderboardnumber);
+             setRoomCount(response.data.roomCount)
+             console.log(response.data.user)
+         } catch (error) {
+             console.log(error)
+         }
+     }
+     
+    useEffect(() => {
+        fetchData();
+    }, []);
 
 
-    const onRefresh = React.useCallback(() => {
+    const onRefresh = React.useCallback(async () => {
       setRefreshing(true);
+      setUser()
       setTimeout(() => {
         setRefreshing(false);
-      }, 2000);
+      }, await fetchData());
+      
     }, []);
 
     const handleEditSettings = () =>{
@@ -31,7 +67,10 @@ export default function Profile({navigation}) {
     }
 
     const handleEditProfile = () =>{
-        navigation.push('EditProfile');
+        navigation.push('EditProfile', { 
+            // Your data here
+            user: user
+        });
         setClickedButton(true);
         setTimeout(() => {
             setClickedButton(false);
@@ -53,15 +92,41 @@ export default function Profile({navigation}) {
         'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
 
-    if (!fontsLoaded) {
+    function calculateAge(dateOfBirth) {
+        var today = new Date();
+        var birthDate = new Date(dateOfBirth);
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+    
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+    
+        return age;
+    }
+
+    function formatDateOfBirth(dateOfBirth) {
+        var birthDate = new Date(dateOfBirth);
+        var day = birthDate.getDate();
+        var monthIndex = birthDate.getMonth();
+        var year = birthDate.getFullYear();
+        
+        var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        
+        return day + ' ' + months[monthIndex] + ' ' + year;
+    }
+
+    if (!fontsLoaded||!user) {
         return (
             <ImageBackground
                 source={require('../../assets/img/HomePage1.png')}
                 style={{ flex:1 ,resizeMode: 'cover'}}
             >
-                    <HStack space="sm">
-                        <Text>LOADING...</Text><Spinner size="large" color="#321bb9" />
+                <Center h={'$full'}>
+                    <HStack space="sm" justifyContent='center' alignItems='center'>
+                        <Text  color='#ffffff50'>LOADING...</Text><Spinner size="large" color="#321bb980" />
                     </HStack>
+                </Center>
             </ImageBackground>
         ) 
     }
@@ -78,23 +143,56 @@ export default function Profile({navigation}) {
                     Profile
                 </Text>
 
-                <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '15%' }}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '15%'}}>
+                    {/* <ImageBackground
+                        source={{uri: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'}}
+                        height={200}
+                        alignSelf='center'
+                        
+                    > */}
                     <Image
                         alt='profilePic'
                         borderColor='white'
                         borderWidth={2}
-                        size="xl"
+                        border
+                        w={140}
+                        h={140}
+                        zIndex={-1}
                         borderRadius="$full"
                         source={{
                             uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
                         }}
                     />
-                    <View style={{ backgroundColor: '#512095', paddingHorizontal: '17%', paddingVertical: '1%', borderRadius: 30, marginTop: -20 }}>
-                        <Text color='white'>Rank</Text>
+
+                    <Image
+                        marginTop={-160}
+                        alt='profilePic'
+                        borderColor='white'
+                        // borderWidth={2}
+                        w={180}
+                        h={180}
+                        // borderRadius="$full"
+                        // source={{
+                        //     uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+                        //     // uri: "assets/img/RankFrames/Beginner.png"
+                        //     // uri : 
+                        // }}
+                        source={
+                            rankName=="Beginner"?beginnerRank:
+                            rankName=="Amateur"?amateurRank:
+                            rankName=="Expert"?expertRank:
+                            rankName=="Master"?masterRank:
+                            rankName=="Champ"?champRank:
+                            superstarRank
+                        }
+                    />
+                    {/* </ImageBackground> */}
+                    <View style={{ backgroundColor: '#512095', paddingHorizontal: '10%', paddingVertical: '1%', borderRadius: 30, marginTop: -20 }}>
+                        <Text color='white'>{rankName} ({user.rankpoints})</Text>
                     </View>
-                    <View display='flex' flexDirection='row' justifyContent='center' alignItems='center' margin={20}>
-                        <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' >Ralph, 21</Text>
-                        <Icon name="verified" size={24} color="#2cd6d3"/>
+                    <View display='flex' flexDirection='row' justifyContent='center' alignItems='center' margin={20} gap={5}>
+                        <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' >{user.username}, {calculateAge(user.dateOfBirth)}</Text>
+                        <Icon name="verified" size={24} color={user.verified?"#2cd6d3":"#bcbcbc"}/>
                     </View>
                     
                 </View>
@@ -122,8 +220,43 @@ export default function Profile({navigation}) {
                         Bio
                     </Text>
                     <Text color='white' fontWeight='$light'>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        {!user.bio?"No bio yet!":user.bio}
+                        {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. */}
                     </Text>
+                </View>
+
+                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
+                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Gender
+                    </Text>
+                    <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+                        <Icon name={user.gender=="Male"?"male":"female"} size={30} color="white"/>
+                        <Text color='white' fontWeight='$light'>
+                            {user.gender}
+                        </Text>
+                    </View>
+                </View>
+
+                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
+                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Global ranking spot
+                    </Text>
+                    <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+                        <Text color='white' fontWeight='$light'>
+                            #{leaderboardnumber}
+                        </Text>
+                    </View>
+                </View>
+
+                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
+                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Total chat rooms joined
+                    </Text>
+                    <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+                        <Text color='white' fontWeight='$light'>
+                            {roomCount}
+                        </Text>
+                    </View>
                 </View>
 
                 <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
@@ -131,7 +264,8 @@ export default function Profile({navigation}) {
                         Country of residence
                     </Text>
                     <Text color='white' fontWeight='$light'>
-                        Lebanon
+                        {/* Lebanon */}
+                        {user.country}
                     </Text>
                 </View>
 
@@ -140,11 +274,12 @@ export default function Profile({navigation}) {
                         Birthday
                     </Text>
                     <Text color='white' fontWeight='$light'>
-                        17 April 2003
+                        {/* 17 April 2003 */}
+                        {formatDateOfBirth(user.dateOfBirth)}
                     </Text>
                 </View>
 
-                <SocialMedia instagram={"daher.ralph"} facebook={"Ralph Daher"}/>
+                <SocialMedia instagram={user.instagramlink} facebook={user.facebooklink}/>
 
                 </ScrollView>
             </View>

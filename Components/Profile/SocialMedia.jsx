@@ -28,6 +28,12 @@ export default function SocialMedia({instagram,facebook}) {
                 </Text>
             </View>
         </TouchableHighlight>}
+
+        {!facebook&&!instagram&&
+        <View>
+            <Text color='white' fontWeight='$light'>Socials have not been linked yet!</Text>
+        </View>
+        }
     </View>
   )
 }

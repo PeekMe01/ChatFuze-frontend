@@ -4,7 +4,7 @@ import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import api from '../Config'
 import {  ScrollView, TouchableHighlight,TouchableOpacity,FlatList,ActivityIndicator } from 'react-native';
-import { AlertCircleIcon,Image, Box,HStack, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, VStack, View } from '@gluestack-ui/themed';
+import { AlertCircleIcon,Image, Box,HStack, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, VStack, View, Spinner } from '@gluestack-ui/themed';
 const Leaderboard = () => {
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory)
@@ -47,7 +47,7 @@ const Leaderboard = () => {
     
             const fetchData = async () => {
                 try {
-                    const response = await api.get(`/leaderboard/local/1`);
+                    const response = await api.get(`/leaderboard/local/9`);
                     setTopData(response.data.slice(0,3));
                     setData(response.data.slice(3));
                     setIsLoading(false);
@@ -208,7 +208,7 @@ const Leaderboard = () => {
     
             const fetchData = async () => {
                 try {
-                    const response = await api.get(`/leaderboard/friends/1`);
+                    const response = await api.get(`/leaderboard/friends/9`);
                     setTopData(response.data.slice(0,3));
                     setData(response.data.slice(3));
                     setIsLoading(false)

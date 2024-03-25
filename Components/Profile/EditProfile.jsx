@@ -8,7 +8,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, ScrollView, TouchableHighlight } from 'react-native';
 import SocialMedia from './SocialMedia';
 
-export default function EditProfile({navigation}) {
+export default function EditProfile({navigation, route }) {
+
+    const { user } = route.params;
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
@@ -30,7 +32,10 @@ export default function EditProfile({navigation}) {
     }
 
     const handleChangeUsernamePage = () => {
-        navigation.push('ChangeUsername');
+        navigation.push('ChangeUsername', { 
+            // Your data here
+            user: user
+        });
         setClickedButton(true);
         setTimeout(() => {
             setClickedButton(false);
@@ -38,7 +43,10 @@ export default function EditProfile({navigation}) {
     }
 
     const handleChangeCountryPage = () => {
-        navigation.push('ChangeCountry');
+        navigation.push('ChangeCountry', { 
+            // Your data here
+            user: user
+        });
         setClickedButton(true);
         setTimeout(() => {
             setClickedButton(false);
@@ -46,7 +54,10 @@ export default function EditProfile({navigation}) {
     }
 
     const handleChangeBioPage = () => {
-        navigation.push('EditBio');
+        navigation.push('EditBio', { 
+            // Your data here
+            user: user
+        });
         setClickedButton(true);
         setTimeout(() => {
             setClickedButton(false);
@@ -55,7 +66,10 @@ export default function EditProfile({navigation}) {
 
     
     const handleChangeSocialsPage = () => {
-        navigation.push('EditSocials');
+        navigation.push('EditSocials', { 
+            // Your data here
+            user: user
+        });
         setClickedButton(true);
         setTimeout(() => {
             setClickedButton(false);

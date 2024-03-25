@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GluestackUIProvider, View, Text } from '@gluestack-ui/themed';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BubbleScene from './Components/Background/BubbleScene';
@@ -29,10 +29,36 @@ import ChangeCountry from './Components/Profile/EditProfile/ChangeCountry';
 import EditBio from './Components/Profile/EditProfile/EditBio';
 import EditSocials from './Components/Profile/EditProfile/EditSocials';
 import EditProfile from './Components/Profile/EditProfile';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+
+  const [loginPage, setLoginPage] = useState(true);
+  const [signupPage, setSignupPage] = useState(false);
+  const [welcomePage, setWelcomePage] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(true);
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  const checkLoginStatus = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      // const id = await AsyncStorage.getItem('id');
+      if (userToken) {
+        // setid(id)
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+    } catch (error) {
+      console.error('Error checking login status:', error);
+    }
+  };
+
 
   function HomeScreen() {
     return (
@@ -67,7 +93,7 @@ export default function App() {
       <View style={{ flex: 1}}>
             <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal'}} initialRouteName='ProfileMain'>
               <Stack.Screen name="ProfileMain" component={Profile} />
-              <Stack.Screen name="EditSettings" component={EditSettings}/>
+              <Stack.Screen name="EditSettings" component={EditSettings} initialParams={{ setLoggedIn: setLoggedIn }}/>
               <Stack.Screen name="EditProfile" component={EditProfile}/>
               <Stack.Screen name="FriendsList" component={FriendsList}/>
               <Stack.Screen name="ProfileVisit" component={ProfileVisit}/>
@@ -85,11 +111,6 @@ export default function App() {
        
     );
   }
-
-  const [loginPage, setLoginPage] = useState(true);
-  const [signupPage, setSignupPage] = useState(false);
-  const [welcomePage, setWelcomePage] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(true);
 
   if(!loggedIn){
     return (

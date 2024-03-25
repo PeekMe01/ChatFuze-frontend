@@ -12,11 +12,13 @@ import { InputField } from '@gluestack-ui/themed';
 import { AlertCircleIcon } from '@gluestack-ui/themed';
 import { Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
-import axios from 'axios';
+import api from '../../Config'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function EditBio({navigation}) {
+export default function EditBio({navigation, route}) {
 
     const toast = useToast()
+    const { user } = route.params;
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false);
@@ -24,34 +26,42 @@ export default function EditBio({navigation}) {
     const [attemptingChangeBio, setAttemptingChangeBio] = useState(false);
 
 
-    const [currentBio, setCurrentBio] = useState('bhigfvlehjbhviguoecvdigdhuocvhghdfbicuosifvighbicsvbcsojfhvgdjofcbhvjghdbfjcbhvgf jhbdkjfvj ghdfbjchvgfj dfhbkjnbhvgjhfdbkjchvjdbkjcshvjdbhk');
+    const [oldBio, setOldBio] = useState(user.bio);
+    const [currentBio, setCurrentBio] = useState(user.bio);
     const [invalidCurrentBio, setInvalidCurrentBio] = useState(false);
     const [invalidCurrentBioErrorMessage, setInvalidCurrentBioErrorMessage] = useState("Error Message Current Password");
 
     const validate = async () => {
         let goodBio = false;
         setAttemptingChangeBio(true);
-        if(currentBio.length>300||currentBio.length<10){
+        if(!currentBio||currentBio.length>300||currentBio.length<10){
+            goodBio = false;
             setInvalidCurrentBio(true);
-            setInvalidCurrentBioErrorMessage('Bio is in bad format!')
+            setInvalidCurrentBioErrorMessage('Bio is in too short!')
         }else{
-            setInvalidCurrentBio(false);
-            goodBio=true;
+            if(currentBio===oldBio){
+            goodBio = false;
+                setInvalidCurrentBio(true);
+                setInvalidCurrentBioErrorMessage('Bio is still the same!')
+            }else{
+                setInvalidCurrentBio(false);
+                goodBio=true;
+            }
         }
-    
+        
 
         if(goodBio){
             console.log('here')
             const data = {
-                userid: 1,
-                oldpassword: currentBio,
-                password: newPassword,
+                userid: await AsyncStorage.getItem('id'),
+                bio: currentBio,
             }
 
             try {
-                const response = await axios.post(`${API_URL}/settings/changeBio`, data);
+                // const response = await axios.post(`${API_URL}/settings/updatebio`, data);
+                const response = await api.post(`/settings/updatebio`, data);
                 if(response){
-                    setCurrentBio('');
+                    setOldBio(currentBio)
                 toast.show({
                     duration: 5000,
                     placement: "top",
@@ -134,7 +144,7 @@ export default function EditBio({navigation}) {
                 <View gap={20}>
 
                 <Center>
-                <Box h="$96" w="$64" style={{ display: 'flex', gap: 40, justifyContent: 'center'}}>
+                <Box h="$96" w="$72" style={{ display: 'flex', gap: 40, justifyContent: 'center'}}>
                         {/* Old Password */}
                         <FormControl isDisabled={attemptingChangeBio} isInvalid={invalidCurrentBio} isReadOnly={false} isRequired={true} >
                             {/* <FormControlLabel mb='$1'>

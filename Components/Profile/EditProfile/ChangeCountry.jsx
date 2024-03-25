@@ -12,16 +12,19 @@ import { InputField } from '@gluestack-ui/themed';
 import { AlertCircleIcon } from '@gluestack-ui/themed';
 import { Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
-import axios from 'axios';
 import { Select } from '@gluestack-ui/themed';
 import { SelectInput } from '@gluestack-ui/themed';
 import { SelectIcon } from '@gluestack-ui/themed';
 import { SelectContent } from '@gluestack-ui/themed';
 import { SelectDragIndicatorWrapper } from '@gluestack-ui/themed';
+import api from '../../Config'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function ChangeCountry({navigation}) {
+export default function ChangeCountry({navigation, route}) {
 
     const toast = useToast()
+
+    const { user } = route.params;
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false);
@@ -29,7 +32,8 @@ export default function ChangeCountry({navigation}) {
     const [attemptingChangeCountry, setAttemptingChangeCountry] = useState(false);
 
 
-    const [currentCountry, setCurrentCountry] = useState("Lebanon");
+    const [oldCountry, setOldCountry] = useState(user.country);
+    const [currentCountry, setCurrentCountry] = useState(user.country);
     const [invalidCurrentCountry, setInvalidCurrentCountry] = useState(false);
     const [invalidCurrentCountryErrorMessage, setInvalidCurrentCountryErrorMessage] = useState("Error Message Current Password");
 
@@ -37,8 +41,18 @@ export default function ChangeCountry({navigation}) {
         let goodCountry = false;
         setAttemptingChangeCountry(true);
         if(!currentCountry){
+            goodCountry = false;
             setInvalidCurrentCountry(true);
             setInvalidCurrentCountryErrorMessage('Please select a country')
+        }else{
+            setInvalidCurrentCountry(false);
+            goodCountry=true;
+        }
+
+        if(currentCountry===oldCountry){
+            goodCountry = false;
+            setInvalidCurrentCountry(true);
+            setInvalidCurrentCountryErrorMessage('Country did not change!')
         }else{
             setInvalidCurrentCountry(false);
             goodCountry=true;
@@ -47,15 +61,17 @@ export default function ChangeCountry({navigation}) {
         if(goodCountry){
             console.log('here')
             const data = {
-                userid: 1,
-                oldpassword: currentCountry,
+                userid: await AsyncStorage.getItem('id'),
+                country: currentCountry,
                 // password: newPassword,
             }
 
             try {
-                const response = await axios.post(`${API_URL}/settings/changeCountry`, data);
+                // const response = await axios.post(`${API_URL}/settings/changeCountry`, data);
+                const response = await api.post(`/settings/updatecountry`, data);
                 if(response){
                     // setCurrentCountry('');
+                    setOldCountry(currentCountry)
                 toast.show({
                     duration: 5000,
                     placement: "top",
@@ -164,11 +180,14 @@ export default function ChangeCountry({navigation}) {
                                 />
                             </Input> */}
                             
-                            <Select style={{ borderWidth: 2, borderColor: invalidCurrentCountry?'rgba(255,0,0,0.8)':'rgba(255,255,255,0.8)', backgroundColor: 'rgba(255,255,255,0.2)',borderRadius: 5}}
+                            <Select
                             selectedValue={currentCountry}
+                            borderRadius={5}
+                            bgColor='rgba(255,255,255,0.2)'
+                            borderWidth={2}
+                            borderColor={invalidCurrentCountry?'#512095':'white'}
+                            isInvalid={invalidCurrentCountry}
                             isDisabled={attemptingChangeCountry}
-                            
-                            $disabled-borderColor='blue'
                             onValueChange={(value)=>{setCurrentCountry(value); setInvalidCurrentCountry(false)}}
                             >
                             <SelectTrigger size="md" borderColor='rgba(255,255,255,0)'>
@@ -202,10 +221,11 @@ export default function ChangeCountry({navigation}) {
                             </Animatable.View>
                             <FormControlError mb={-24}>
                             <FormControlErrorIcon
+                                color='#512095'
                                 as={AlertCircleIcon}
                             />
-                            <FormControlErrorText>
-                                Invalid Country
+                            <FormControlErrorText color='#512095'>
+                                {invalidCurrentCountryErrorMessage}
                             </FormControlErrorText>
                             </FormControlError>
                         </FormControl>

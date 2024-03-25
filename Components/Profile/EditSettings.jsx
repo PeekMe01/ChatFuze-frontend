@@ -1,6 +1,6 @@
 import { AddIcon, AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogFooter, Button, ButtonGroup, ButtonText, CloseIcon, Divider, HStack, Heading, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
@@ -10,8 +10,10 @@ import SocialMedia from './SocialMedia';
 import { AlertDialogContent } from '@gluestack-ui/themed';
 import { AlertDialogHeader } from '@gluestack-ui/themed';
 import { AlertDialogCloseButton } from '@gluestack-ui/themed';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function EditSettings({navigation}) {
+export default function EditSettings({ navigation,route }) {
+    const { setLoggedIn } = route.params;
 
     const [clickedButton, setClickedButton] = useState(false);
     const [changePage, setChangePage] = useState(0);
@@ -121,8 +123,16 @@ export default function EditSettings({navigation}) {
                 <Button
                     bg="#512095"
                     action="negative"
-                    onPress={() => {
+                    onPress={async () => {
                     setShowAlertDialog(false)
+                        try {
+                          await AsyncStorage.removeItem('userToken');
+                          await AsyncStorage.removeItem('id');
+                          setLoggedIn(false);
+                          
+                        } catch (error) {
+                          console.error('Logout failed:', error);
+                        }
                     }}
                 >
                     <ButtonText>Logout</ButtonText>

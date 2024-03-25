@@ -1,15 +1,17 @@
 import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, VStack, View } from '@gluestack-ui/themed';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
 import { Image } from 'react-native';
 import { AppLoading } from 'expo';
 import { HStack } from '@gluestack-ui/themed';
 import { Spinner } from '@gluestack-ui/themed';
-import axios from 'axios';
+// import axios from 'axios';
 import * as Animatable from 'react-native-animatable';
 import { useToast, Toast } from '@gluestack-ui/themed';
 import API_URL from '../Config'
 import logo from '../../assets/img/Logo/Logo_WithoutBackground.png'
+import api from '../Config'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login(props) {
   console.log(API_URL)
@@ -73,7 +75,8 @@ export default function Login(props) {
       try {
         const data = {email}
         // const response = await axios.post('http://localhost:3001/login', data);
-        const response = await axios.post(`${API_URL}/Accounts/resetpassword`, data);
+        // const response = await axios.post(`${API_URL}/Accounts/resetpassword`, data);
+        const response = await api.post(`/Accounts/resetpassword`, data);
         if(response){
           setChangingPage(true);
     
@@ -154,7 +157,8 @@ export default function Login(props) {
       const data = {email, password}
       try {
         // const response = await axios.post('http://localhost:3001/login', data);
-        const response = await axios.post(`${API_URL}/Accounts/login`, data);
+        // const response = await axios.post(`${API_URL}/Accounts/login`, data);
+        const response = await api.post(`/Accounts/login`, data);
         if(response){
           setChangingPage(true);
           toast.show({
@@ -174,7 +178,10 @@ export default function Login(props) {
                 )
             },
             })
-          setTimeout(function() {
+          setTimeout(async function() {
+            const { token, id } = response.data;
+            await AsyncStorage.setItem('userToken', token);
+            await AsyncStorage.setItem('id', String(id));
             setLoggedIn(true);
             setChangingPage(false);
             setAttemptingLogin(false)

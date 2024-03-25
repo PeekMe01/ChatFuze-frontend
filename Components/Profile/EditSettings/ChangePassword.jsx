@@ -12,7 +12,9 @@ import { InputField } from '@gluestack-ui/themed';
 import { AlertCircleIcon } from '@gluestack-ui/themed';
 import { Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '../../Config'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ChangePassword({navigation}) {
 
@@ -71,17 +73,18 @@ export default function ChangePassword({navigation}) {
             setInvalidConfirmNewPasswordErrorMessage("Error Message New Password");
         }
         //oldpassword, password
-        console.log('here')
+        // console.log('here')
         if(goodCurrentPassword&&goodNewPassword&&goodConfirmNewPassword){
-            console.log('here')
+            // console.log('here')
             const data = {
-                userid: 1,
+                userid: await AsyncStorage.getItem('id'),
                 oldpassword: currentPassword,
                 password: newPassword,
             }
 
             try {
-                const response = await axios.post(`${API_URL}/settings/changepassword`, data);
+                // const response = await axios.post(`${API_URL}/settings/changepassword`, data);
+                const response = await api.post(`/settings/changepassword`, data);
                 if(response){
                     setCurrentPassword('');
                     setNewPassword('');
@@ -108,6 +111,7 @@ export default function ChangePassword({navigation}) {
                 setAttemptingChangePassword(false);
             } catch (error) {
                 // console.log(error.response.data.error)
+                console.log(error)
                 const errorMsg = await error.response.data.error;
                 toast.show({
                 duration: 5000,
