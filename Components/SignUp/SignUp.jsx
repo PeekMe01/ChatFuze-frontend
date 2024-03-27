@@ -30,10 +30,10 @@ let goodOTP = false;
 export default function Login(props) {
 
   const toast = useToast()
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
-  const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
-  const cameraRef = useRef(null);
+  // const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  // const [type, setType] = useState(Camera.Constants.Type.back);
+  // const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
+  // const cameraRef = useRef(null);
 
   const [emailErrorText, setEmailErrorText] = useState(null);
   const [usernameErrorText, setUsernameErrorText] = useState(null);
@@ -47,25 +47,25 @@ export default function Login(props) {
     welcomePage
   } = props
 
-  useEffect(() => {
-    (async () => {
-        MediaLibrary.requestPermissionsAsync();
-        const cameraStatus = await Camera.requestCameraPermissionsAsync();
-        setHasCameraPermission(cameraStatus.status === 'granted');
-    })();
-  }, [])
+  // useEffect(() => {
+  //   (async () => {
+  //       MediaLibrary.requestPermissionsAsync();
+  //       const cameraStatus = await Camera.requestCameraPermissionsAsync();
+  //       setHasCameraPermission(cameraStatus.status === 'granted');
+  //   })();
+  // }, [])
 
-  const takePicture = async () => {
-    if(cameraRef) {
-      try {
-        const data = await cameraRef.current.takePictureAsync();
-        console.log(data)
-        setImage(data.uri)
-      } catch (error) {
-        console.log(e)
-      }
-    }
-  }
+  // const takePicture = async () => {
+  //   if(cameraRef) {
+  //     try {
+  //       const data = await cameraRef.current.takePictureAsync();
+  //       console.log(data)
+  //       setImage(data.uri)
+  //     } catch (error) {
+  //       console.log(e)
+  //     }
+  //   }
+  // }
 
   //First Page
     const [username, setUsername] = useState();
@@ -187,6 +187,8 @@ export default function Login(props) {
           setInvalidUsername(false)
           usernameGood = true;
       }
+      usernameGood = false;
+      emailGood = false;
       usernameGood = await validateUsername(username);
       emailGood = await validateEmail(email);
       
@@ -224,7 +226,7 @@ export default function Login(props) {
         }
       }
 
-      if(goodCountry){
+      if(goodCountry&&goodDateOfBirth){
         setChangingPage(true)
         setTimeout(function() {
           setChangePage(2);
