@@ -93,7 +93,7 @@ export default function App() {
       <View style={{ flex: 1}}>
             <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal'}} initialRouteName='ProfileMain'>
               <Stack.Screen name="ProfileMain" component={Profile} />
-              <Stack.Screen name="EditSettings" component={EditSettings} initialParams={{ setLoggedIn: setLoggedIn }}/>
+              <Stack.Screen name="EditSettings" component={EditSettings} initialParams={{ setLoggedIn: setLoggedIn, setLoginPage: setLoginPage, setSignupPage: setSignupPage }}/>
               <Stack.Screen name="EditProfile" component={EditProfile}/>
               <Stack.Screen name="FriendsList" component={FriendsList}/>
               <Stack.Screen name="ProfileVisit" component={ProfileVisit}/>

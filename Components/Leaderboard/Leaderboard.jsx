@@ -5,6 +5,8 @@ import { useFonts } from 'expo-font';
 import api from '../Config'
 import {  ScrollView, TouchableHighlight,TouchableOpacity,FlatList,ActivityIndicator } from 'react-native';
 import { AlertCircleIcon,Image, Box,HStack, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, VStack, View, Spinner } from '@gluestack-ui/themed';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Leaderboard = () => {
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory)
@@ -47,7 +49,8 @@ const Leaderboard = () => {
     
             const fetchData = async () => {
                 try {
-                    const response = await api.get(`/leaderboard/local/9`);
+                    const userId = await AsyncStorage.getItem('id');
+                    const response = await api.get(`/leaderboard/local/${userId}`);
                     setTopData(response.data.slice(0,3));
                     setData(response.data.slice(3));
                     setIsLoading(false);
@@ -208,7 +211,8 @@ const Leaderboard = () => {
     
             const fetchData = async () => {
                 try {
-                    const response = await api.get(`/leaderboard/friends/9`);
+                    const userId = await AsyncStorage.getItem('id');
+                    const response = await api.get(`/leaderboard/friends/${userId}`);
                     setTopData(response.data.slice(0,3));
                     setData(response.data.slice(3));
                     setIsLoading(false)

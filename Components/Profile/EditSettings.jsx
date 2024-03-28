@@ -13,7 +13,7 @@ import { AlertDialogCloseButton } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function EditSettings({ navigation,route }) {
-    const { setLoggedIn } = route.params;
+    const { setLoggedIn, setLoginPage, setSignupPage } = route.params;
 
     const [clickedButton, setClickedButton] = useState(false);
     const [changePage, setChangePage] = useState(0);
@@ -129,6 +129,8 @@ export default function EditSettings({ navigation,route }) {
                           await AsyncStorage.removeItem('userToken');
                           await AsyncStorage.removeItem('id');
                           setLoggedIn(false);
+                          setLoginPage(true);
+                          setSignupPage(false);
                           
                         } catch (error) {
                           console.error('Logout failed:', error);
