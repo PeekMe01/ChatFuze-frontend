@@ -276,29 +276,38 @@ export default function Login(props) {
       if(goodOTP){
         setAttemptingSignup(true);
         
-        const dataId = new FormData();
+        const formData = new FormData();
 
-        dataId.append('imageID', {
+        formData.append('image', {
+          name: `${username}_${email}.jpg`,
           uri: image.uri,
-          name: "photoooo", //split the uri at / and get the last element of the resulting array which actually is the name with the image extention (e.g, abc.jpg)
-          type: "jpg"
+          type: 'image/jpg'
         })
+        formData.append('email',email);
+        formData.append('username',username);
+        formData.append('password',password);
+        formData.append('dateOfBirth',dateOfBirth+"");
+        formData.append('country',country);
+        formData.append('gender',gender);
 
-        console.log(dataId._parts[0][1])
-        // console.log(image)
-
-        const data = {email, username, password, dateOfBirth, country, gender};
+        // const data = {email, username, password, dateOfBirth, country, gender};
 
         try {
           // const response = await axios.post(`${API_URL}/Accounts/register`, data);
-          const responsePhoto = await axios.post('http://192.168.0.102:3001/Accounts/idphoto', dataId._parts[0][1], {
+          // const responsePhoto = await axios.post('http://192.168.0.102:3001/Accounts/idphoto', formData ,{
+          //   headers:{
+          //     'x-expo-app': 'chatfuze-frontend',
+          //     Accept: 'application/json',
+          //     'Content-Type' : 'multipart/form-data',
+          //   },
+          // })
+          const response = await axios.post('http://192.168.0.102:3001/Accounts/register', formData ,{
             headers:{
               'x-expo-app': 'chatfuze-frontend',
               Accept: 'application/json',
               'Content-Type' : 'multipart/form-data',
-            }
+            },
           })
-          const response = await api.post(`/Accounts/register`, data);
           console.log(response.data)
           // console.log(responsePhoto.data)
           setChangingPage(true)
