@@ -1,4 +1,4 @@
-import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, View, Select, SelectTrigger, ChevronDownIcon, SelectContent, SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, RadioGroup, HStack, RadioIndicator, RadioIcon, RadioLabel } from '@gluestack-ui/themed';
+import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, View, Select, SelectTrigger, ChevronDownIcon, SelectContent, SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, RadioGroup, HStack, RadioIndicator, RadioIcon, RadioLabel, Image } from '@gluestack-ui/themed';
 import React, { useEffect, useRef, useState } from 'react';
 import * as Progress from 'react-native-progress';
 import * as Animatable from 'react-native-animatable';
@@ -17,19 +17,6 @@ import Buttons from './Buttons';
 
 export default function SecondPage(props) {
 
-  const handleUpload = async () => {
-    //const response = await launchCamera({maxHeight: 500, maxWidth: 500})
-    console.log('jo')
-  }
-
-  useEffect(() => {
-    (async () => {
-        MediaLibrary.requestPermissionsAsync();
-        const cameraStatus = await Camera.requestCameraPermissionsAsync();
-        setHasCameraPermission(cameraStatus.status === 'granted');
-    })();
-  }, [])
-
   const { 
     image,
     setImage,
@@ -39,81 +26,66 @@ export default function SecondPage(props) {
     setSignUpProgress,
     changePage,
     setChangePage,
+    setOpenCamera,
+    openCamera,
   } = props;
 
   return (
-    // <View>
-    //     <Center>
-    //         {/* <FormControl m={10} pt={30}>
-    //             <Progress.Bar progress={signUpProgress} width={300} color='#2cb5d6' height={8}/>
-    //         </FormControl> */}
-    //         <Animatable.Text animation="bounceIn" easing="ease-out">
-    //           <Text size='5xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-    //             SIGN UP2
-    //           </Text>
-    //         </Animatable.Text>
-    //         <Divider my="$10"/>                 
-      
-        <Box h="$32" w="$72" mb={50} style={{ display: 'flex', gap: 40 }}>
-        <FormControl isDisabled={false} isInvalid={false} isReadOnly={false} isRequired={true}>
-            <Animatable.View animation={null}>
-              <Button onPress={handleUpload} backgroundColor='#2cb5d6'>
-                <ButtonText fontSize="$xl" fontWeight="$medium">
-                    Upload ID
-                  </ButtonText>
-              </Button>
-              
-            </Animatable.View>
-          </FormControl>
-          {/* <FormControl>
-            <View style={styles.container}>
-                <Camera
-                    style={styles.camera}
-                    type={type}
-                    flasMode={flash}
-                    ref={cameraRef}
-                >
-                    <View>
-                        <Buttons title={'Take a picture'} icon="camera"/> 
-                    </View>
-                </Camera>
-            </View>
-            
-          </FormControl> */}
-        </Box>
-
-        // <FormControl m={10} pt={50}>
-        //   <Button
-        //     size="lg"
-        //     mb="$4"
-        //     borderRadius={40}
-        //     hardShadow='1'
-        //     bgColor="#2cb5d6"
-        //     $hover={{
-        //         bg: "$green600",
-        //         _text: {
-        //         color: "$white",
-        //         },
-        //     }}
-        //     $active={{
-        //         bg: "#2c94d6",
-        //     }}
-        //     onPress={validate}
-        //     >
-        //       <ButtonText fontSize="$xl" fontWeight="$medium">
-        //         Next
-        //       </ButtonText>
-        //     </Button>
-
-        //     <FormControlHelper style={{ alignItems: 'center', justifyContent: 'center'}}>
-        //     <FormControlHelperText  color='rgba(255,255,255,0.7)' >
-        //         Already have an account? <FormControlHelperText color='#2cb5d6' fontWeight='$semibold' onPress={()=>console.log('Pressed login')}>Login</FormControlHelperText>
-        //     </FormControlHelperText>
-        //     </FormControlHelper>
-        //   </FormControl>
-
-
-    //     </Center>
-    // </View>
+    <Box h='$48' w="$72" mb={50} style={{ display: 'flex', gap: 10 }}>
+      <FormControl isDisabled={false} isInvalid={invalidImage} isReadOnly={false} isRequired={true}>
+        <Animatable.View animation={null}>
+          <Button
+            isDisabled={false}
+            size="lg"
+            mb="$4"
+            // borderRadius={40}
+            hardShadow='1'
+            bgColor="#2cb5d6"
+            $hover={{
+                bg: "$green600",
+                _text: {
+                color: "$white",
+                },
+            }}
+            $active={{
+                bg: "#2c94d6",
+            }}
+            onPress={()=>{setOpenCamera(true);setImage(null); setInvalidImage(false)}}
+            >
+            <ButtonText fontSize="$xl" fontWeight="$medium">
+              Upload ID
+            </ButtonText>
+          </Button>
+        </Animatable.View>
+        <FormControlError marginTop={-10}>
+          <FormControlErrorIcon
+            color='#512095'
+            as={AlertCircleIcon}
+          />
+          <FormControlErrorText color='#512095'>
+            Please upload a photo of your id.
+          </FormControlErrorText>
+      </FormControlError>
+      </FormControl>
+      {image&&
+      <FormControl>
+        <View width={'$72'} height={'$48'}>
+          <Image
+          borderWidth={3}
+          borderColor='#2cd6d3'
+          borderRadius={30}
+          flex={1}
+          w={'$full'}
+          // size='2xl'
+          // rotation={90}
+          source={image}
+          alt='photo_id'
+          // aspectRatio={16/9}
+          />
+        </View>
+       
+      </FormControl>
+      }
+    </Box>
   )
 }

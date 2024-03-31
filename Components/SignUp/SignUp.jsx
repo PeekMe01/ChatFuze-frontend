@@ -1,4 +1,4 @@
-import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, View } from '@gluestack-ui/themed';
+import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, Image, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, View } from '@gluestack-ui/themed';
 import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { useFonts } from 'expo-font';
 import { AppLoading } from 'expo';
@@ -11,7 +11,7 @@ import FirstPage from './FirstPage';
 import * as Animatable from 'react-native-animatable';
 import SecondPage from './SecondPage';
 import ThirdPage from './ThirdPage';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableHighlight } from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import Buttons from './Buttons';
@@ -19,6 +19,9 @@ import FourthPage from './FourthPage'
 import { useToast, Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
 import api from '../Config'
+import axios from 'axios'
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import mime from "mime";
 
 import debounce from 'lodash.debounce';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -30,10 +33,6 @@ let goodOTP = false;
 export default function Login(props) {
 
   const toast = useToast()
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
-  const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
-  const cameraRef = useRef(null);
 
   const [emailErrorText, setEmailErrorText] = useState(null);
   const [usernameErrorText, setUsernameErrorText] = useState(null);
@@ -47,6 +46,11 @@ export default function Login(props) {
     welcomePage
   } = props
 
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
+  const cameraRef = useRef(null);
+
   useEffect(() => {
     (async () => {
         MediaLibrary.requestPermissionsAsync();
@@ -55,17 +59,17 @@ export default function Login(props) {
     })();
   }, [])
 
-  const takePicture = async () => {
-    if(cameraRef) {
-      try {
-        const data = await cameraRef.current.takePictureAsync();
-        console.log(data)
-        setImage(data.uri)
-      } catch (error) {
-        console.log(e)
-      }
-    }
-  }
+  // const takePicture = async () => {
+  //   if(cameraRef) {
+  //     try {
+  //       const data = await cameraRef.current.takePictureAsync();
+  //       console.log(data)
+  //       setImage(data.uri)
+  //     } catch (error) {
+  //       console.log(e)
+  //     }
+  //   }
+  // }
 
   //First Page
     const [username, setUsername] = useState();
@@ -85,7 +89,8 @@ export default function Login(props) {
 
   //Third Page
     const [image, setImage] = useState(null);
-    const [invalidImage, setInvalidImage] = useState(false)
+    const [invalidImage, setInvalidImage] = useState(false);
+    const [openCamera, setOpenCamera] = useState(false);
 
   //Fourth Page
     const [OTP, setOTP] = useState(null);
@@ -187,6 +192,8 @@ export default function Login(props) {
           setInvalidUsername(false)
           usernameGood = true;
       }
+      usernameGood = false;
+      emailGood = false;
       usernameGood = await validateUsername(username);
       emailGood = await validateEmail(email);
       
@@ -224,7 +231,7 @@ export default function Login(props) {
         }
       }
 
-      if(goodCountry){
+      if(goodCountry&&goodDateOfBirth){
         setChangingPage(true)
         setTimeout(function() {
           setChangePage(2);
@@ -232,8 +239,9 @@ export default function Login(props) {
         }, 100); // 1000 milliseconds = 1 second
       }
     }else if(changePage==2){
-      let goodImage = true; // temporary true until imagepicker is fixed
+      let goodImage = false; // temporary true until imagepicker is fixed
       if(!image){
+        goodImage = false
         setInvalidImage(true);
       }else{
         setInvalidImage(false);
@@ -267,12 +275,41 @@ export default function Login(props) {
 
       if(goodOTP){
         setAttemptingSignup(true);
-        const data = {email, username, password, dateOfBirth, country, gender};
+        
+        const formData = new FormData();
+
+        formData.append('image', {
+          name: `${username}_${email}.jpg`,
+          uri: image.uri,
+          type: 'image/jpg'
+        })
+        formData.append('email',email);
+        formData.append('username',username);
+        formData.append('password',password);
+        formData.append('dateOfBirth',dateOfBirth+"");
+        formData.append('country',country);
+        formData.append('gender',gender);
+
+        // const data = {email, username, password, dateOfBirth, country, gender};
 
         try {
           // const response = await axios.post(`${API_URL}/Accounts/register`, data);
-          const response = await api.post(`/Accounts/register`, data);
+          // const responsePhoto = await axios.post('http://192.168.0.102:3001/Accounts/idphoto', formData ,{
+          //   headers:{
+          //     'x-expo-app': 'chatfuze-frontend',
+          //     Accept: 'application/json',
+          //     'Content-Type' : 'multipart/form-data',
+          //   },
+          // })
+          const response = await axios.post('http://192.168.0.102:3001/Accounts/register', formData ,{
+            headers:{
+              'x-expo-app': 'chatfuze-frontend',
+              Accept: 'application/json',
+              'Content-Type' : 'multipart/form-data',
+            },
+          })
           console.log(response.data)
+          // console.log(responsePhoto.data)
           setChangingPage(true)
           toast.show({
             duration: 3000,
@@ -303,6 +340,7 @@ export default function Login(props) {
           }, 100); // 1000 milliseconds = 1 second
 
         } catch (error) {
+          console.log(error)
           toast.show({
             duration: 3000,
             placement: "top",
@@ -336,6 +374,64 @@ export default function Login(props) {
         <Spinner size="large" color="#321bb9" />
       </HStack>
     ) 
+  }
+
+  const snap = async () => {
+    if (cameraRef) {
+      let photo = await cameraRef.current.takePictureAsync();
+      console.log("THE PHOTOS ARE HERE, MILDRED", photo);
+      setImage(photo);
+    }
+  };
+
+  const saveImage = async () => {
+    // if(image){
+    //   try{
+    //     // console.log(image.localUri)
+    //     await MediaLibrary.createAssetAsync(image);
+    //   }catch(e){
+    //     console.log(e)
+    //   }
+    // }
+    setOpenCamera(false);
+  }
+
+  if(hasCameraPermission&&changePage==2&&openCamera){
+    return (
+      <View style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        {!image&&<Camera
+          style={styles.container}
+          type={type}
+          flashMode={flash}
+          ref={cameraRef}
+          ratio='16:9'
+        />}
+        {!image&&<Icon name='center-focus-weak' size={350} color="#ffffff50" style={{position: 'absolute'}}/>}
+        {image&&<Image source={{ uri : image.uri}} alt='photo_id' style={styles.container}/>}
+        <View style={{ backgroundColor: 'black', position: 'absolute', bottom: 0, width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', padding: 10, flexDirection: 'row' }}>
+          {!image&&
+          <TouchableHighlight onPress={()=>{snap()}} underlayColor={'#51209550'} style={{ borderRadius: 100 }}>
+            <View justifyContent='center' alignItems='center' backgroundColor='#51209560' style={{ borderRadius: 100 }}>
+              <Icon name="camera-alt" size={50} color="white" style={{padding: 10}}/>
+            </View>
+          </TouchableHighlight>}
+          {image&&
+          <>
+            <TouchableHighlight onPress={()=>{setImage(null)}} underlayColor={'#51209550'} style={{ borderRadius: 100 }}>
+              <View justifyContent='center' alignItems='center' backgroundColor='#51209560' style={{ borderRadius: 100 }}>
+                <Icon name="refresh" size={50} color="white" style={{padding: 10}}/>
+              </View>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={()=>{saveImage()}} underlayColor={'#51209550'} style={{ borderRadius: 100 }}>
+            <View justifyContent='center' alignItems='center' backgroundColor='#51209560' style={{ borderRadius: 100 }}>
+              <Icon name="navigate-next" size={50} color="white" style={{padding: 10}}/>
+            </View>
+            </TouchableHighlight>
+          </>
+          }
+          </View>
+      </View>
+    )
   }
 
   if(changePageAfterOTP){
@@ -445,6 +541,8 @@ export default function Login(props) {
                 :changePage==2?
                 <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
                 <ThirdPage
+                  openCamera={openCamera}
+                  setOpenCamera={setOpenCamera}
                   image={image}
                   setImage={setImage}
                   invalidImage={invalidImage}
@@ -519,16 +617,16 @@ export default function Login(props) {
 
 const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      justifyContent: 'center',
-      paddingBottom: 20,
-      width: '100%'
+    height: 2408/3,
+    width: 1080/2.4,
+    // width: '100%',
+    // marginBottom: 15,
+    height: '100%',
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   camera: {
-      flex: 1,
-      borderRadius: 20,
-      aspectRatio: 7/9
-
+    flex: 1,
   }
 })
