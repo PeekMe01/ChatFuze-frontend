@@ -50,6 +50,14 @@ export default function FriendsList({navigation}) {
         }, 1000);
     }
 
+    const handleGoBackPressed = () => {
+        setClickedButton(true);
+        navigation.goBack();
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
     const [fontsLoaded] = useFonts({
@@ -77,9 +85,14 @@ export default function FriendsList({navigation}) {
     >
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={230}>
-                <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
-                    Friends ({friendsList?friendsList.length:0})
-                </Text>
+                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                        <Icon name="arrow-back" size={30} color="white"/>
+                    </TouchableHighlight>
+                    <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Friends ({friendsList?friendsList.length:0})
+                    </Text>
+                </View>
             <ScrollView style={{ marginTop: friendsList?0:250 }} fadingEdgeLength={100} showsVerticalScrollIndicator = {false} refreshControl={<RefreshControl colors={["#321bb9"]} refreshing={refreshing} onRefresh={onRefresh}/>}>
                 <View w="$80" alignSelf='center' marginVertical={50}>
                     {friendsList&&friendsList.length>0?friendsList.map((user)=>(

@@ -46,7 +46,7 @@ export default function Profile({navigation}) {
      
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [!user]);
 
 
     const onRefresh = React.useCallback(async () => {
@@ -69,7 +69,8 @@ export default function Profile({navigation}) {
     const handleEditProfile = () =>{
         navigation.push('EditProfile', { 
             // Your data here
-            user: user
+            user: user,
+            setUser: setUser
         });
         setClickedButton(true);
         setTimeout(() => {

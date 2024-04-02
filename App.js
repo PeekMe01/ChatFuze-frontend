@@ -30,6 +30,8 @@ import EditBio from './Components/Profile/EditProfile/EditBio';
 import EditSocials from './Components/Profile/EditProfile/EditSocials';
 import EditProfile from './Components/Profile/EditProfile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -89,7 +91,6 @@ export default function App() {
 
   function ProfileScreen() {
     return (
-      
       <View style={{ flex: 1}}>
             <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal'}} initialRouteName='ProfileMain'>
               <Stack.Screen name="ProfileMain" component={Profile} />
@@ -108,13 +109,13 @@ export default function App() {
               <Stack.Screen name="EditSocials" component={EditSocials}/>
             </Stack.Navigator>
        </View>
-       
     );
   }
 
   if(!loggedIn){
     return (
     <GluestackUIProvider config={config}>
+      <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
       <View flex={1}>
         {/* <StatusBar/> */}
         <ImageBackground
@@ -147,6 +148,7 @@ export default function App() {
         {/* <BubbleScene /> */}
         </ImageBackground>
       </View>
+      </TouchableWithoutFeedback>
     </GluestackUIProvider>
   );
   } else if (loggedIn) {

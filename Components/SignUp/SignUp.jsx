@@ -22,6 +22,7 @@ import api from '../Config'
 import axios from 'axios'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import mime from "mime";
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 
 import debounce from 'lodash.debounce';
 import AsyncStorage from '@react-native-async-storage/async-storage';

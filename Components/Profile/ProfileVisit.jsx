@@ -84,6 +84,14 @@ export default function ProfileVisit({navigation, route}) {
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
 
+    const handleGoBackPressed = () => {
+        setClickedButton(true);
+        navigation.goBack();
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
@@ -135,7 +143,14 @@ export default function ProfileVisit({navigation, route}) {
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
                 <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false} refreshControl={<RefreshControl  colors={["#321bb9"]} refreshing={refreshing} onRefresh={onRefresh}/>}>
-
+                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                        <Icon name="arrow-back" size={30} color="white"/>
+                    </TouchableHighlight>
+                    <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Profile
+                    </Text>
+                </View>
                 <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '15%'}}>
                     {/* <ImageBackground
                         source={{uri: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'}}

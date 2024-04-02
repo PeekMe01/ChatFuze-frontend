@@ -412,8 +412,9 @@ export default function Login(props) {
                   <Input 
                     p={5}
                     borderWidth={2}
+                    borderColor={invalidEmail?'#512095':'white'}
                     backgroundColor='rgba(255,255,255,0.2)'
-                    $focus-borderColor='white'
+                    $focus-borderColor={invalidEmail?'#512095':'white'}
                     >
                     <InputField
                       type="email"
@@ -431,9 +432,10 @@ export default function Login(props) {
                 </Animatable.View>
                 <FormControlError mb={-24}>
                   <FormControlErrorIcon
+                    color='#512095'
                     as={AlertCircleIcon}
                   />
-                  <FormControlErrorText>
+                  <FormControlErrorText color='#512095'>
                     Invalid Email
                   </FormControlErrorText>
                 </FormControlError>
@@ -448,7 +450,8 @@ export default function Login(props) {
                     p={5} 
                     backgroundColor='rgba(255,255,255,0.2)'
                     borderWidth={2}
-                    $focus-borderColor='white'
+                    borderColor={invalidEmail?'#512095':'white'}
+                    $focus-borderColor={invalidEmail?'#512095':'white'}
                     >
                     <InputField
                       type={showPassword ? "text" : "password"}
@@ -473,14 +476,15 @@ export default function Login(props) {
                 </Animatable.View>
                 <FormControlError mb={-24}>
                   <FormControlErrorIcon
+                    color='#512095'
                     as={AlertCircleIcon}
                   />
-                  <FormControlErrorText>
+                  <FormControlErrorText color='#512095'>
                     At least 8 characters are required.
                   </FormControlErrorText>
                 </FormControlError>
   
-                <FormControlHelper style={{ alignItems: 'center', paddingTop: 10}}>
+                <FormControlHelper style={{ alignItems: 'center', paddingTop: 20}}>
                   <FormControlHelperText  color='#2cb5d6' size='l' textAlign='left' onPress={()=>handleForgotPasswordPageChange()}>
                     Forgot Password?
                   </FormControlHelperText>

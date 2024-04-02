@@ -19,15 +19,17 @@ import { SelectContent } from '@gluestack-ui/themed';
 import { SelectDragIndicatorWrapper } from '@gluestack-ui/themed';
 import api from '../../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 
 export default function ChangeCountry({navigation, route}) {
 
     const toast = useToast()
 
-    const { user } = route.params;
+    const { user, setUser } = route.params;
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false);
+    const [clickedButton, setClickedButton] = useState(false);
 
     const [attemptingChangeCountry, setAttemptingChangeCountry] = useState(false);
 
@@ -72,6 +74,7 @@ export default function ChangeCountry({navigation, route}) {
                 if(response){
                     // setCurrentCountry('');
                     setOldCountry(currentCountry)
+                    setUser(null)
                 toast.show({
                     duration: 5000,
                     placement: "top",
@@ -123,6 +126,14 @@ export default function ChangeCountry({navigation, route}) {
         }
     }
 
+    const handleGoBackPressed = () => {
+        setClickedButton(true);
+        navigation.goBack();
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
 
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
@@ -145,12 +156,18 @@ export default function ChangeCountry({navigation, route}) {
         source={require('../../../assets/img/HomePage1.png')}
         style={{ flex:1 ,resizeMode: 'cover'}}
     >
+        <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
-                <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
-                    Change Country
-                </Text>
+                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                        <Icon name="arrow-back" size={30} color="white"/>
+                    </TouchableHighlight>
+                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Change Country
+                    </Text>
+                </View>
                 <View gap={20}>
 
                 <Center>
@@ -262,6 +279,7 @@ export default function ChangeCountry({navigation, route}) {
             {/* </ScrollView> */}
             </View>
         </Animatable.View>
+        </TouchableWithoutFeedback>
     </ImageBackground>
   )
 }

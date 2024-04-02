@@ -13,6 +13,16 @@ export default function AboutUs({navigation}) {
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
+    const [clickedButton, setClickedButton] = useState(false);
+
+    const handleGoBackPressed = () => {
+        setClickedButton(true);
+        navigation.goBack();
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
@@ -37,9 +47,14 @@ export default function AboutUs({navigation}) {
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
-                <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
-                    About us
-                </Text>
+                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                        <Icon name="arrow-back" size={30} color="white"/>
+                    </TouchableHighlight>
+                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        About us
+                    </Text>
+                </View>
                 <View alignItems='center' justifyContent='center' margin={10} marginTop={40}>
                     <Image source={logo}
                     // style={{width: '100%', height: '100%'}}
