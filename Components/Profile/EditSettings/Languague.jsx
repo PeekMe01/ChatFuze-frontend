@@ -11,7 +11,17 @@ export default function Language({navigation}) {
 
     const [clickedButton, setClickedButton] = useState(false);
     const [changePage, setChangePage] = useState(0);
+    
     const [changingPage, setChangingPage] = useState(false)
+
+    const handleGoBackPressed = () => {
+        setClickedButton(true);
+        navigation.goBack();
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
@@ -36,9 +46,14 @@ export default function Language({navigation}) {
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
-                <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
-                    Language
-                </Text>
+                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                        <Icon name="arrow-back" size={30} color="white"/>
+                    </TouchableHighlight>
+                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Language
+                    </Text>
+                </View>
                 <View w="$80" alignSelf='center' marginVertical={100}>
                     <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='center' alignItems='center' flexDirection='row'>

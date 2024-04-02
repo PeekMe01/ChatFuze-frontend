@@ -15,6 +15,7 @@ import { VStack } from '@gluestack-ui/themed';
 // import axios from 'axios';
 import api from '../../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 
 export default function ChangePassword({navigation}) {
 
@@ -22,6 +23,7 @@ export default function ChangePassword({navigation}) {
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false);
+    const [clickedButton, setClickedButton] = useState(false);
 
     const [attemptingChangePassword, setAttemptingChangePassword] = useState(false);
 
@@ -141,6 +143,14 @@ export default function ChangePassword({navigation}) {
         }
     }
 
+    const handleGoBackPressed = () => {
+        setClickedButton(true);
+        navigation.goBack();
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
 
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
@@ -163,12 +173,18 @@ export default function ChangePassword({navigation}) {
         source={require('../../../assets/img/HomePage1.png')}
         style={{ flex:1 ,resizeMode: 'cover'}}
     >
+        <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
-                <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
-                    Change Password
-                </Text>
+                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                        <Icon name="arrow-back" size={30} color="white"/>
+                    </TouchableHighlight>
+                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Change Password
+                    </Text>
+                </View>
                 <View marginVertical={100} gap={20}>
 
                 <Center>
@@ -319,6 +335,7 @@ export default function ChangePassword({navigation}) {
             {/* </ScrollView> */}
             </View>
         </Animatable.View>
+        </TouchableWithoutFeedback>
     </ImageBackground>
   )
 }

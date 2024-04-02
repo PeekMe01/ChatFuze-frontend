@@ -10,7 +10,7 @@ import SocialMedia from './SocialMedia';
 
 export default function EditProfile({navigation, route }) {
 
-    const { user } = route.params;
+    const { user, setUser } = route.params;
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
@@ -34,7 +34,8 @@ export default function EditProfile({navigation, route }) {
     const handleChangeUsernamePage = () => {
         navigation.push('ChangeUsername', { 
             // Your data here
-            user: user
+            user: user,
+            setUser: setUser
         });
         setClickedButton(true);
         setTimeout(() => {
@@ -45,7 +46,8 @@ export default function EditProfile({navigation, route }) {
     const handleChangeCountryPage = () => {
         navigation.push('ChangeCountry', { 
             // Your data here
-            user: user
+            user: user,
+            setUser: setUser
         });
         setClickedButton(true);
         setTimeout(() => {
@@ -56,7 +58,8 @@ export default function EditProfile({navigation, route }) {
     const handleChangeBioPage = () => {
         navigation.push('EditBio', { 
             // Your data here
-            user: user
+            user: user,
+            setUser: setUser
         });
         setClickedButton(true);
         setTimeout(() => {
@@ -68,9 +71,18 @@ export default function EditProfile({navigation, route }) {
     const handleChangeSocialsPage = () => {
         navigation.push('EditSocials', { 
             // Your data here
-            user: user
+            user: user,
+            setUser: setUser
         });
         setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
+    const handleGoBackPressed = () => {
+        setClickedButton(true);
+        navigation.goBack();
         setTimeout(() => {
             setClickedButton(false);
         }, 1000);
@@ -84,9 +96,14 @@ export default function EditProfile({navigation, route }) {
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
-                <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
-                    Edit Profile
-                </Text>
+                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                        <Icon name="arrow-back" size={30} color="white"/>
+                    </TouchableHighlight>
+                    <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Edit Profile
+                    </Text>
+                </View>
                 <View w="$80" alignSelf='center' marginVertical={100}>
                     <TouchableHighlight onPress={()=>{handleChangeUsernamePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>

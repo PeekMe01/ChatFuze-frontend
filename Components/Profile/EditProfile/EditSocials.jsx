@@ -4,7 +4,8 @@ import React from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView, TouchableHighlight } from 'react-native';
 import { Box } from '@gluestack-ui/themed';
 import { Input } from '@gluestack-ui/themed';
@@ -13,6 +14,7 @@ import { AlertCircleIcon } from '@gluestack-ui/themed';
 import { Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
 import axios from 'axios';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 
 export default function EditSocials({navigation}) {
 
@@ -20,6 +22,7 @@ export default function EditSocials({navigation}) {
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false);
+    const [clickedButton, setClickedButton] = useState(false);
 
     const [attemptingChangeBio, setAttemptingChangeBio] = useState(false);
 
@@ -103,6 +106,14 @@ export default function EditSocials({navigation}) {
         }
     }
 
+    const handleGoBackPressed = () => {
+        setClickedButton(true);
+        navigation.goBack();
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
 
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
@@ -125,16 +136,22 @@ export default function EditSocials({navigation}) {
         source={require('../../../assets/img/HomePage1.png')}
         style={{ flex:1 ,resizeMode: 'cover'}}
     >
+        <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
-                <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
-                    Edit Socials
-                </Text>
+                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                        <MaterialIcons name="arrow-back" size={30} color="white"/>
+                    </TouchableHighlight>
+                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Edit Socials
+                    </Text>
+                </View>
 
                     <Box style={{ display: 'flex', gap: 40, justifyContent: 'center', marginVertical: 80}}>
                         <View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
-                            <Icon name="instagram" size={30} color="white"/>
+                            <FontAwesome5 name="instagram" size={30} color="white"/>
                             <Text color='white' fontWeight='$light'>
                                 @daher.ralph
                             </Text>
@@ -146,7 +163,7 @@ export default function EditSocials({navigation}) {
                         </View>
                         <Divider/>
                         <View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
-                            <Icon name="facebook" size={30} color="white"/>
+                            <FontAwesome5 name="facebook" size={30} color="white"/>
                             <Text color='white' fontWeight='$light'>
                                 FACEBOOK
                             </Text>
@@ -161,6 +178,7 @@ export default function EditSocials({navigation}) {
             {/* </ScrollView> */}
             </View>
         </Animatable.View>
+        </TouchableWithoutFeedback>
     </ImageBackground>
   )
 }

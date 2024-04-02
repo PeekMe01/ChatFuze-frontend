@@ -83,6 +83,14 @@ export default function EditSettings({ navigation,route }) {
         }, 1000);
     }
 
+    const handleGoBackPressed = () => {
+        setClickedButton(true);
+        navigation.goBack();
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
   return (
     <ImageBackground
         source={require('../../assets/img/HomePage1.png')}
@@ -145,9 +153,14 @@ export default function EditSettings({ navigation,route }) {
         </AlertDialog>
             <View margin={30} marginBottom={100}>
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
-                <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={30}>
-                    Edit Settings
-                </Text>
+                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                        <Icon name="arrow-back" size={30} color="white"/>
+                    </TouchableHighlight>
+                    <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        Edit Settings
+                    </Text>
+                </View>
                 <View w="$80" alignSelf='center' marginVertical={100}>
                     <TouchableHighlight onPress={()=>{handleChangePasswordPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>

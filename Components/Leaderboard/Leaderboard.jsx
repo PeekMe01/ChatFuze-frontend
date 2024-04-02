@@ -120,6 +120,7 @@ const Leaderboard = () => {
                             data={data}
                             renderItem={renderItem}
                             showsVerticalScrollIndicator={false}
+                            fadingEdgeLength={100}
                         />
                     </View>
                 );
@@ -205,6 +206,7 @@ const Leaderboard = () => {
                         data={data}
                         renderItem={renderItem}
                         showsVerticalScrollIndicator={false}
+                        fadingEdgeLength={100}
                     />
                 </View>
             );
@@ -290,6 +292,7 @@ const Leaderboard = () => {
                             data={data}
                             renderItem={renderItem}
                             showsVerticalScrollIndicator={false}
+                            fadingEdgeLength={100}
                         />
                     </View>
                 );
