@@ -31,6 +31,9 @@ import EditSocials from './Components/Profile/EditProfile/EditSocials';
 import EditProfile from './Components/Profile/EditProfile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { ClerkProvider, SignedIn, SignedOut } from "@clerk/clerk-expo";
+import Constants from "expo-constants"
+import * as SecureStore from "expo-secure-store";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -88,6 +91,23 @@ export default function App() {
       <Leaderboard/>
     );
   }
+
+  const tokenCache = {
+    async getToken(key: string) {
+      try {
+        return SecureStore.getItemAsync(key);
+      } catch (err) {
+        return null;
+      }
+    },
+    async saveToken(key: string, value: string) {
+      try {
+        return SecureStore.setItemAsync(key, value);
+      } catch (err) {
+        return;
+      }
+    },
+  };
 
   function ProfileScreen() {
     return (
@@ -153,6 +173,7 @@ export default function App() {
   );
   } else if (loggedIn) {
     return (
+      <ClerkProvider tokenCache={tokenCache} publishableKey={"pk_test_cHJlbWl1bS1sb25naG9ybi03Ni5jbGVyay5hY2NvdW50cy5kZXYk"}>
       <GluestackUIProvider config={config}>
       <NavigationContainer>
         <Tab.Navigator screenOptions={{ headerShown: false}}>
@@ -194,6 +215,7 @@ export default function App() {
         </Tab.Navigator>
       </NavigationContainer>
     </GluestackUIProvider>
+    </ClerkProvider>
     )
     
   }

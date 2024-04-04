@@ -19,6 +19,8 @@ import masterRank from '../../assets/img/RankFrames/Master.png'
 import champRank from '../../assets/img/RankFrames/Champ.png'
 import superstarRank from '../../assets/img/RankFrames/Superstar.png'
 
+import { useUser } from "@clerk/clerk-expo";
+
 export default function Profile({navigation}) {
 
     const [refreshing, setRefreshing] = React.useState(false);
@@ -161,7 +163,8 @@ export default function Profile({navigation}) {
                         zIndex={-1}
                         borderRadius="$full"
                         source={{
-                            uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+                            //uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+                            uri: useUser().user.imageUrl
                         }}
                     />
 

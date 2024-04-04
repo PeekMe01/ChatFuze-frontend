@@ -16,9 +16,22 @@ import { VStack } from '@gluestack-ui/themed';
 import axios from 'axios';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 
+import * as WebBrowser from "expo-web-browser";
+import { useOAuth } from "@clerk/clerk-expo";
+import { useWarmUpBrowser } from "./useWarmUpBrowser";
+import { ClerkProvider, SignedIn, SignedOut, useAuth, RedirectToUserProfile } from "@clerk/clerk-expo";
+import * as SecureStore from "expo-secure-store";
+import { useUser } from "@clerk/clerk-expo";
+
+WebBrowser.maybeCompleteAuthSession();
+
 export default function EditSocials({navigation}) {
 
+    const { isSignedIn, user } = useUser();
+    const { isLoaded,signOut } = useAuth();
     const toast = useToast()
+
+    useWarmUpBrowser();
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false);
@@ -118,6 +131,24 @@ export default function EditSocials({navigation}) {
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
+
+    const { startOAuthFlow } = useOAuth({ strategy: "oauth_facebook" });
+ 
+    const onPress = React.useCallback(async () => {
+      try {
+        const { createdSessionId, signIn, signUp, setActive } =
+          await startOAuthFlow();
+   
+        if (createdSessionId) {
+          setActive({ session: createdSessionId });
+        } else {
+          // Use signIn or signUp for next steps such as MFA
+        }
+      } catch (err) {
+        console.error("OAuth error", err);
+      }
+    }, []);
+
     if (!fontsLoaded) {
         return (
             <ImageBackground
@@ -164,14 +195,30 @@ export default function EditSocials({navigation}) {
                         <Divider/>
                         <View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
                             <FontAwesome5 name="facebook" size={30} color="white"/>
-                            <Text color='white' fontWeight='$light'>
-                                FACEBOOK
-                            </Text>
-                            <TouchableHighlight onPress={()=>{}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
+                            <SignedOut>
+                                <Text color='white' fontWeight='$light'>
+                                    FACEBOOK
+                                </Text>
+                            </SignedOut>
+                            <SignedIn>
+                                <Text color='white' fontWeight='$light'>
+                                    {user&&user.fullName}
+                                </Text>
+                            </SignedIn>
+                            <SignedOut>
+                            <TouchableHighlight onPress={onPress} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
                                 <View borderWidth={1} borderColor='white' padding={5} borderRadius={10}>
                                     <Text color='white' fontWeight='$light'>link</Text>
                                 </View>
                             </TouchableHighlight>
+                            </SignedOut>
+                            <SignedIn>
+                            <TouchableHighlight onPress={()=>signOut()} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
+                                <View borderWidth={1} borderColor='white' padding={5} borderRadius={10}>
+                                    <Text color='white' fontWeight='$light'>un-link</Text>
+                                </View>
+                            </TouchableHighlight>
+                            </SignedIn>
                         </View>
                         
                     </Box>
