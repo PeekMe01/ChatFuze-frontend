@@ -31,6 +31,8 @@ import EditSocials from './Components/Profile/EditProfile/EditSocials';
 import EditProfile from './Components/Profile/EditProfile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import BottomTabBar from '@react-navigation/bottom-tabs';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -114,13 +116,15 @@ export default function App() {
 
   if(!loggedIn){
     return (
+    
     <GluestackUIProvider config={config}>
+      {/* <SafeAreaProvider> */}
+      <StatusBar backgroundColor="transparent" hidden/>
       <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
       <View flex={1}>
-        {/* <StatusBar/> */}
         <ImageBackground
             source={require('./assets/img/LoginSignUp1.png')}
-            style={{ flex:1 ,resizeMode: 'cover', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
+            style={{ flex:1 ,resizeMode: 'cover', justifyContent: 'center', display: 'flex', alignItems: 'center', height: '100vh'}}
           >
 
         {/* LOGIN FROM */}
@@ -149,10 +153,13 @@ export default function App() {
         </ImageBackground>
       </View>
       </TouchableWithoutFeedback>
+      {/* </SafeAreaProvider> */}
     </GluestackUIProvider>
+    
   );
   } else if (loggedIn) {
     return (
+      // <SafeAreaProvider>
       <GluestackUIProvider config={config}>
       <NavigationContainer>
         <Tab.Navigator screenOptions={{ headerShown: false}}>
@@ -194,6 +201,7 @@ export default function App() {
         </Tab.Navigator>
       </NavigationContainer>
     </GluestackUIProvider>
+    // </SafeAreaProvider>
     )
     
   }
