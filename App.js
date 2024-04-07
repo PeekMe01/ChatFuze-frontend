@@ -33,6 +33,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import BottomTabBar from '@react-navigation/bottom-tabs';
+import Messages from './Components/Messages/Messages';
+import Chat from './Components/Messages/Chat';
+import ProfileMessages from './Components/Messages/ProfileMessages';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -77,13 +80,51 @@ export default function App() {
     );
   }
   
-  function MessagesScreen() {
+  function MessagesScreen({ navigation }) {
+    React.useLayoutEffect(() => {
+      const unsubscribe = navigation.addListener('state', (e) => {
+          const currentRoute = e.data.state.routes[e.data.state.index];
+          const leafRouteName = getCurrentRouteName(currentRoute);
+
+        
+          if (leafRouteName==="Chat" || leafRouteName==="ProfileMessages") {
+              navigation.setOptions({
+                  tabBarStyle: { display: 'none' }
+              });
+          } else {
+             
+              navigation.setOptions({
+                tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' }, 
+            
+              });
+          }
+      });
+
+      
+      return unsubscribe;
+  }, [navigation]);
+
+  // Function to get the leaf route name
+  const getCurrentRouteName = (route) => {
+      if (route.state) {
+          // Dive into nested navigators
+          return getCurrentRouteName(route.state.routes[route.state.index]);
+      }
+      return route.name;
+  };
+
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Message!</Text>
-      </View>
+        <View style={{ flex: 1 }}>
+            <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
+                <Stack.Screen name="MessagesStack" component={Messages} />
+                <Stack.Screen name="Chat" component={Chat}   />
+                  <Stack.Screen name="ProfileMessages" component={ProfileMessages} />
+               
+            </Stack.Navigator>
+        </View>
     );
-  }
+}
+
 
   function LeaderboardScreen() {
     return (
@@ -91,7 +132,37 @@ export default function App() {
     );
   }
 
-  function ProfileScreen() {
+  function ProfileScreen({ navigation }) {
+    React.useLayoutEffect(() => {
+      const unsubscribe = navigation.addListener('state', (e) => {
+          const currentRoute = e.data.state.routes[e.data.state.index];
+          const leafRouteName = getCurrentRouteName(currentRoute);
+
+        
+          if (leafRouteName!=="ProfileMain" && leafRouteName!=='Profile' ) {
+              navigation.setOptions({
+                  tabBarStyle: { display: 'none' }
+              });
+          } else {
+              navigation.setOptions({
+                tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
+              });
+          }
+      });
+
+      
+      return unsubscribe;
+  }, [navigation]);
+
+  // Function to get the leaf route name
+  const getCurrentRouteName = (route) => {
+      if (route.state) {
+          // Dive into nested navigators
+          return getCurrentRouteName(route.state.routes[route.state.index]);
+      }
+      return route.name;
+  };
+
     return (
       <View style={{ flex: 1}}>
             <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal'}} initialRouteName='ProfileMain'>
