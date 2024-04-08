@@ -1,12 +1,11 @@
 // This page is for visiting a friend's profile.
-import { AddIcon, Center, Divider, HStack, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
-import { View } from '@gluestack-ui/themed';
+import { View, Select, Button, Heading, CloseIcon,ChevronDownIcon, ButtonText, AddIcon, AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, ButtonGroup, Center, Divider, HStack, Image, ImageBackground, Spinner, Text, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem, useToast, Toast, ToastTitle, ToastDescription } from '@gluestack-ui/themed';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Button, ScrollView, TouchableHighlight } from 'react-native';
+import { Keyboard, ScrollView, TextInput, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import SocialMedia from './SocialMedia';
 import { RefreshControl } from '@gluestack-ui/themed';
 import api from '../Config'
@@ -16,17 +15,103 @@ import expertRank from '../../assets/img/RankFrames/Expert.png'
 import masterRank from '../../assets/img/RankFrames/Master.png'
 import champRank from '../../assets/img/RankFrames/Champ.png'
 import superstarRank from '../../assets/img/RankFrames/Superstar.png'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { VStack } from '@gluestack-ui/themed';
 
 export default function ProfileVisit({navigation, route}) {
-
+    const toast = useToast()
     const { userId } = route.params;
-
     const [refreshing, setRefreshing] = React.useState(false);
     const [clickedButton, setClickedButton] = useState(false);
     const [friend, setFriend] = useState();
     const [rankName, setRankName] = useState();
     const [leaderboardnumber, setLeaderboardnumber] = useState();
     const [roomCount, setRoomCount] = useState();
+
+    const [showAlertDialog, setShowAlertDialog] = useState(false)
+    const [showAlertReport, setshowAlertReport] = useState(false)
+    const [ reportCategory,setreportCategory]=useState();
+    const [ invalidreport,setInvalidReport]=useState(false);
+    const [message,setmessage]=useState('');
+    const[invalidtext,setinvalidtext]=useState(false)
+    const [disablebutton,setdisablebutton]=useState(false);
+    const[disabledeletebutton,setdisabledeletebutton]=useState(false)
+
+    const removefriend =async()=>{
+        try {
+            setdisabledeletebutton(true)
+            const response = await api.post(`/messages/removefriend`, {
+                usersid1: friend.idusers,
+                usersid2: await AsyncStorage.getItem('id')
+            });
+            setTimeout(() => {
+                setdisabledeletebutton(false);
+            }, 1000);
+            toast.show({
+                duration: 5000,
+                placement: "top",
+                render: ({ id }) => {
+                    const toastId = "toast-" + id
+                    return (
+                    <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+                        <VStack space="xs">
+                        <ToastTitle>Success</ToastTitle>
+                        <ToastDescription>
+                        {friend.username} has been removed from your friend list...
+                        </ToastDescription>
+                        </VStack>
+                    </Toast>
+                    )
+                },
+            })
+            navigation.goBack();
+            
+        } catch (error) {
+            console.error('Error deleting friend:', error);
+        }
+    }
+
+    const submitreport=async()=>{
+        try {
+            if(reportCategory && message!==''){
+                setdisablebutton(true)
+                const response = await api.post(`/reports/submitreport`, {
+                    categoryname: reportCategory,
+                    message: message,
+                    reporterid:userId,
+                    reportedid: await AsyncStorage.getItem('id') ,
+                });
+                setshowAlertReport(false)
+                setTimeout(() => {
+                    setdisablebutton(false);
+                }, 1000);
+                toast.show({
+                    duration: 5000,
+                    placement: "top",
+                    render: ({ id }) => {
+                        const toastId = "toast-" + id
+                        return (
+                        <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+                            <VStack space="xs">
+                            <ToastTitle>Success</ToastTitle>
+                            <ToastDescription>
+                                You have succesfully Submitted your report...
+                            </ToastDescription>
+                            </VStack>
+                        </Toast>
+                        )
+                    },
+                })
+            }else{
+                if(!reportCategory)
+                    setInvalidReport(true)
+                if(message==="")
+                    setinvalidtext(true)
+            }
+            }  catch (error) {
+                console.error('Error deleting friend:', error);
+            }
+    }
 
     async function fetchData(){
         try {
@@ -83,6 +168,10 @@ export default function ProfileVisit({navigation, route}) {
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
+
+    const dismissKeyboard = () => {
+        Keyboard.dismiss();
+      };
 
     const handleGoBackPressed = () => {
         setClickedButton(true);
@@ -141,8 +230,146 @@ export default function ProfileVisit({navigation, route}) {
     >
         {/* <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}> */}
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
-            <View margin={30} marginBottom={100}>
-                <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false} refreshControl={<RefreshControl  colors={["#321bb9"]} refreshing={refreshing} onRefresh={onRefresh}/>}>
+            <AlertDialog
+                isOpen={showAlertDialog}
+                onClose={() => {
+                setShowAlertDialog(false)
+                }}
+            >
+                <AlertDialogBackdrop />
+                <AlertDialogContent>
+                <AlertDialogHeader>
+                <Heading size='lg' color='#512095'>Remove Friend?</Heading>
+                    <AlertDialogCloseButton>
+                    <Icon as={CloseIcon} />
+                    </AlertDialogCloseButton>
+                </AlertDialogHeader>
+                <AlertDialogBody>
+                    <Text size="sm">
+                    Are you sure you want to Remove this Friend?
+                    </Text>
+                </AlertDialogBody>
+                <AlertDialogFooter>
+                    <ButtonGroup space="lg">
+                        <Button
+                            variant="outline"
+                            action="secondary"
+                            borderWidth={2}
+                            onPress={() => {
+                            setShowAlertDialog(false)
+                            }}
+                        >
+                            <ButtonText>Cancel</ButtonText>
+                        </Button>
+                        <Button
+                            bg="#512095"
+                            action="negative"
+                            onPress={() => {
+                                removefriend()
+                            }}
+                            disabled={disabledeletebutton}
+                        >
+                            <ButtonText>Remove</ButtonText>
+                        </Button>
+                    </ButtonGroup>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+
+        {/* report friend */}
+        <AlertDialog
+            isOpen={showAlertReport}
+            onClose={() => {
+                setshowAlertReport(false)
+            }}
+        >
+            <AlertDialogBackdrop />
+            <AlertDialogContent>
+                <TouchableWithoutFeedback onPress={dismissKeyboard}>
+                    <View> 
+                        <AlertDialogHeader>
+                            <Heading size="lg" color='#512095'>Report Friend?</Heading>
+                                <AlertDialogCloseButton>
+                                <Icon as={CloseIcon} />
+                            </AlertDialogCloseButton>
+                        </AlertDialogHeader>
+                        <AlertDialogBody>
+                            <Select
+                            style={{ borderWidth: 2, borderColor:invalidreport?'red':'#ccc',  borderRadius: 5 }}
+                            selectedValue={reportCategory}
+                            onValueChange={(value) => { setreportCategory(value); setInvalidReport(false) }}
+                            >
+                                <SelectTrigger size="md" borderColor='rgba(255,255,255,0)'>
+                                    <SelectInput placeholderTextColor='grey' placeholder="Select Report Category"  style={{ color: 'grey' }} />
+                                        <SelectIcon mr="$3">
+                                            <Icon as={ChevronDownIcon} style={{ color: 'white' }} />
+                                        </SelectIcon>
+                                </SelectTrigger>
+                                <SelectPortal>
+                                    <SelectBackdrop />
+                                    <SelectContent>
+                                        <SelectDragIndicatorWrapper>
+                                            <SelectDragIndicator />
+                                        </SelectDragIndicatorWrapper>
+                                        <SelectItem label="Abuse" value="Abuse" />
+                                        <SelectItem label="Spam" value="Spam" />
+                                        <SelectItem label="Hate Speech" value="Hate Speech" />
+                                        <SelectItem label="Inappropriate Speech" value="Inappropriate Speech" />
+                                    </SelectContent>
+                                </SelectPortal>
+                            </Select>
+                            <TextInput
+                                placeholder="Type your message..."
+                                multiline
+                                numberOfLines={4}
+                                style={{
+                                    marginVertical:10,
+                                    borderWidth: 1,
+                                    borderColor: invalidtext?'red':'#ccc',
+                                    borderRadius: 10,
+                                    paddingHorizontal: 10,
+                                    paddingVertical: 8,
+                                    fontSize: 16,
+                                    minHeight: 100,
+                                    textAlignVertical: 'top',
+                                }}
+                                value={message}
+                                onChangeText={(text) => {
+                                    setmessage(text);
+                                    setinvalidtext(false);
+                                    }}
+                            />
+                        </AlertDialogBody>
+                        <AlertDialogFooter>
+                            <ButtonGroup space="lg">
+                                <Button
+                                    variant="outline"
+                                    action="secondary"
+                                    borderWidth={2}
+                                    onPress={() => {
+                                    setshowAlertReport(false)
+                                    }}
+                                
+                                >
+                                    <ButtonText>Cancel</ButtonText>
+                                </Button>
+                                <Button
+                                    bg="#512095"
+                                    action="negative"
+                                    onPress={() => {
+                                            submitreport();
+                                    }}
+                                    disabled={disablebutton}
+                                >
+                                    <ButtonText>Report</ButtonText>
+                                </Button>
+                            </ButtonGroup>
+                        </AlertDialogFooter>
+                    </View>
+                </TouchableWithoutFeedback>
+            </AlertDialogContent>
+        </AlertDialog>
+            <View margin={30}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
                         <Icon name="arrow-back" size={30} color="white"/>
@@ -151,6 +378,8 @@ export default function ProfileVisit({navigation, route}) {
                         Profile
                     </Text>
                 </View>
+                <ScrollView fadingEdgeLength={100} style={{ marginBottom: 150 }} showsVerticalScrollIndicator = {false} refreshControl={<RefreshControl  colors={["#321bb9"]} refreshing={refreshing} onRefresh={onRefresh}/>}>
+                
                 <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '15%'}}>
                     {/* <ImageBackground
                         source={{uri: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'}}
@@ -198,11 +427,30 @@ export default function ProfileVisit({navigation, route}) {
                     <View style={{ backgroundColor: '#512095', paddingHorizontal: '10%', paddingVertical: '1%', borderRadius: 30, marginTop: -20 }}>
                         <Text color='white'>{rankName} ({friend.rankpoints})</Text>
                     </View>
-                    <View display='flex' flexDirection='row' justifyContent='center' alignItems='center' margin={20} gap={5}>
+                    <View display='flex' flexDirection='row' justifyContent='center' alignItems='center' marginTop={20} gap={5}>
                         <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' >{friend.username}, {calculateAge(friend.dateOfBirth)}</Text>
                         <Icon name="verified" size={24} color={friend.verified?"#2cd6d3":"#bcbcbc"}/>
                     </View>
-                    
+                    <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 50, padding: 20 }}>
+                        <TouchableHighlight onPress={()=>{setShowAlertDialog(true)}} style={{ borderRadius: 50 }} underlayColor={'#51209550'} disabled={clickedButton}>
+                            <View width={50} height={50} justifyContent='center' alignItems='center' backgroundColor='#51209530' borderRadius={50}>
+                                <Icon name="person-remove" size={30} color="white"/>
+                            </View>
+                        </TouchableHighlight>
+                        <TouchableHighlight onPress={()=>{setshowAlertReport(true)}} style={{ borderRadius: 50 }} underlayColor={'#51209550'} disabled={clickedButton}>
+                            <View width={50} height={50} justifyContent='center' alignItems='center' backgroundColor='#51209530' borderRadius={50}>
+                                <Icon name="report" size={30} color="white"/>
+                            </View>
+                        </TouchableHighlight>
+                    </View>
+                    {/* <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'  gap={20}>
+                    <TouchableOpacity  style={{backgroundColor:'#512095',padding:10}} onPress={()=>setShowAlertDialog(true)} >
+                        <Text style={{color:'white'}}>Remove Friend</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity  style={{backgroundColor:'#512095',paddingHorizontal:20, paddingVertical:10}} onPress={()=>setshowAlertReport(true)}>
+                        <Text style={{color:'white'}} >Reports</Text>
+                    </TouchableOpacity>
+                    </View> */}
                 </View>
 
                 <Divider marginVertical={10}/>

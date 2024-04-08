@@ -9,12 +9,13 @@ import { Button, ScrollView, TouchableHighlight } from 'react-native';
 import SocialMedia from './SocialMedia';
 import api from '../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function FriendsList({navigation}) {
-
     const [refreshing, setRefreshing] = React.useState(false);
     const [clickedButton, setClickedButton] = useState(false);
     const [friendsList, setFriendsList] = useState();
+    const isFocused = useIsFocused();
 
     async function fetchData(){
         try {
@@ -30,7 +31,7 @@ export default function FriendsList({navigation}) {
      
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [isFocused]);
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
@@ -42,7 +43,7 @@ export default function FriendsList({navigation}) {
 
     const handleProfileVisit = (user) =>{
         navigation.push('ProfileVisit', { 
-            userId: user.idusers
+            userId: user.idusers,
         });
         setClickedButton(true);
         setTimeout(() => {

@@ -7,24 +7,34 @@ import userimg from '../../assets/img/user.png'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { AntDesign } from '@expo/vector-icons';
 import {  ScrollView, TouchableHighlight,TouchableOpacity,FlatList,ActivityIndicator } from 'react-native';
-import { AlertCircleIcon,Image, Box,HStack, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, VStack, View, Spinner } from '@gluestack-ui/themed';
+import { AlertCircleIcon,Image, Box,HStack, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, VStack, View, Spinner, RefreshControl } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const Messages = ({navigation }) => {
     const [friendsuser,setfriendsuser]=useState([]);
     const [loading,setIsLoading]=useState(true)
- 
+    const [refreshing, setRefreshing] = React.useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const userId = await AsyncStorage.getItem('id');
-            const response = await api.get(`/messages/friends/${userId}`);
-            setfriendsuser(response.data);
-            setIsLoading(false);
-          } catch (error) {
-            console.error('Error fetching data:', error);
-          }
-        };
+    const onRefresh = React.useCallback(async () => {
+      setRefreshing(true);
+      setfriendsuser();
+      setTimeout(() => {
+        setRefreshing(false);
+      }, await fetchData());
+      
+    }, []);
+
+    const fetchData = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('id');
+        const response = await api.get(`/messages/friends/${userId}`);
+        setfriendsuser(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    useEffect(() => {  
       
         const unsubscribe = navigation.addListener('focus', () => {
           fetchData(); 
@@ -97,11 +107,12 @@ const Messages = ({navigation }) => {
                 </Text>
             </ScrollView>
             
-              {friendsuser.length>=1? <FlatList style={{height:550}}
+              {friendsuser&&friendsuser.length>=1? <FlatList style={{height:550}}
                     data={friendsuser}
                     renderItem={renderItem}
                     showsVerticalScrollIndicator={false}
                     fadingEdgeLength={100}
+                    refreshControl={<RefreshControl  colors={["#321bb9"]} refreshing={refreshing} onRefresh={onRefresh}/>}
                 /> :<>
                 <Text size='2xl' color='white' fontWeight='$bold' fontFamily='ArialRoundedMTBold' style={{textAlign:'center' }}>No Friends Available!</Text>
                 </>}
