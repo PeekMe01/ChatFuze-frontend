@@ -45,6 +45,7 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(true);
 
   useEffect(() => {
+
     checkLoginStatus();
   }, []);
 

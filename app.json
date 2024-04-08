@@ -30,6 +30,7 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "scheme": ["chatfuze-frontend", "fb1200886614214250"]
   }
 }

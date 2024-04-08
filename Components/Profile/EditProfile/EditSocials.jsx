@@ -1,12 +1,13 @@
-import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Textarea, TextareaInput } from '@gluestack-ui/themed';
+import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Textarea, TextareaInput, Link, LinkText } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { ScrollView, TouchableHighlight } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather'
+import { Linking, ScrollView, TouchableHighlight } from 'react-native';
 import { Box } from '@gluestack-ui/themed';
 import { Input } from '@gluestack-ui/themed';
 import { InputField } from '@gluestack-ui/themed';
@@ -15,46 +16,138 @@ import { Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
 import axios from 'axios';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import * as Facebook from "expo-auth-session/providers/facebook";
+import * as WebBrowser from "expo-web-browser";
+import { makeRedirectUri } from 'expo-auth-session';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../../Config'
 
-export default function EditSocials({navigation}) {
-
-    const toast = useToast()
-
-    const [changePage, setChangePage] = useState(0);
-    const [changingPage, setChangingPage] = useState(false);
-    const [clickedButton, setClickedButton] = useState(false);
-
-    const [attemptingChangeBio, setAttemptingChangeBio] = useState(false);
+WebBrowser.maybeCompleteAuthSession();
 
 
-    const [currentBio, setCurrentBio] = useState('bhigfvlehjbhviguoecvdigdhuocvhghdfbicuosifvighbicsvbcsojfhvgdjofcbhvjghdbfjcbhvgf jhbdkjfvj ghdfbjchvgfj dfhbkjnbhvgjhfdbkjchvjdbkjcshvjdbhk');
-    const [invalidCurrentBio, setInvalidCurrentBio] = useState(false);
-    const [invalidCurrentBioErrorMessage, setInvalidCurrentBioErrorMessage] = useState("Error Message Current Password");
 
-    const validate = async () => {
-        let goodBio = false;
-        setAttemptingChangeBio(true);
-        if(currentBio.length>300||currentBio.length<10){
-            setInvalidCurrentBio(true);
-            setInvalidCurrentBioErrorMessage('Bio is in bad format!')
-        }else{
-            setInvalidCurrentBio(false);
-            goodBio=true;
+export default function EditSocials({navigation, route}) {
+    let facebookLink;
+    // const { user, setUser } = route.params;
+    const [user, setUser] = useState();
+
+    async function fetchData(){
+        try {
+             const data = await AsyncStorage.getItem('id')
+             const response = await api.get(`/settings/getinsight/${data}`);
+             // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
+             setUser(response.data.user);
+         } catch (error) {
+             console.log(error)
+         }
+     }
+     
+    useEffect(() => {
+        fetchData();
+    }, [!user]);
+
+    const [request, response, promptAsync] = Facebook.useAuthRequest(
+        {
+            clientId: "1200886614214250"
         }
-    
+    );
 
-        if(goodBio){
-            console.log('here')
+    useEffect(() => {
+        handleFacebookLogin();
+    }, [response])
+
+    const handleFacebookLogin = async () => {
+        if(response && response.type === "success" && response.authentication){
+            await AsyncStorage.setItem('FacebookToken', response.authentication.accessToken);
+            const userInfoResponse = await fetch(
+                `https://graph.facebook.com/me?access_token=${response.authentication.accessToken}&fields=id,name,link,picture.type(large)`
+            );
+            
+            const userInfo = await userInfoResponse.json();
+            console.log(userInfo)
+            facebookLink = userInfo.link;
             const data = {
-                userid: 1,
-                oldpassword: currentBio,
-                password: newPassword,
+                userid: await AsyncStorage.getItem('id'),
+                facebooklink: facebookLink,
             }
-
+    
             try {
-                const response = await axios.post(`${API_URL}/settings/changeBio`, data);
+                const response = await api.post(`/settings/facebooklink`, data);
                 if(response){
-                    setCurrentBio('');
+                    try {
+                        const data = await AsyncStorage.getItem('id')
+                        const response = await api.get(`/settings/getinsight/${data}`);
+                        // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
+                        setUser(null);
+                    } catch (error) {
+                        console.log(error)
+                    }
+                    toast.show({
+                        duration: 5000,
+                        placement: "top",
+                        render: ({ id }) => {
+                            const toastId = "toast-" + id
+                            return (
+                            <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+                                <VStack space="xs">
+                                <ToastTitle>Success</ToastTitle>
+                                <ToastDescription>
+                                    You have succesfully linked your facebook profile!
+                                </ToastDescription>
+                                </VStack>
+                            </Toast>
+                            )
+                        },
+                    })
+                }
+            } catch (error) {
+                console.log(error)
+                const errorMsg = await error.response.data.error;
+                toast.show({
+                    duration: 5000,
+                    placement: "top",
+                    render: ({ id }) => {
+                        const toastId = "toast-" + id
+                        return (
+                        <Toast nativeID={toastId} action="error" variant="solid" marginTop={40}>
+                            <VStack space="xs">
+                            <ToastTitle>There was an error while connecting your facebook</ToastTitle>
+                            <ToastDescription>
+                                {errorMsg}
+                            </ToastDescription>
+                            </VStack>
+                        </Toast>
+                        )
+                    },
+                })
+            }
+        }
+    }
+
+    const handlePressAsync = async () => {
+        const result = await promptAsync();
+        if (result.type !== "success") {
+            alert("Uh oh, something went wrong");
+            return;
+        }
+    }
+
+    const handleFacebookLogout = async () =>{
+        const data = {
+            userid: await AsyncStorage.getItem('id'),
+        }
+        try {
+            const response = await api.post(`/settings/removeFacebookLink`, data);
+            if(response){
+                try {
+                    const data = await AsyncStorage.getItem('id')
+                    const response = await api.get(`/settings/getinsight/${data}`);
+                    // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
+                    setUser(null);
+                } catch (error) {
+                    console.log(error)
+                }
+                await AsyncStorage.removeItem('FacebookToken')
                 toast.show({
                     duration: 5000,
                     placement: "top",
@@ -65,20 +158,18 @@ export default function EditSocials({navigation}) {
                             <VStack space="xs">
                             <ToastTitle>Success</ToastTitle>
                             <ToastDescription>
-                                You have succesfully linked your social media!
+                                You have succesfully un-linked your facebook profile!
                             </ToastDescription>
                             </VStack>
                         </Toast>
                         )
                     },
-                    })
-                    
-                }
-                setAttemptingChangeBio(false);
-            } catch (error) {
-                // console.log(error.response.data.error)
-                const errorMsg = await error.response.data.error;
-                toast.show({
+                })
+            }
+        } catch (error) {
+            console.log(error)
+            const errorMsg = await error.response.data.error;
+            toast.show({
                 duration: 5000,
                 placement: "top",
                 render: ({ id }) => {
@@ -86,7 +177,7 @@ export default function EditSocials({navigation}) {
                     return (
                     <Toast nativeID={toastId} action="error" variant="solid" marginTop={40}>
                         <VStack space="xs">
-                        <ToastTitle>There was an error while linking your social media</ToastTitle>
+                        <ToastTitle>There was an error while removing your facebook</ToastTitle>
                         <ToastDescription>
                             {errorMsg}
                         </ToastDescription>
@@ -94,17 +185,16 @@ export default function EditSocials({navigation}) {
                     </Toast>
                     )
                 },
-                })
-                setAttemptingChangeBio(false);
-            }
-            
-            
-        }else{
-            setTimeout(() => {
-                setAttemptingChangeBio(false);
-        }, 1000);
+            })
         }
+        
     }
+
+    const toast = useToast()
+
+    const [changePage, setChangePage] = useState(0);
+    const [changingPage, setChangingPage] = useState(false);
+    const [clickedButton, setClickedButton] = useState(false);
 
     const handleGoBackPressed = () => {
         setClickedButton(true);
@@ -150,29 +240,55 @@ export default function EditSocials({navigation}) {
                 </View>
 
                     <Box style={{ display: 'flex', gap: 40, justifyContent: 'center', marginVertical: 80}}>
-                        <View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
+                        {user&&user.instagramlink&&<View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
                             <FontAwesome5 name="instagram" size={30} color="white"/>
                             <Text color='white' fontWeight='$light'>
-                                @daher.ralph
+                                Go to Instagram profile
                             </Text>
                             <TouchableHighlight onPress={()=>{}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
-                                <View borderWidth={1} borderColor='white' padding={5} borderRadius={10}>
-                                    <Text color='white' fontWeight='$light'>un-link</Text>
+                                <View borderWidth={1} borderColor='white' paddingHorizontal={20} paddingVertical={10} borderRadius={10}>
+                                    <Text color='white' fontWeight='$light'>remove</Text>
                                 </View>
                             </TouchableHighlight>
-                        </View>
+                        </View>}
+                        {user&&!user.instagramlink&&<View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
+                            <FontAwesome5 name="instagram" size={30} color="white"/>
+                            <Text color='white' fontWeight='$light'>
+                                INSTAGRAM
+                            </Text>
+                            <TouchableHighlight onPress={()=>{}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
+                                <View borderWidth={1} borderColor='white' paddingHorizontal={20} paddingVertical={10} borderRadius={10}>
+                                    <Text color='white' fontWeight='$light'>add</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </View>}
                         <Divider/>
-                        <View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
+                        {user&&user.facebooklink&&<View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
+                            <FontAwesome5 name="facebook" size={30} color="white"/>
+                            <Link href={user.facebooklink}>
+                                <TouchableHighlight onPress={()=>{Linking.openURL(user.facebooklink)}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
+                                    <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
+                                        <LinkText textDecorationLine='none' color='white' fontWeight='$light'>Visit Profile </LinkText><Feather name="link" size={20} color="white"/>
+                                    </View>
+                                </TouchableHighlight>
+                            </Link>
+                            <TouchableHighlight onPress={()=>{handleFacebookLogout()}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
+                                <View borderWidth={1} borderColor='white' paddingHorizontal={20} paddingVertical={10} borderRadius={10}>
+                                    <Text color='white' fontWeight='$light'>remove</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </View>}
+                        {user&&!user.facebooklink&&<View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
                             <FontAwesome5 name="facebook" size={30} color="white"/>
                             <Text color='white' fontWeight='$light'>
                                 FACEBOOK
                             </Text>
-                            <TouchableHighlight onPress={()=>{}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
-                                <View borderWidth={1} borderColor='white' padding={5} borderRadius={10}>
-                                    <Text color='white' fontWeight='$light'>link</Text>
+                            <TouchableHighlight onPress={()=>{handlePressAsync()}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
+                                <View borderWidth={1} borderColor='white' paddingHorizontal={20} paddingVertical={10} borderRadius={10}>
+                                    <Text color='white' fontWeight='$light'>add</Text>
                                 </View>
                             </TouchableHighlight>
-                        </View>
+                        </View>}
                         
                     </Box>
             {/* </ScrollView> */}
