@@ -28,6 +28,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function EditSocials({navigation, route}) {
     let facebookLink;
+    let facebookimg;
     // const { user, setUser } = route.params;
     const [user, setUser] = useState();
 
@@ -66,9 +67,11 @@ export default function EditSocials({navigation, route}) {
             const userInfo = await userInfoResponse.json();
             console.log(userInfo)
             facebookLink = userInfo.link;
+            facebookimg = userInfo.picture.data.url;
             const data = {
                 userid: await AsyncStorage.getItem('id'),
                 facebooklink: facebookLink,
+                imageurl: facebookimg
             }
     
             try {

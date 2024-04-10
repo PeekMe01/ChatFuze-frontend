@@ -92,35 +92,69 @@ const Leaderboard = () => {
                      <View style={{flexDirection:'row',justifyContent:"center",gap:9,marginBottom:20}}>
                 
                             
-                <View style={{ justifyContent:'flex-end', alignItems: 'center', marginTop: 30 }} >
-                      <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>2</Text>
-                      <Image source={require('../../assets/img/rank2.png')} alt='' style={{ borderRadius: 40 }} />
-                      {topdata.length >= 2 ? (
-                                  <View style={{ alignItems: 'center' }}>
-                                      <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].username}</Text>
-                                      <Text color={topdata[1].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].rankpoints} pts</Text>
-                                  </View>
-                              ) : (
-                                  <View style={{ alignItems: 'center' }}>
-                                      <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
-                                  </View>
-                              )}
-                  </View>
+                     {  
+                    topdata.length >=2 ? (
+                        <View style={{ justifyContent:'flex-end', alignItems: 'center', marginTop: 30 }} >
+                        <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>2</Text>
+                        <Image source={topdata[1].imageurl?topdata[1].imageurl:require('../../assets/img/rank2.png')} alt='' style={{ borderRadius: 40 }} />
+                        {topdata.length >= 2 ? (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].username}</Text>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].rankpoints} pts</Text>
+                                </View>
+                            ) : (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
+                                </View>
+                            )}
+                    </View>
+                    ):
+                    <View style={{ justifyContent:'flex-end', alignItems: 'center', marginTop: 30 }} >
+                        <Text color={'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>2</Text>
+                        <Image source={require('../../assets/img/rank2.png')} alt='' style={{ borderRadius: 40 }} />
+                        {topdata.length >= 2 ? (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].username}</Text>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].rankpoints} pts</Text>
+                                </View>
+                            ) : (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
+                                </View>
+                            )}
+                    </View>             
+                        
+                    }
               
       
-         
+                
                   <View style={{ justifyContent:'flex-start', alignItems: 'center',marginTop: -25  }} >
                       <Text color='gold' size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>1</Text>
-                      <Image source={require('../../assets/img/rank1.jpeg')} alt='' style={{ borderRadius: 40 }} />
+                      <Image source={topdata[0].imageurl?topdata[0].imageurl:require('../../assets/img/rank1.jpeg')} alt='' style={{ borderRadius: 40 }} />
                       <View style={{ alignItems: 'center' }}>
                         <Text color={topdata[0].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[0].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[0].username}</Text>
                         <Text color={topdata[0].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[0].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[0].rankpoints} pts</Text>
                       </View>
                   </View>
               
-        
+                  {topdata.length >= 3 ?
                   <View style={{ alignSelf:'flex-end', alignItems: 'center', marginTop: 30 }} >
                       <Text color={topdata[2].idusers==user.idusers?'#512095':'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>3</Text>
+                      <Image source={topdata[2].imageurl?topdata[2].imageurl:require('../../assets/img/rank3.png')} alt='' style={{ borderRadius: 40 }} />
+                      {topdata.length >= 3 ? (
+                                  <View style={{ alignItems: 'center' }}>
+                                      <Text color={topdata[2].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[2].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[2].username}</Text>
+                                      <Text color={topdata[2].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[2].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[2].rankpoints} pts</Text>
+                                  </View>
+                              ) : (
+                                  <View style={{ alignItems: 'center' }}>
+                                      <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
+                                  </View>
+                              )}
+                    </View>
+                    :
+                    <View style={{ alignSelf:'flex-end', alignItems: 'center', marginTop: 30 }} >
+                      <Text color={'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>3</Text>
                       <Image source={require('../../assets/img/rank3.png')} alt='' style={{ borderRadius: 40 }} />
                       {topdata.length >= 3 ? (
                                   <View style={{ alignItems: 'center' }}>
@@ -133,6 +167,7 @@ const Leaderboard = () => {
                                   </View>
                               )}
                     </View>
+                }
               
       
                     </View>
@@ -181,35 +216,69 @@ const Leaderboard = () => {
                 
                            
                                   
-                 <View style={{ justifyContent:'flex-end', alignItems: 'center', marginTop: 30 }} >
-                      <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>2</Text>
-                      <Image source={require('../../assets/img/rank2.png')} alt='' style={{ borderRadius: 40 }} />
-                      {topdata.length >= 2 ? (
-                                  <View style={{ alignItems: 'center' }}>
-                                      <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].username}</Text>
-                                      <Text color={topdata[1].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].rankpoints} pts</Text>
-                                  </View>
-                              ) : (
-                                  <View style={{ alignItems: 'center' }}>
-                                      <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
-                                  </View>
-                              )}
-                  </View>
+                 {  
+                    topdata.length >=2 ? (
+                        <View style={{ justifyContent:'flex-end', alignItems: 'center', marginTop: 30 }} >
+                        <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>2</Text>
+                        <Image source={topdata[1].imageurl?topdata[1].imageurl:require('../../assets/img/rank2.png')} alt='' style={{ borderRadius: 40 }} />
+                        {topdata.length >= 2 ? (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].username}</Text>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].rankpoints} pts</Text>
+                                </View>
+                            ) : (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
+                                </View>
+                            )}
+                    </View>
+                    ):
+                    <View style={{ justifyContent:'flex-end', alignItems: 'center', marginTop: 30 }} >
+                        <Text color={'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>2</Text>
+                        <Image source={require('../../assets/img/rank2.png')} alt='' style={{ borderRadius: 40 }} />
+                        {topdata.length >= 2 ? (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].username}</Text>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].rankpoints} pts</Text>
+                                </View>
+                            ) : (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
+                                </View>
+                            )}
+                    </View>             
+                        
+                    }
               
       
-         
+                
                   <View style={{ justifyContent:'flex-start', alignItems: 'center',marginTop: -25  }} >
                       <Text color='gold' size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>1</Text>
-                      <Image source={require('../../assets/img/rank1.jpeg')} alt='' style={{ borderRadius: 40 }} />
+                      <Image source={topdata[0].imageurl?topdata[0].imageurl:require('../../assets/img/rank1.jpeg')} alt='' style={{ borderRadius: 40 }} />
                       <View style={{ alignItems: 'center' }}>
                         <Text color={topdata[0].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[0].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[0].username}</Text>
                         <Text color={topdata[0].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[0].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[0].rankpoints} pts</Text>
                       </View>
                   </View>
               
-        
+                  {topdata.length >= 3 ?
                   <View style={{ alignSelf:'flex-end', alignItems: 'center', marginTop: 30 }} >
                       <Text color={topdata[2].idusers==user.idusers?'#512095':'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>3</Text>
+                      <Image source={topdata[2].imageurl?topdata[2].imageurl:require('../../assets/img/rank3.png')} alt='' style={{ borderRadius: 40 }} />
+                      {topdata.length >= 3 ? (
+                                  <View style={{ alignItems: 'center' }}>
+                                      <Text color={topdata[2].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[2].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[2].username}</Text>
+                                      <Text color={topdata[2].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[2].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[2].rankpoints} pts</Text>
+                                  </View>
+                              ) : (
+                                  <View style={{ alignItems: 'center' }}>
+                                      <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
+                                  </View>
+                              )}
+                    </View>
+                    :
+                    <View style={{ alignSelf:'flex-end', alignItems: 'center', marginTop: 30 }} >
+                      <Text color={'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>3</Text>
                       <Image source={require('../../assets/img/rank3.png')} alt='' style={{ borderRadius: 40 }} />
                       {topdata.length >= 3 ? (
                                   <View style={{ alignItems: 'center' }}>
@@ -222,6 +291,7 @@ const Leaderboard = () => {
                                   </View>
                               )}
                     </View>
+                }
               
       
                 </View>
@@ -268,37 +338,69 @@ const Leaderboard = () => {
                     <View style={{ height: '78%' }}>
                     <View style={{flexDirection:'row',justifyContent:"center",gap:9,marginBottom:20}}>
                 
-                           
-                                  
+                    {  
+                    topdata.length >=2 ? (
+                        <View style={{ justifyContent:'flex-end', alignItems: 'center', marginTop: 30 }} >
+                        <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>2</Text>
+                        <Image source={topdata[1].imageurl?topdata[1].imageurl:require('../../assets/img/rank2.png')} alt='' style={{ borderRadius: 40 }} />
+                        {topdata.length >= 2 ? (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].username}</Text>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].rankpoints} pts</Text>
+                                </View>
+                            ) : (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
+                                </View>
+                            )}
+                    </View>
+                    ):
                     <View style={{ justifyContent:'flex-end', alignItems: 'center', marginTop: 30 }} >
-                      <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>2</Text>
-                      <Image source={require('../../assets/img/rank2.png')} alt='' style={{ borderRadius: 40 }} />
-                      {topdata.length >= 2 ? (
-                                  <View style={{ alignItems: 'center' }}>
-                                      <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].username}</Text>
-                                      <Text color={topdata[1].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].rankpoints} pts</Text>
-                                  </View>
-                              ) : (
-                                  <View style={{ alignItems: 'center' }}>
-                                      <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
-                                  </View>
-                              )}
-                  </View>
+                        <Text color={'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>2</Text>
+                        <Image source={require('../../assets/img/rank2.png')} alt='' style={{ borderRadius: 40 }} />
+                        {topdata.length >= 2 ? (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].username}</Text>
+                                    <Text color={topdata[1].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[1].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[1].rankpoints} pts</Text>
+                                </View>
+                            ) : (
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
+                                </View>
+                            )}
+                    </View>             
+                        
+                    }
               
       
-         
+                
                   <View style={{ justifyContent:'flex-start', alignItems: 'center',marginTop: -25  }} >
                       <Text color='gold' size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>1</Text>
-                      <Image source={require('../../assets/img/rank1.jpeg')} alt='' style={{ borderRadius: 40 }} />
+                      <Image source={topdata[0].imageurl?topdata[0].imageurl:require('../../assets/img/rank1.jpeg')} alt='' style={{ borderRadius: 40 }} />
                       <View style={{ alignItems: 'center' }}>
                         <Text color={topdata[0].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[0].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[0].username}</Text>
                         <Text color={topdata[0].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[0].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[0].rankpoints} pts</Text>
                       </View>
                   </View>
               
-        
+                  {topdata.length >= 3 ?
                   <View style={{ alignSelf:'flex-end', alignItems: 'center', marginTop: 30 }} >
                       <Text color={topdata[2].idusers==user.idusers?'#512095':'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>3</Text>
+                      <Image source={topdata[2].imageurl?topdata[2].imageurl:require('../../assets/img/rank3.png')} alt='' style={{ borderRadius: 40 }} />
+                      {topdata.length >= 3 ? (
+                                  <View style={{ alignItems: 'center' }}>
+                                      <Text color={topdata[2].idusers==user.idusers?'#512095':'white'} fontWeight={topdata[2].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[2].username}</Text>
+                                      <Text color={topdata[2].idusers==user.idusers?'#512095':'#2cd6d3'} fontWeight={topdata[2].idusers==user.idusers?'bold':'$light'} fontFamily='ArialRoundedMTBold'>{topdata[2].rankpoints} pts</Text>
+                                  </View>
+                              ) : (
+                                  <View style={{ alignItems: 'center' }}>
+                                      <Text style={{ color: 'red' }} fontWeight='$light' fontFamily='ArialRoundedMTBold'>Not Available</Text>
+                                  </View>
+                              )}
+                    </View>
+                    :
+                    <View style={{ alignSelf:'flex-end', alignItems: 'center', marginTop: 30 }} >
+                      <Text color={'white'} size='3xl' fontWeight='$light' fontFamily='ArialRoundedMTBold'>3</Text>
                       <Image source={require('../../assets/img/rank3.png')} alt='' style={{ borderRadius: 40 }} />
                       {topdata.length >= 3 ? (
                                   <View style={{ alignItems: 'center' }}>
@@ -311,6 +413,7 @@ const Leaderboard = () => {
                                   </View>
                               )}
                     </View>
+                }
                                 
                         
                     </View>
