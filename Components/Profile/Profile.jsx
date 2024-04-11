@@ -11,6 +11,7 @@ import { RefreshControl } from '@gluestack-ui/themed';
 import api from '../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Center } from '@gluestack-ui/themed';
+import { useIsFocused } from '@react-navigation/native';
 
 import beginnerRank from '../../assets/img/RankFrames/Beginner.png'
 import amateurRank from '../../assets/img/RankFrames/Amateur.png'
@@ -43,10 +44,10 @@ export default function Profile({navigation}) {
              console.log(error)
          }
      }
-     
+    const isFocused = useIsFocused();
     useEffect(() => {
         fetchData();
-    }, [!user]);
+    }, [!user||isFocused]);
 
 
     const onRefresh = React.useCallback(async () => {
