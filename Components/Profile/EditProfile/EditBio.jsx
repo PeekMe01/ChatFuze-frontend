@@ -64,7 +64,6 @@ export default function EditBio({navigation, route}) {
                 const response = await api.post(`/settings/updatebio`, data);
                 if(response){
                     setOldBio(currentBio)
-                    setUser(null)
                 toast.show({
                     duration: 5000,
                     placement: "top",

@@ -67,7 +67,6 @@ export default function ChangeUsername({navigation, route}) {
                 const response = await api.post(`/settings/updateusername`, data);
                 if(response){
                     setOldUsername(currentUsername);
-                    setUser(null)
                     toast.show({
                         duration: 5000,
                         placement: "top",

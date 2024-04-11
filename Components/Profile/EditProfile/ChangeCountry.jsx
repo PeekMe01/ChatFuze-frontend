@@ -74,7 +74,6 @@ export default function ChangeCountry({navigation, route}) {
                 if(response){
                     // setCurrentCountry('');
                     setOldCountry(currentCountry)
-                    setUser(null)
                 toast.show({
                     duration: 5000,
                     placement: "top",
