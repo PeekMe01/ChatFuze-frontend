@@ -14,7 +14,7 @@ import superstarRank from '../../assets/img/RankFrames/Superstar.png'
 import SocialMedia from '../Profile/SocialMedia';
 export default function ProfileMessages({navigation, route}) {
 
-    const { user,userid } = route.params;
+    const { user } = route.params;
     const [showAlertDialog, setShowAlertDialog] = useState(false)
     const [showAlertReport, setshowAlertReport] = useState(false)
     const [refreshing, setRefreshing] = React.useState(false);
@@ -72,8 +72,9 @@ export default function ProfileMessages({navigation, route}) {
     const removefriend =async()=>{
         try {
             setdisabledeletebutton(true)
+            const userId = await AsyncStorage.getItem('id');
             const response = await api.post(`/messages/removefriend`, {
-                usersid1: userid,
+                usersid1: userId,
                 usersid2: user.idusers
             });
             setTimeout(() => {
@@ -107,10 +108,11 @@ export default function ProfileMessages({navigation, route}) {
         try {
             if(reportCategory && message!==''){
                 setdisablebutton(true)
+                const userId = await AsyncStorage.getItem('id');
                 const response = await api.post(`/reports/submitreport`, {
                     categoryname: reportCategory,
                     message: message,
-                    reporterid:userid,
+                    reporterid:userId,
                     reportedid:user.idusers ,
                 });
                 setshowAlertReport(false)
