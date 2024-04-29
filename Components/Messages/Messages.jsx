@@ -42,11 +42,12 @@ const Messages = ({navigation }) => {
       
         return unsubscribe;
       }, [navigation]);
+      
     const renderItem = ({ item, index }) => {
           return (
             <TouchableOpacity key={index} style={{ flexDirection: 'row', alignItems:'flex-end', padding: 10,borderBottomWidth:1,borderColor:'white'}}
-            onPress={()=>{  navigation.push('Chat', { 
-            user: item,
+            onPress={async ()=>{  navigation.push('Chat', { 
+            receivingUser: item,
         });}}
              >
             {item.imageurl?<Text>profile image</Text>:<Image source={userimg} alt='' style={{ borderRadius: 40 }} />}

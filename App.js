@@ -1,11 +1,11 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
-import { GluestackUIProvider, View, Text } from '@gluestack-ui/themed';
+import { GluestackUIProvider, View, Text, KeyboardAvoidingView } from '@gluestack-ui/themed';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BubbleScene from './Components/Background/BubbleScene';
 import Login from './Components/Login/Login';
 import { config } from "@gluestack-ui/config"
-import { ImageBackground } from 'react-native'
+import { ImageBackground, Platform } from 'react-native'
 import SignUp from './Components/SignUp/SignUp';
 import { StatusBar } from 'react-native';
 import { useScroll } from '@react-three/drei';
@@ -118,9 +118,8 @@ export default function App() {
         <View style={{ flex: 1 }}>
             <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
                 <Stack.Screen name="MessagesStack" component={Messages} />
-                <Stack.Screen name="Chat" component={Chat}   />
-                  <Stack.Screen name="ProfileMessages" component={ProfileMessages} />
-               
+                <Stack.Screen name="Chat" component={Chat}/>
+                <Stack.Screen name="ProfileMessages" component={ProfileMessages} />
             </Stack.Navigator>
         </View>
     );
