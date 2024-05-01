@@ -108,7 +108,7 @@ const Messages = ({navigation }) => {
                 </Text>
             </ScrollView>
             
-              {friendsuser&&friendsuser.length>=1? <FlatList style={{height:550}}
+              {friendsuser&&friendsuser.length>=1? <FlatList style={{height:'75%'}}
                     data={friendsuser}
                     renderItem={renderItem}
                     showsVerticalScrollIndicator={false}
