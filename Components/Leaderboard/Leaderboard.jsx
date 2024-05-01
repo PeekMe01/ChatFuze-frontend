@@ -89,7 +89,7 @@ const Leaderboard = () => {
                 );
             }else
                 return (
-                    <View style={{ height: '78%' }}>
+                    <View style={{ height: '75%' }}>
                      <View style={{flexDirection:'row',justifyContent:"center",gap:9,marginBottom:20}}>
                 
                             
@@ -212,7 +212,7 @@ const Leaderboard = () => {
             );
         }
             return (
-                <View style={{ height: '78%' }}>
+                <View style={{ height: '75%' }}>
                  <View style={{flexDirection:'row',justifyContent:"center",gap:9,marginBottom:20}}>
                 
                            
@@ -336,7 +336,7 @@ const Leaderboard = () => {
                 );
             }
                 return (
-                    <View style={{ height: '78%' }}>
+                    <View style={{ height: '75%' }}>
                     <View style={{flexDirection:'row',justifyContent:"center",gap:9,marginBottom:20}}>
                 
                     {  
