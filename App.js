@@ -24,6 +24,7 @@ import Insights from './Components/Profile/EditSettings/Insights';
 import Language from './Components/Profile/EditSettings/Languague';
 import AboutUs from './Components/Profile/EditSettings/AboutUs';
 import Feedback from './Components/Profile/EditSettings/Feedback';
+import Verification from './Components/Profile/EditSettings/Verification';
 import ChangeUsername from './Components/Profile/EditProfile/ChangeUsername';
 import ChangeCountry from './Components/Profile/EditProfile/ChangeCountry';
 import EditBio from './Components/Profile/EditProfile/EditBio';
@@ -176,6 +177,7 @@ export default function App() {
               <Stack.Screen name="Language" component={Language}/>
               <Stack.Screen name="AboutUs" component={AboutUs}/>
               <Stack.Screen name="Feedback" component={Feedback}/>
+              <Stack.Screen name="Verification" component={Verification}/>
               <Stack.Screen name="ChangeUsername" component={ChangeUsername}/>
               <Stack.Screen name="ChangeCountry" component={ChangeCountry}/>
               <Stack.Screen name="EditBio" component={EditBio}/>

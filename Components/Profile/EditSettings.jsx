@@ -75,6 +75,14 @@ export default function EditSettings({ navigation,route }) {
         }, 1000);
     }
 
+    const handleVerificationPage = () => {
+        navigation.push('Verification');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
     const handleLogoutPressed = () => {
         setClickedButton(true);
         setShowAlertDialog(true)
@@ -202,6 +210,15 @@ export default function EditSettings({ navigation,route }) {
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Feedback
+                            </Text>
+                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                        </View>
+                    </TouchableHighlight>
+                    <Divider/>
+                    <TouchableHighlight onPress={()=>{handleVerificationPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
+                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                                Verification
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
                         </View>
