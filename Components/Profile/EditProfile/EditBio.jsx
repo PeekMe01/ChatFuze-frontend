@@ -1,11 +1,11 @@
-import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Textarea, TextareaInput } from '@gluestack-ui/themed';
+import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Textarea, TextareaInput, Icon, CloseIcon } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { ScrollView, TouchableHighlight } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Pressable, ScrollView, TouchableHighlight } from 'react-native';
 import { Box } from '@gluestack-ui/themed';
 import { Input } from '@gluestack-ui/themed';
 import { InputField } from '@gluestack-ui/themed';
@@ -15,11 +15,33 @@ import { VStack } from '@gluestack-ui/themed';
 import api from '../../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function EditBio({navigation, route}) {
 
     const toast = useToast()
-    const { user, setUser } = route.params;
+    
+    const [user, setUser] = useState(null);
+
+    async function fetchData(){
+        try {
+             const data = await AsyncStorage.getItem('id')
+             const response = await api.get(`/settings/getinsight/${data}`);
+             // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
+             console.log("hellloooooooooo" + response.data)
+             setUser(response.data.user);
+             setOldBio(response.data.user.bio);
+             setCurrentBio(response.data.user.bio);
+             console.log(response.data.user)
+         } catch (error) {
+             console.log(error)
+         }
+     }
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        fetchData();
+    }, [!user||isFocused]);
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false);
@@ -28,8 +50,8 @@ export default function EditBio({navigation, route}) {
     const [attemptingChangeBio, setAttemptingChangeBio] = useState(false);
 
 
-    const [oldBio, setOldBio] = useState(user.bio);
-    const [currentBio, setCurrentBio] = useState(user.bio);
+    const [oldBio, setOldBio] = useState();
+    const [currentBio, setCurrentBio] = useState();
     const [invalidCurrentBio, setInvalidCurrentBio] = useState(false);
     const [invalidCurrentBioErrorMessage, setInvalidCurrentBioErrorMessage] = useState("Error Message Current Password");
 
@@ -64,23 +86,26 @@ export default function EditBio({navigation, route}) {
                 const response = await api.post(`/settings/updatebio`, data);
                 if(response){
                     setOldBio(currentBio)
-                toast.show({
-                    duration: 5000,
-                    placement: "top",
-                    render: ({ id }) => {
-                        const toastId = "toast-" + id
-                        return (
-                        <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
-                            <VStack space="xs">
-                            <ToastTitle>Success</ToastTitle>
-                            <ToastDescription>
-                                You have succesfully updated your bio!
-                            </ToastDescription>
-                            </VStack>
-                        </Toast>
-                        )
-                    },
-                    })
+                    toast.show({
+                        duration: 5000,
+                        placement: "top",
+                        render: ({ id }) => {
+                            const toastId = "toast-" + id
+                            return (
+                            <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+                                <VStack space="xs">
+                                <ToastTitle>Success</ToastTitle>
+                                <ToastDescription>
+                                    You have succesfully updated your bio!
+                                </ToastDescription>
+                                </VStack>
+                                <Pressable mt="$1" onPress={() => toast.close(id)}>
+                                    <Icon as={CloseIcon} color="$black" />
+                                </Pressable>
+                            </Toast>
+                            )
+                        },
+                        })
                     
                 }
                 setAttemptingChangeBio(false);
@@ -100,6 +125,9 @@ export default function EditBio({navigation, route}) {
                             {errorMsg}
                         </ToastDescription>
                         </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
                     </Toast>
                     )
                 },
@@ -127,7 +155,7 @@ export default function EditBio({navigation, route}) {
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
-    if (!fontsLoaded) {
+    if (!fontsLoaded||!user) {
         return (
             <ImageBackground
                 source={require('../../../assets/img/HomePage1.png')}
@@ -152,7 +180,7 @@ export default function EditBio({navigation, route}) {
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={30} color="white"/>
                     </TouchableHighlight>
                     <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                         Edit Bio

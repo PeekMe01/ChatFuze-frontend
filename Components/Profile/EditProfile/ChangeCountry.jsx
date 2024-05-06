@@ -1,10 +1,10 @@
-import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, SelectTrigger, SelectPortal, SelectBackdrop, SelectDragIndicator, SelectItem, ChevronDownIcon } from '@gluestack-ui/themed';
+import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, SelectTrigger, SelectPortal, SelectBackdrop, SelectDragIndicator, SelectItem, ChevronDownIcon, Pressable } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView, TouchableHighlight } from 'react-native';
 import { Box } from '@gluestack-ui/themed';
 import { Input } from '@gluestack-ui/themed';
@@ -20,12 +20,34 @@ import { SelectDragIndicatorWrapper } from '@gluestack-ui/themed';
 import api from '../../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Icon } from '@gluestack-ui/themed';
+import { CloseIcon } from '@gluestack-ui/themed';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function ChangeCountry({navigation, route}) {
 
     const toast = useToast()
 
-    const { user, setUser } = route.params;
+    const [user, setUser] = useState(null);
+
+    async function fetchData(){
+        try {
+             const data = await AsyncStorage.getItem('id')
+             const response = await api.get(`/settings/getinsight/${data}`);
+             // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
+             setUser(response.data.user);
+             setOldCountry(response.data.user.country);
+             setCurrentCountry(response.data.user.country);
+             console.log(response.data.user)
+         } catch (error) {
+             console.log(error)
+         }
+     }
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        fetchData();
+    }, [!user||isFocused]);
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false);
@@ -34,8 +56,8 @@ export default function ChangeCountry({navigation, route}) {
     const [attemptingChangeCountry, setAttemptingChangeCountry] = useState(false);
 
 
-    const [oldCountry, setOldCountry] = useState(user.country);
-    const [currentCountry, setCurrentCountry] = useState(user.country);
+    const [oldCountry, setOldCountry] = useState();
+    const [currentCountry, setCurrentCountry] = useState();
     const [invalidCurrentCountry, setInvalidCurrentCountry] = useState(false);
     const [invalidCurrentCountryErrorMessage, setInvalidCurrentCountryErrorMessage] = useState("Error Message Current Password");
 
@@ -87,6 +109,9 @@ export default function ChangeCountry({navigation, route}) {
                                 You have succesfully changed your country!
                             </ToastDescription>
                             </VStack>
+                            <Pressable mt="$1" onPress={() => toast.close(id)}>
+                                <Icon as={CloseIcon} color="$black" />
+                            </Pressable>
                         </Toast>
                         )
                     },
@@ -110,6 +135,9 @@ export default function ChangeCountry({navigation, route}) {
                             {errorMsg}
                         </ToastDescription>
                         </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
                     </Toast>
                     )
                 },
@@ -137,7 +165,7 @@ export default function ChangeCountry({navigation, route}) {
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
-    if (!fontsLoaded) {
+    if (!fontsLoaded||!user) {
         return (
             <ImageBackground
                 source={require('../../../assets/img/HomePage1.png')}
@@ -161,7 +189,7 @@ export default function ChangeCountry({navigation, route}) {
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={30} color="white"/>
                     </TouchableHighlight>
                     <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                         Change Country
@@ -209,7 +237,7 @@ export default function ChangeCountry({navigation, route}) {
                             <SelectTrigger size="md" borderColor='rgba(255,255,255,0)'>
                                 <SelectInput placeholderTextColor={'rgba(255,255,255,0.5)'} placeholder="Select Country" style={{ color: 'white' }}/>
                                 <SelectIcon mr="$3">
-                                    <Icon as={ChevronDownIcon} style={{color: 'white'}}/>
+                                    <MaterialIcons as={ChevronDownIcon} style={{color: 'white'}}/>
                                 </SelectIcon>
                             </SelectTrigger>
                             <SelectPortal>

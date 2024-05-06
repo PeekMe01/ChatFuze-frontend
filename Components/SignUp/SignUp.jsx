@@ -1,4 +1,4 @@
-import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, Image, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, View } from '@gluestack-ui/themed';
+import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, Icon, Image, ImageBackground, Input, InputField, InputIcon, InputSlot, Pressable, Text, ToastDescription, ToastTitle, View } from '@gluestack-ui/themed';
 import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { useFonts } from 'expo-font';
 import { AppLoading } from 'expo';
@@ -20,12 +20,13 @@ import { useToast, Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
 import api from '../Config'
 import axios from 'axios'
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import mime from "mime";
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 
 import debounce from 'lodash.debounce';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CloseIcon } from '@gluestack-ui/themed';
 
 const Stack = createStackNavigator();
 
@@ -280,7 +281,7 @@ export default function Login(props) {
         const formData = new FormData();
 
         formData.append('image', {
-          name: `${username}_${email}.jpg`,
+          name: `${username}_${email.toLowerCase()}.jpg`,
           uri: image.uri,
           type: 'image/jpg'
         })
@@ -325,6 +326,9 @@ export default function Login(props) {
                         Your account has been succesfully created!
                     </ToastDescription>
                     </VStack>
+                    <Pressable mt="$1" onPress={() => toast.close(id)}>
+                      <Icon as={CloseIcon} color="$black" />
+                    </Pressable>
                 </Toast>
                 )
             },
@@ -355,6 +359,9 @@ export default function Login(props) {
                         There was an error creating your account.
                     </ToastDescription>
                     </VStack>
+                    <Pressable mt="$1" onPress={() => toast.close(id)}>
+                      <Icon as={CloseIcon} color="$black" />
+                    </Pressable>
                 </Toast>
                 )
             },
@@ -407,25 +414,25 @@ export default function Login(props) {
           ref={cameraRef}
           ratio='16:9'
         />}
-        {!image&&<Icon name='center-focus-weak' size={350} color="#ffffff50" style={{position: 'absolute'}}/>}
+        {!image&&<MaterialIcons name='center-focus-weak' size={350} color="#ffffff50" style={{position: 'absolute'}}/>}
         {image&&<Image source={{ uri : image.uri}} alt='photo_id' style={styles.container}/>}
         <View style={{ backgroundColor: 'black', position: 'absolute', bottom: 0, width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', padding: 10, flexDirection: 'row' }}>
           {!image&&
           <TouchableHighlight onPress={()=>{snap()}} underlayColor={'#51209550'} style={{ borderRadius: 100 }}>
             <View justifyContent='center' alignItems='center' backgroundColor='#51209560' style={{ borderRadius: 100 }}>
-              <Icon name="camera-alt" size={50} color="white" style={{padding: 10}}/>
+              <MaterialIcons name="camera-alt" size={50} color="white" style={{padding: 10}}/>
             </View>
           </TouchableHighlight>}
           {image&&
           <>
             <TouchableHighlight onPress={()=>{setImage(null)}} underlayColor={'#51209550'} style={{ borderRadius: 100 }}>
               <View justifyContent='center' alignItems='center' backgroundColor='#51209560' style={{ borderRadius: 100 }}>
-                <Icon name="refresh" size={50} color="white" style={{padding: 10}}/>
+                <MaterialIcons name="refresh" size={50} color="white" style={{padding: 10}}/>
               </View>
             </TouchableHighlight>
             <TouchableHighlight onPress={()=>{saveImage()}} underlayColor={'#51209550'} style={{ borderRadius: 100 }}>
             <View justifyContent='center' alignItems='center' backgroundColor='#51209560' style={{ borderRadius: 100 }}>
-              <Icon name="navigate-next" size={50} color="white" style={{padding: 10}}/>
+              <MaterialIcons name="navigate-next" size={50} color="white" style={{padding: 10}}/>
             </View>
             </TouchableHighlight>
           </>

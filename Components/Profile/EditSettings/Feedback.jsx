@@ -1,10 +1,10 @@
-import { AddIcon, AlertCircleIcon, Button, ButtonText, Divider, FormControlError, FormControlErrorIcon, HStack, Image, ImageBackground, Spinner, Text, TextareaInput, Toast, ToastDescription, ToastTitle, VStack, useToast } from '@gluestack-ui/themed';
+import { AddIcon, AlertCircleIcon, Button, ButtonText, CloseIcon, Divider, FormControlError, FormControlErrorIcon, HStack, Icon, Image, ImageBackground, Pressable, Spinner, Text, TextareaInput, Toast, ToastDescription, ToastTitle, VStack, useToast } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
 import React from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView, TouchableHighlight } from 'react-native';
 import { Textarea } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -63,6 +63,9 @@ export default function Feedback({navigation}) {
                                 Your voice has been heard!
                             </ToastDescription>
                             </VStack>
+                            <Pressable mt="$1" onPress={() => toast.close(id)}>
+                                <Icon as={CloseIcon} color="$black" />
+                            </Pressable>
                         </Toast>
                         )
                     },
@@ -87,6 +90,9 @@ export default function Feedback({navigation}) {
                             {errorMsg}
                         </ToastDescription>
                         </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
                     </Toast>
                     )
                 },
@@ -132,7 +138,7 @@ export default function Feedback({navigation}) {
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={30} color="white"/>
                     </TouchableHighlight>
                     <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                         Feedback

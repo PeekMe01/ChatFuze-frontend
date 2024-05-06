@@ -1,7 +1,8 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
 import { GluestackUIProvider, View, Text, KeyboardAvoidingView } from '@gluestack-ui/themed';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Octicons from 'react-native-vector-icons/Octicons';
 import BubbleScene from './Components/Background/BubbleScene';
 import Login from './Components/Login/Login';
 import { config } from "@gluestack-ui/config"
@@ -72,6 +73,7 @@ export default function App() {
   function HomeScreen() {
     return (
       <View style={{ flex: 1}}>
+        <StatusBar translucent backgroundColor="transparent"/>
         <ImageBackground
             source={require('./assets/img/HomePage1.png')}
             style={{ flex:1 ,resizeMode: 'cover', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
@@ -166,9 +168,12 @@ export default function App() {
 
     return (
       <View style={{ flex: 1}}>
+        {/* initialParams={{ setLoggedIn: setLoggedIn, setLoginPage: setLoginPage, setSignupPage: setSignupPage }} */}
             <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal'}} initialRouteName='ProfileMain'>
               <Stack.Screen name="ProfileMain" component={Profile} />
-              <Stack.Screen name="EditSettings" component={EditSettings} initialParams={{ setLoggedIn: setLoggedIn, setLoginPage: setLoginPage, setSignupPage: setSignupPage }}/>
+              <Stack.Screen name="EditSettings">
+                { ({ navigation }) => <EditSettings navigation={navigation} setLoggedIn={setLoggedIn} setLoginPage={setLoginPage} setSignupPage={setSignupPage}/>}
+              </Stack.Screen>
               <Stack.Screen name="EditProfile" component={EditProfile}/>
               <Stack.Screen name="FriendsList" component={FriendsList}/>
               <Stack.Screen name="ProfileVisit" component={ProfileVisit}/>
@@ -192,7 +197,7 @@ export default function App() {
     
     <GluestackUIProvider config={config}>
       {/* <SafeAreaProvider> */}
-      <StatusBar backgroundColor="transparent" hidden/>
+      <StatusBar backgroundColor="transparent" translucent hidden/>
       <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
       <View flex={1}>
         <ImageBackground
@@ -238,12 +243,13 @@ export default function App() {
         <Tab.Navigator screenOptions={{ headerShown: false}}>
           <Tab.Screen 
             name="Home" 
-            component={HomeScreen} 
+            component={HomeScreen}
             options={{ 
               tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
               // tabBarIcon: () => <Icon name="home" size={24} color="#2cd6d3" />,
-              tabBarIcon: () => <Icon name="home" size={24} color="white" />,
-              tabBarActiveTintColor: "white"
+              tabBarIcon: () => <MaterialIcons name="home" size={30} color="white" />,
+              tabBarActiveTintColor: "white",
+              title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>
             }} />
           <Tab.Screen 
             name="Messages" 
@@ -251,24 +257,27 @@ export default function App() {
             options={{
               tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' }, 
               // tabBarIcon: () => <Icon name="inbox" size={24} color="#2cd6d3" />,
-              tabBarIcon: () => <Icon name="inbox" size={24} color="white" />,
-              tabBarActiveTintColor: "white"
+              tabBarIcon: () => <MaterialIcons name="inbox" size={30} color="white" />,
+              tabBarActiveTintColor: "white",
+              title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>
             }} />
           <Tab.Screen 
           name="Leaderboard" 
           component={LeaderboardScreen} 
           options={{ 
             tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-            tabBarIcon: () => <Icon name="leaderboard" size={24} color="white" />,
-            tabBarActiveTintColor: "white"
+            tabBarIcon: () => <MaterialIcons name="leaderboard" size={30} color="white" />,
+            tabBarActiveTintColor: "white",
+            title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>
           }} />
           <Tab.Screen 
             name="Profile" 
             component={ProfileScreen} 
             options={{ 
               tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-              tabBarIcon: () => <Icon name="person" size={24} color="white" />,
-              tabBarActiveTintColor: "white"
+              tabBarIcon: () => <MaterialIcons name="person" size={30} color="white" />,
+              tabBarActiveTintColor: "white",
+              title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>
              }}
           />
         </Tab.Navigator>

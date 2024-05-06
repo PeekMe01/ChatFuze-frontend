@@ -12,8 +12,9 @@ import { AlertDialogHeader } from '@gluestack-ui/themed';
 import { AlertDialogCloseButton } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function EditSettings({ navigation,route }) {
-    const { setLoggedIn, setLoginPage, setSignupPage } = route.params;
+export default function EditSettings({ navigation, setLoggedIn, setLoginPage, setSignupPage }) {
+    // console.log(props)
+    // const { setLoggedIn, setLoginPage, setSignupPage } = props;
 
     const [clickedButton, setClickedButton] = useState(false);
     const [changePage, setChangePage] = useState(0);

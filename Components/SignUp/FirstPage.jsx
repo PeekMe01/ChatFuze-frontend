@@ -68,6 +68,7 @@ export default function FirstPage(props) {
                   type="text"
                   placeholder="Username"
                   fontSize={'$xl'}
+                  autoCapitalize='none'
                   color='white'
                   placeholderTextColor={'rgba(255,255,255,0.5)'}
                   value={username}
@@ -106,6 +107,7 @@ export default function FirstPage(props) {
                   type="email"
                   placeholder="Email"
                   fontSize={'$xl'}
+                  autoCapitalize='none'
                   color='white'
                   placeholderTextColor={'rgba(255,255,255,0.5)'}
                   value={email}
@@ -144,6 +146,7 @@ export default function FirstPage(props) {
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   fontSize={'$xl'}
+                  autoCapitalize='none'
                   color='white'
                   placeholderTextColor={'rgba(255,255,255,0.5)'}
                   value={password}

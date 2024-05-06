@@ -1,10 +1,10 @@
-import { AddIcon, AlertCircleIcon, Button, ButtonText, Divider, FormControlError, FormControlErrorIcon, HStack, Image, ImageBackground, Spinner, Text, TextareaInput, Toast, ToastDescription, ToastTitle, VStack, useToast } from '@gluestack-ui/themed';
+import { AddIcon, AlertCircleIcon, Button, ButtonText, Divider, FormControlError, FormControlErrorIcon, HStack, Icon, Image, ImageBackground, Pressable, Spinner, Text, TextareaInput, Toast, ToastDescription, ToastTitle, VStack, useToast } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
 import React, { useEffect, useRef } from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native';
 import { Textarea } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,6 +16,7 @@ import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { StyleSheet, TouchableHighlight } from 'react-native';
 import axios from 'axios';
+import { CloseIcon } from '@gluestack-ui/themed';
 
 export default function Verification({navigation}) {
 
@@ -58,6 +59,9 @@ export default function Verification({navigation}) {
                             There was an error checking for your verification status
                         </ToastDescription>
                         </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
                     </Toast>
                     )
                 },
@@ -222,6 +226,26 @@ export default function Verification({navigation}) {
             setClickedButton(false);
             setUserHasAnIdVerificationRequest(true);
             setImage(null);
+            toast.show({
+                duration: 5000,
+                placement: "top",
+                render: ({ id }) => {
+                    const toastId = "toast-" + id
+                    return (
+                    <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+                        <VStack space="xs">
+                        <ToastTitle>Success</ToastTitle>
+                        <ToastDescription>
+                            Your ID has been submit for review.
+                        </ToastDescription>
+                        </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
+                    </Toast>
+                    )
+                },
+            })
           }
         } catch (error) {
             console.log(error)
@@ -239,6 +263,9 @@ export default function Verification({navigation}) {
                             There was an error uploading your ID.
                         </ToastDescription>
                         </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
                     </Toast>
                     )
                 },
@@ -256,25 +283,25 @@ export default function Verification({navigation}) {
                 ref={cameraRef}
                 ratio='16:9'
               />}
-              {!image&&<Icon name='center-focus-weak' size={350} color="#ffffff50" style={{position: 'absolute'}}/>}
+              {!image&&<MaterialIcons name='center-focus-weak' size={350} color="#ffffff50" style={{position: 'absolute'}}/>}
               {image&&<Image source={{ uri : image.uri}} alt='photo_id' style={styles.container}/>}
               <View style={{ backgroundColor: 'black', position: 'absolute', bottom: 0, width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', padding: 10, flexDirection: 'row' }}>
                 {!image&&
                 <TouchableHighlight onPress={()=>{snap()}} underlayColor={'#51209550'} style={{ borderRadius: 100 }}>
                   <View justifyContent='center' alignItems='center' backgroundColor='#51209560' style={{ borderRadius: 100 }}>
-                    <Icon name="camera-alt" size={50} color="white" style={{padding: 10}}/>
+                    <MaterialIcons name="camera-alt" size={50} color="white" style={{padding: 10}}/>
                   </View>
                 </TouchableHighlight>}
                 {image&&
                 <>
                   <TouchableHighlight onPress={()=>{setImage(null)}} underlayColor={'#51209550'} style={{ borderRadius: 100 }}>
                     <View justifyContent='center' alignItems='center' backgroundColor='#51209560' style={{ borderRadius: 100 }}>
-                      <Icon name="refresh" size={50} color="white" style={{padding: 10}}/>
+                      <MaterialIcons name="refresh" size={50} color="white" style={{padding: 10}}/>
                     </View>
                   </TouchableHighlight>
                   <TouchableHighlight onPress={()=>{saveImage()}} underlayColor={'#51209550'} style={{ borderRadius: 100 }}>
                   <View justifyContent='center' alignItems='center' backgroundColor='#51209560' style={{ borderRadius: 100 }}>
-                    <Icon name="navigate-next" size={50} color="white" style={{padding: 10}}/>
+                    <MaterialIcons name="navigate-next" size={50} color="white" style={{padding: 10}}/>
                   </View>
                   </TouchableHighlight>
                 </>
@@ -294,7 +321,7 @@ export default function Verification({navigation}) {
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={30} color="white"/>
                     </TouchableHighlight>
                     <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                         Verification
