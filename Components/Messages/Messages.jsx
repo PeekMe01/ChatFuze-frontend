@@ -73,9 +73,11 @@ const Messages = ({navigation }) => {
                 source={require('../../assets/img/HomePage1.png')}
                 style={{ flex:1 ,resizeMode: 'cover'}}
             >
+                  <Center h={'$full'}>
                     <HStack space="sm">
                         <Text>LOADING...</Text><Spinner size="large" color="#321bb9" />
                     </HStack>
+                </Center>
             </ImageBackground>
         ) 
     }

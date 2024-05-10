@@ -197,7 +197,7 @@ export default function App() {
     
     <GluestackUIProvider config={config}>
       {/* <SafeAreaProvider> */}
-      <StatusBar backgroundColor="transparent" translucent hidden/>
+      <StatusBar translucent backgroundColor="transparent"/>
       <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
       <View flex={1}>
         <ImageBackground
