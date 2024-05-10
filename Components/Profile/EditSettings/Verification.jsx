@@ -210,7 +210,7 @@ export default function Verification({navigation}) {
         formData.append('userid', userid);
 
         try {
-            const response = await axios.post('http://192.168.0.102:3001/Accounts/applyForIDVerification', formData ,{
+            const response = await axios.post('http://172.16.189.161:3001/Accounts/applyForIDVerification', formData ,{
             headers:{
               'x-expo-app': 'chatfuze-frontend',
               Accept: 'application/json',

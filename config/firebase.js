@@ -12,7 +12,7 @@ const firebaseConfig = {
     messagingSenderId: Constants.manifest2.extra.expoClient.extra.messagingSenderId,
     appId: Constants.manifest2.extra.expoClient.extra.appId,
     measurementId: Constants.manifest2.extra.expoClient.extra.measurementId,
-    //databaseURL: Constants.manifest2.extra.expoClient.extra.databaseURL
+   // databaseURL: Constants.manifest2.extra.expoClient.extra.databaseURL
 };
 
 console.log(firebaseConfig);
