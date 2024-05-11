@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import BubbleScene from './Components/Background/BubbleScene';
 import Login from './Components/Login/Login';
 import { config } from "@gluestack-ui/config"
-import { ImageBackground, Platform } from 'react-native'
+import {AppState, ImageBackground, Platform } from 'react-native'
 import SignUp from './Components/SignUp/SignUp';
 import { StatusBar } from 'react-native';
 import { useScroll } from '@react-three/drei';
@@ -37,34 +37,88 @@ import BottomTabBar from '@react-navigation/bottom-tabs';
 import Messages from './Components/Messages/Messages';
 import Chat from './Components/Messages/Chat';
 import ProfileMessages from './Components/Messages/ProfileMessages';
-
+import api from './Components/Config'
+import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
 export default function App() {
+ 
+  useEffect(() => {
+    const initializePusher = async () => {
+      const pusher = Pusher.getInstance();
+      try {
+        await pusher.init({
+          apiKey: "f55dcf58564041046663",
+          cluster: "ap2",
+        });
+        const channel = pusher.subscribe('my-channel');
+        channel.bind('my-event', (data: PusherEvent) => {
+          console.log('Event received:', data);
+        });
+        await pusher.connect();
+      } catch (error) {
+        console.error('Error occurred while initializing Pusher:', error);
+      }
+    };
+
+    initializePusher();
+
+    return () => {
+      // Cleanup logic if needed
+    };
+  }, []);
 
   const [loginPage, setLoginPage] = useState(true);
   const [signupPage, setSignupPage] = useState(false);
   const [welcomePage, setWelcomePage] = useState(true);
   const [loggedIn, setLoggedIn] = useState(true);
-
+  const [userOnline, setUserOnline] = useState(false);
   useEffect(() => {
-
     checkLoginStatus();
+    
+    AppState.addEventListener('change', handleAppStateChange);
+    return () => {
+      // Clean up listener when component unmounts
+      AppState.removeEventListener('change', handleAppStateChange);
+    };
   }, []);
 
   const checkLoginStatus = async () => {
     try {
       const userToken = await AsyncStorage.getItem('userToken');
-      // const id = await AsyncStorage.getItem('id');
       if (userToken) {
-        // setid(id)
         setLoggedIn(true);
       } else {
         setLoggedIn(false);
       }
     } catch (error) {
       console.error('Error checking login status:', error);
+    }
+  };
+
+  const handleAppStateChange =async (nextAppState) => {
+    const userToken = await AsyncStorage.getItem('userToken');
+    let userId=await AsyncStorage.getItem('id');
+    if(userToken){
+      let active;
+      if (nextAppState === 'active') {
+        active=true
+        setUserOnline(true); 
+        try {
+         
+          const response = await api.put(`/settings/updateStatus/${userId}/${active}`);
+        } catch (error) {
+          console.error('Error occurred while updating user status:', error);
+        }
+      } else {
+        active=false
+        setUserOnline(false); 
+       try {
+        const response = await api.put(`/settings/updateStatus/${userId}/${active}`);
+      } catch (error) {
+        console.error('Error occurred while updating user status:', error);
+      }
+      }
     }
   };
 
