@@ -43,30 +43,6 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 export default function App() {
  
-  useEffect(() => {
-    const initializePusher = async () => {
-      const pusher = Pusher.getInstance();
-      try {
-        await pusher.init({
-          apiKey: "f55dcf58564041046663",
-          cluster: "ap2",
-        });
-        const channel = pusher.subscribe('my-channel');
-        channel.bind('my-event', (data: PusherEvent) => {
-          console.log('Event received:', data);
-        });
-        await pusher.connect();
-      } catch (error) {
-        console.error('Error occurred while initializing Pusher:', error);
-      }
-    };
-
-    initializePusher();
-
-    return () => {
-      // Cleanup logic if needed
-    };
-  }, []);
 
   const [loginPage, setLoginPage] = useState(true);
   const [signupPage, setSignupPage] = useState(false);
