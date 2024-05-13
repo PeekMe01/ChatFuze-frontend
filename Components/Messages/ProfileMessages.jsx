@@ -12,6 +12,7 @@ import masterRank from '../../assets/img/RankFrames/Master.png'
 import champRank from '../../assets/img/RankFrames/Champ.png'
 import superstarRank from '../../assets/img/RankFrames/Superstar.png'
 import SocialMedia from '../Profile/SocialMedia';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function ProfileMessages({navigation, route}) {
 
     const { user } = route.params;
