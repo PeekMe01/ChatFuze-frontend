@@ -1,4 +1,4 @@
-import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, ToastDescription, ToastTitle, VStack, View } from '@gluestack-ui/themed';
+import { AlertCircleIcon, Box, Button, ButtonText, Center, CloseIcon, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, Icon, ImageBackground, Input, InputField, InputIcon, InputSlot, Pressable, Text, ToastDescription, ToastTitle, VStack, View } from '@gluestack-ui/themed';
 import React, { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
 import { Image } from 'react-native';
@@ -105,6 +105,9 @@ export default function Login(props) {
                         There was an error send the reset email password!
                     </ToastDescription>
                     </VStack>
+                    <Pressable mt="$1" onPress={() => toast.close(id)}>
+                      <Icon as={CloseIcon} color="$black" />
+                    </Pressable>
                 </Toast>
                 )
             },
@@ -176,6 +179,9 @@ export default function Login(props) {
                         You have succesfully logged in to your account
                     </ToastDescription>
                     </VStack>
+                    <Pressable mt="$1" onPress={() => toast.close(id)}>
+                      <Icon as={CloseIcon} color="$black" />
+                    </Pressable>
                 </Toast>
                 )
             },
@@ -222,6 +228,9 @@ export default function Login(props) {
                         Email or password are incorrect
                     </ToastDescription>
                     </VStack>
+                    <Pressable mt="$1" onPress={() => toast.close(id)}>
+                      <Icon as={CloseIcon} color="$black" />
+                    </Pressable>
                 </Toast>
                 )
             },
@@ -266,6 +275,7 @@ export default function Login(props) {
                         type="email"
                         placeholder="Email"
                         fontSize={'$xl'}
+                        autoCapitalize='none'
                         color='white'
                         placeholderTextColor={'rgba(255,255,255,0.5)'}
                         value={email}
@@ -439,6 +449,7 @@ export default function Login(props) {
                       type="email"
                       placeholder="Email"
                       fontSize={'$xl'}
+                      autoCapitalize='none'
                       color='white'
                       placeholderTextColor={'rgba(255,255,255,0.5)'}
                       value={email}
@@ -476,6 +487,7 @@ export default function Login(props) {
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       fontSize={'$xl'}
+                      autoCapitalize='none'
                       color='white'
                       placeholderTextColor={'rgba(255,255,255,0.5)'}
                       value={password}

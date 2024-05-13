@@ -1,5 +1,5 @@
 import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, View, Select, SelectTrigger, ChevronDownIcon, SelectContent, SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, RadioGroup, HStack, RadioIndicator, RadioIcon, RadioLabel } from '@gluestack-ui/themed';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import * as Progress from 'react-native-progress';
 import * as Animatable from 'react-native-animatable';
 import { SelectInput } from '@gluestack-ui/themed';
@@ -8,12 +8,38 @@ import { Icon } from '@gluestack-ui/themed';
 import { SelectItem } from '@gluestack-ui/themed';
 import { SelectDragIndicator } from '@gluestack-ui/themed';
 import DateTimePicker from '@react-native-community/datetimepicker'
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { Radio } from '@gluestack-ui/themed';
 import { CircleIcon } from '@gluestack-ui/themed';
-
+import SelectDropdown from 'react-native-select-dropdown'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import emojiFlags from 'emoji-flags';
 
 export default function SecondPage(props) {
+
+  const [countriesWithEmojis, setCountriesWithEmojis] = useState([]);
+
+    useEffect(() => {
+        // Get all country codes
+        const countryCodes = Object.keys(emojiFlags.data);
+    
+        // Map country codes to country names and emojis
+        const countries = countryCodes.map(countryCode => {
+          const countryData = emojiFlags.data[countryCode];
+          return {
+            country: countryData.name,
+            emoji: countryData.emoji
+          };
+        });
+
+        const sortedCountries = countries.sort((a, b) => a.country.localeCompare(b.country));
+    
+        setCountriesWithEmojis(sortedCountries);
+      }, []);
+
+      const dropdownData = useMemo(() => {
+        return countriesWithEmojis.map(({ country, emoji }) => ({ country, emoji }));
+      }, [countriesWithEmojis]);
 
   const [show, setShow] = useState(false)
   
@@ -56,6 +82,56 @@ export default function SecondPage(props) {
     invalidCountry,
     setInvalidCountry,
   } = props;
+
+  const styles = StyleSheet.create({
+    dropdownButtonStyle: {
+      width: '100%',
+      height: 50,
+      backgroundColor: 'rgba(255,255,255,0.2)',
+      borderRadius: 5,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 12,
+      borderWidth: 2,
+      borderColor:invalidCountry?'#512095':'white'
+    },
+    dropdownButtonTxtStyle: {
+      flex: 1,
+      fontSize: 18,
+      color: 'white',
+    },
+    dropdownButtonArrowStyle: {
+      fontSize: 28,
+    },
+    dropdownButtonIconStyle: {
+      fontSize: 28,
+      marginRight: 8,
+    },
+    dropdownMenuStyle: {
+      backgroundColor: '#E9ECEF',
+      borderRadius: 8,
+    },
+    dropdownItemStyle: {
+      width: '100%',
+      flexDirection: 'row',
+      paddingHorizontal: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 8,
+      gap: 10,
+    },
+    dropdownItemTxtStyle: {
+      flex: 1,
+      fontSize: 18,
+      fontWeight: '500',
+      color: '#151E26',
+    },
+    dropdownItemIconStyle: {
+      fontSize: 28,
+      marginRight: 8,
+    },
+  });
 
   return (
     // <View>
@@ -120,30 +196,8 @@ export default function SecondPage(props) {
             </FormControlError>
           </FormControl>
 
-          <FormControl isDisabled={false} isInvalid={invalidCountry} isReadOnly={false} isRequired={true}>
-            {/* <FormControlLabel mb='$1'>
-              <FormControlLabelText>Email</FormControlLabelText>
-            </FormControlLabel> */}
-            <Animatable.View animation={invalidCountry?"shake":null}>
-              {/* <Input 
-                p={5}
-                borderWidth={2}
-                backgroundColor='rgba(255,255,255,0.2)'
-                $focus-borderColor='white'
-                >
-                <InputField
-                  type="text"
-                  placeholder="country"
-                  fontSize={'$xl'}
-                  color='white'
-                  placeholderTextColor={'rgba(255,255,255,0.5)'}
-                  value={country}
-                  onChange={(newValue)=>{
-                      setCountry(newValue.nativeEvent.text);
-                  }}
-                />
-              </Input> */}
-              
+          {/* <FormControl isDisabled={false} isInvalid={invalidCountry} isReadOnly={false} isRequired={true}>
+            <Animatable.View animation={invalidCountry?"shake":null}>   
             <Select style={{ borderWidth: 2, borderColor: invalidCountry?'#512095':'rgba(255,255,255,0.8)', backgroundColor: 'rgba(255,255,255,0.2)',borderRadius: 5}}
               selectedValue={country}
               onValueChange={(value)=>{setCountry(value); setInvalidCountry(false)}}
@@ -161,8 +215,6 @@ export default function SecondPage(props) {
                   <SelectDragIndicatorWrapper>
                     <SelectDragIndicator />
                   </SelectDragIndicatorWrapper>
-
-                  {/* Here you put all the countries */}
                   <SelectItem label="Lebanon" value="Lebanon" />
                   <SelectItem label="Syria" value="Syria" />
                   <SelectItem label="United States" value="United States" />
@@ -184,6 +236,54 @@ export default function SecondPage(props) {
               <FormControlErrorText color='#512095'>
                 Invalid Country
               </FormControlErrorText>
+            </FormControlError>
+          </FormControl> */}
+
+          
+          <FormControl isDisabled={false} isInvalid={invalidCountry} isReadOnly={false} isRequired={true}>
+          <Animatable.View animation={invalidCountry?"shake":null}>
+              <SelectDropdown
+                disabled={false}
+                data={dropdownData}
+                onSelect={(selectedItem, index) => {
+                    setCountry(selectedItem.country);
+                    setInvalidCountry(false);
+                    console.log(selectedItem, index);
+                }}
+                disableAutoScroll
+                renderButton={(selectedItem, isOpened) => {
+                    return (
+                    <View style={styles.dropdownButtonStyle}>
+                        {selectedItem && (
+                        <Text style={{ paddingRight: 10 }}>{selectedItem.emoji}</Text>
+                        )}
+                        <Text style={styles.dropdownButtonTxtStyle}>
+                        {(selectedItem && selectedItem.country) || 'Select your country'}
+                        </Text>
+                        <MaterialCommunityIcons color={'white'} name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                    </View>
+                    );
+                }}
+                renderItem={(item, index, isSelected) => {
+                    return (
+                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                        <Text>{item.emoji}</Text>
+                        <Text style={styles.dropdownItemTxtStyle}>{item.country}</Text>
+                    </View>
+                    );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={styles.dropdownMenuStyle}
+              />
+            </Animatable.View>
+            <FormControlError mb={-24}>
+                <FormControlErrorIcon
+                    color='#512095'
+                    as={AlertCircleIcon}
+                />
+                <FormControlErrorText color='#512095'>
+                  Invalid Country
+                </FormControlErrorText>
             </FormControlError>
           </FormControl>
 

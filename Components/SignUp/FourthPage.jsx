@@ -62,7 +62,7 @@ export default function SecondPage(props) {
     //         <Divider my="$10"/> 
     <>       
         <Heading color='white' textAlign='center'>OTP sent to</Heading>
-        <Heading color='white' textAlign='center' fontWeight='regular' size='s'>{email.length<=30?email:email.substring(0, 30)+'...'}</Heading>
+        <Heading color='white' textAlign='center' fontWeight='regular' size='s'>{email.length<=30?email.toLowerCase():email.substring(0, 30).toLowerCase()+'...'}</Heading>
         <Box h="$32" w="$72" style={{ display: 'flex', justifyContent: 'center' }}>
             
         

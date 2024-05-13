@@ -1,10 +1,10 @@
-import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast } from '@gluestack-ui/themed';
+import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Pressable, CloseIcon } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
-import React from 'react'
+import React, { useEffect, useLayoutEffect } from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView, TouchableHighlight, TouchableWithoutFeedback } from 'react-native';
 import { Box } from '@gluestack-ui/themed';
 import { Input } from '@gluestack-ui/themed';
@@ -15,12 +15,33 @@ import { VStack } from '@gluestack-ui/themed';
 import api from '../../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Keyboard } from 'react-native';
+import { Icon } from '@gluestack-ui/themed';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function ChangeUsername({navigation, route}) {
     
     const toast = useToast()
 
-    const { user, setUser } = route.params;
+    const [user, setUser] = useState(null);
+
+    async function fetchData(){
+        try {
+             const data = await AsyncStorage.getItem('id')
+             const response = await api.get(`/settings/getinsight/${data}`);
+             // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
+             setUser(response.data.user);
+             setOldUsername(response.data.user.username);
+             setCurrentUsername(response.data.user.username);
+             console.log(response.data.user)
+         } catch (error) {
+             console.log(error)
+         }
+     }
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        fetchData();
+    }, [!user||isFocused]);
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false);
@@ -28,9 +49,9 @@ export default function ChangeUsername({navigation, route}) {
 
     const [attemptingChangeUsername, setAttemptingChangeUsername] = useState(false);
 
-
-    const [oldUsername, setOldUsername] = useState(user.username)
-    const [currentUsername, setCurrentUsername] = useState(user.username);
+    
+    const [oldUsername, setOldUsername] = useState()
+    const [currentUsername, setCurrentUsername] = useState();
     const [invalidCurrentUsername, setInvalidCurrentUsername] = useState(false);
     const [invalidCurrentUsernameErrorMessage, setInvalidCurrentUsernameErrorMessage] = useState("Error Message Current Password");
     console.log(oldUsername)
@@ -80,6 +101,9 @@ export default function ChangeUsername({navigation, route}) {
                                     You have succesfully changed your username!
                                 </ToastDescription>
                                 </VStack>
+                                <Pressable mt="$1" onPress={() => toast.close(id)}>
+                                    <Icon as={CloseIcon} color="$black" />
+                                </Pressable>
                             </Toast>
                             )
                         },
@@ -104,6 +128,9 @@ export default function ChangeUsername({navigation, route}) {
                             {errorMsg}
                         </ToastDescription>
                         </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
                     </Toast>
                     )
                 },
@@ -131,15 +158,17 @@ export default function ChangeUsername({navigation, route}) {
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
-    if (!fontsLoaded) {
+    if (!fontsLoaded|!user) {
         return (
             <ImageBackground
                 source={require('../../../assets/img/HomePage1.png')}
                 style={{ flex:1 ,resizeMode: 'cover'}}
             >
+                <Center h={'$full'}>
                     <HStack space="sm">
                         <Text>LOADING...</Text><Spinner size="large" color="#321bb9" />
                     </HStack>
+                </Center>
             </ImageBackground>
         ) 
     }
@@ -155,7 +184,7 @@ export default function ChangeUsername({navigation, route}) {
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={30} color="white"/>
                     </TouchableHighlight>
                     <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                         Change Username

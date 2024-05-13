@@ -1,4 +1,4 @@
-import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Textarea, TextareaInput, Link, LinkText } from '@gluestack-ui/themed';
+import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Textarea, TextareaInput, Link, LinkText, Pressable, CloseIcon } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
 import React from 'react'
 import { useState, useEffect } from 'react';
@@ -21,6 +21,7 @@ import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri } from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../Config'
+import { Icon } from '@gluestack-ui/themed';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -98,6 +99,9 @@ export default function EditSocials({navigation, route}) {
                                     You have succesfully linked your facebook profile!
                                 </ToastDescription>
                                 </VStack>
+                                <Pressable mt="$1" onPress={() => toast.close(id)}>
+                                    <Icon as={CloseIcon} color="$black" />
+                                </Pressable>
                             </Toast>
                             )
                         },
@@ -119,6 +123,9 @@ export default function EditSocials({navigation, route}) {
                                 {errorMsg}
                             </ToastDescription>
                             </VStack>
+                            <Pressable mt="$1" onPress={() => toast.close(id)}>
+                                <Icon as={CloseIcon} color="$black" />
+                            </Pressable>
                         </Toast>
                         )
                     },
@@ -164,6 +171,9 @@ export default function EditSocials({navigation, route}) {
                                 You have succesfully un-linked your facebook profile!
                             </ToastDescription>
                             </VStack>
+                            <Pressable mt="$1" onPress={() => toast.close(id)}>
+                                <Icon as={CloseIcon} color="$black" />
+                            </Pressable>
                         </Toast>
                         )
                     },
@@ -185,6 +195,9 @@ export default function EditSocials({navigation, route}) {
                             {errorMsg}
                         </ToastDescription>
                         </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
                     </Toast>
                     )
                 },

@@ -14,8 +14,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { database } from "../../config/firebase";
 
-export default function EditSettings({ navigation,route }) {
-    const { setLoggedIn, setLoginPage, setSignupPage } = route.params;
+export default function EditSettings({ navigation, setLoggedIn, setLoginPage, setSignupPage }) {
+    // console.log(props)
+    // const { setLoggedIn, setLoginPage, setSignupPage } = props;
 
     const [clickedButton, setClickedButton] = useState(false);
     const [changePage, setChangePage] = useState(0);

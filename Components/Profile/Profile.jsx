@@ -19,6 +19,7 @@ import expertRank from '../../assets/img/RankFrames/Expert.png'
 import masterRank from '../../assets/img/RankFrames/Master.png'
 import champRank from '../../assets/img/RankFrames/Champ.png'
 import superstarRank from '../../assets/img/RankFrames/Superstar.png'
+import EditProfile from './EditProfile';
 
 export default function Profile({navigation}) {
 
@@ -68,11 +69,7 @@ export default function Profile({navigation}) {
     }
 
     const handleEditProfile = () =>{
-        navigation.push('EditProfile', { 
-            // Your data here
-            user: user,
-            setUser: setUser
-        });
+        navigation.push('EditProfile');
         setClickedButton(true);
         setTimeout(() => {
             setClickedButton(false);

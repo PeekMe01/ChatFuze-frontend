@@ -1,10 +1,10 @@
 // This page is for visiting a friend's profile.
-import { View, Select, Button, Heading, CloseIcon,ChevronDownIcon, ButtonText, AddIcon, AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, ButtonGroup, Center, Divider, HStack, Image, ImageBackground, Spinner, Text, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem, useToast, Toast, ToastTitle, ToastDescription } from '@gluestack-ui/themed';
+import { View, Select, Button, Heading, CloseIcon,ChevronDownIcon, ButtonText, AddIcon, AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, ButtonGroup, Center, Divider, HStack, Image, ImageBackground, Spinner, Text, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem, useToast, Toast, ToastTitle, ToastDescription, Icon } from '@gluestack-ui/themed';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Keyboard, ScrollView, TextInput, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import SocialMedia from './SocialMedia';
 import { RefreshControl } from '@gluestack-ui/themed';
@@ -17,6 +17,7 @@ import champRank from '../../assets/img/RankFrames/Champ.png'
 import superstarRank from '../../assets/img/RankFrames/Superstar.png'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VStack } from '@gluestack-ui/themed';
+import { Pressable } from '@gluestack-ui/themed';
 
 export default function ProfileVisit({navigation, route}) {
     const toast = useToast()
@@ -57,9 +58,12 @@ export default function ProfileVisit({navigation, route}) {
                         <VStack space="xs">
                         <ToastTitle>Success</ToastTitle>
                         <ToastDescription>
-                        {friend.username} has been removed from your friend list...
+                        {friend.username} has been removed from your friend list.
                         </ToastDescription>
                         </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
                     </Toast>
                     )
                 },
@@ -95,9 +99,12 @@ export default function ProfileVisit({navigation, route}) {
                             <VStack space="xs">
                             <ToastTitle>Success</ToastTitle>
                             <ToastDescription>
-                                You have succesfully Submitted your report...
+                                You have succesfully submitted your report.
                             </ToastDescription>
                             </VStack>
+                            <Pressable mt="$1" onPress={() => toast.close(id)}>
+                                <Icon as={CloseIcon} color="$black" />
+                            </Pressable>
                         </Toast>
                         )
                     },
@@ -241,7 +248,7 @@ export default function ProfileVisit({navigation, route}) {
                 <AlertDialogHeader>
                 <Heading size='lg' color='#512095'>Remove Friend?</Heading>
                     <AlertDialogCloseButton>
-                    <Icon as={CloseIcon} />
+                    <MaterialIcons as={CloseIcon} />
                     </AlertDialogCloseButton>
                 </AlertDialogHeader>
                 <AlertDialogBody>
@@ -290,7 +297,7 @@ export default function ProfileVisit({navigation, route}) {
                         <AlertDialogHeader>
                             <Heading size="lg" color='#512095'>Report Friend?</Heading>
                                 <AlertDialogCloseButton>
-                                <Icon as={CloseIcon} />
+                                <MaterialIcons as={CloseIcon} />
                             </AlertDialogCloseButton>
                         </AlertDialogHeader>
                         <AlertDialogBody>
@@ -302,7 +309,7 @@ export default function ProfileVisit({navigation, route}) {
                                 <SelectTrigger size="md" borderColor='rgba(255,255,255,0)'>
                                     <SelectInput placeholderTextColor='grey' placeholder="Select Report Category"  style={{ color: 'grey' }} />
                                         <SelectIcon mr="$3">
-                                            <Icon as={ChevronDownIcon} style={{ color: 'white' }} />
+                                            <MaterialIcons as={ChevronDownIcon} style={{ color: 'white' }} />
                                         </SelectIcon>
                                 </SelectTrigger>
                                 <SelectPortal>
@@ -372,7 +379,7 @@ export default function ProfileVisit({navigation, route}) {
             <View margin={30}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={30} color="white"/>
                     </TouchableHighlight>
                     <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                         Profile
@@ -429,17 +436,17 @@ export default function ProfileVisit({navigation, route}) {
                     </View>
                     <View display='flex' flexDirection='row' justifyContent='center' alignItems='center' marginTop={20} gap={5}>
                         <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' >{friend.username}, {calculateAge(friend.dateOfBirth)}</Text>
-                        <Icon name="verified" size={24} color={friend.verified?"#2cd6d3":"#bcbcbc"}/>
+                        <MaterialIcons name="verified" size={24} color={friend.verified?"#2cd6d3":"#bcbcbc"}/>
                     </View>
                     <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 50, padding: 20 }}>
                         <TouchableHighlight onPress={()=>{setShowAlertDialog(true)}} style={{ borderRadius: 50 }} underlayColor={'#51209550'} disabled={clickedButton}>
                             <View width={50} height={50} justifyContent='center' alignItems='center' backgroundColor='#51209530' borderRadius={50}>
-                                <Icon name="person-remove" size={30} color="white"/>
+                                <MaterialIcons name="person-remove" size={30} color="white"/>
                             </View>
                         </TouchableHighlight>
                         <TouchableHighlight onPress={()=>{setshowAlertReport(true)}} style={{ borderRadius: 50 }} underlayColor={'#51209550'} disabled={clickedButton}>
                             <View width={50} height={50} justifyContent='center' alignItems='center' backgroundColor='#51209530' borderRadius={50}>
-                                <Icon name="report" size={30} color="white"/>
+                                <MaterialIcons name="report" size={30} color="white"/>
                             </View>
                         </TouchableHighlight>
                     </View>
@@ -472,7 +479,7 @@ export default function ProfileVisit({navigation, route}) {
                         Gender
                     </Text>
                     <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
-                        <Icon name={friend.gender=="Male"?"male":"female"} size={30} color="white"/>
+                        <MaterialIcons name={friend.gender=="Male"?"male":"female"} size={30} color="white"/>
                         <Text color='white' fontWeight='$light'>
                             {friend.gender}
                         </Text>

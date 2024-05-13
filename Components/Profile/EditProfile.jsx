@@ -10,8 +10,6 @@ import SocialMedia from './SocialMedia';
 
 export default function EditProfile({navigation, route }) {
 
-    const { user, setUser } = route.params;
-
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
     const [clickedButton, setClickedButton] = useState(false);
@@ -32,11 +30,7 @@ export default function EditProfile({navigation, route }) {
     }
 
     const handleChangeUsernamePage = () => {
-        navigation.push('ChangeUsername', { 
-            // Your data here
-            user: user,
-            setUser: setUser
-        });
+        navigation.push('ChangeUsername');
         setClickedButton(true);
         setTimeout(() => {
             setClickedButton(false);
@@ -44,11 +38,7 @@ export default function EditProfile({navigation, route }) {
     }
 
     const handleChangeCountryPage = () => {
-        navigation.push('ChangeCountry', { 
-            // Your data here
-            user: user,
-            setUser: setUser
-        });
+        navigation.push('ChangeCountry');
         setClickedButton(true);
         setTimeout(() => {
             setClickedButton(false);
@@ -56,11 +46,7 @@ export default function EditProfile({navigation, route }) {
     }
 
     const handleChangeBioPage = () => {
-        navigation.push('EditBio', { 
-            // Your data here
-            user: user,
-            setUser: setUser
-        });
+        navigation.push('EditBio');
         setClickedButton(true);
         setTimeout(() => {
             setClickedButton(false);
@@ -69,11 +55,7 @@ export default function EditProfile({navigation, route }) {
 
     
     const handleChangeSocialsPage = () => {
-        navigation.push('EditSocials', { 
-            // Your data here
-            user: user,
-            setUser: setUser
-        });
+        navigation.push('EditSocials');
         setClickedButton(true);
         setTimeout(() => {
             setClickedButton(false);

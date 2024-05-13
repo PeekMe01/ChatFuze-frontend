@@ -188,6 +188,11 @@ export default function Chat({navigation,route}) {
                         renderAvatarOnTop={true}
                         renderAvatar = {null}
                     />
+                    {/* <Center h={'$full'}>
+                        <HStack space="sm">
+                            <Text>LOADING...</Text><Spinner size="large" color="#321bb9" />
+                        </HStack>
+                    </Center> */}
                     {
                         Platform.OS === 'android' && <KeyboardAvoidingView behavior="padding" />
                     }

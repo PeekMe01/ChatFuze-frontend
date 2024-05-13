@@ -181,7 +181,7 @@ export default function FriendsList({navigation}) {
             <ScrollView style={{ marginTop: friendsList?0:250 }} fadingEdgeLength={100} showsVerticalScrollIndicator = {false} refreshControl={<RefreshControl colors={["#321bb9"]} refreshing={refreshing} onRefresh={onRefresh}/>}>
                 <View w="$80" alignSelf='center' marginVertical={50}>
                     {friendsList&&friendsList.length>0?friendsList.map((user)=>(
-                <>
+                <React.Fragment key={user.idusers}>
                     <TouchableHighlight onPress={()=>{handleProfileVisit(user)}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                         <View justifyContent='center' alignItems='center' flexDirection='row' gap= {10}>
@@ -210,7 +210,7 @@ export default function FriendsList({navigation}) {
                     </TouchableHighlight>
 
                     <Divider/>
-                </>
+                </React.Fragment>
                 )):null}
 
                 </View>

@@ -1,10 +1,10 @@
-import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast } from '@gluestack-ui/themed';
+import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Pressable, CloseIcon, Icon } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
 import React from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView, TouchableHighlight } from 'react-native';
 import { Box } from '@gluestack-ui/themed';
 import { Input } from '@gluestack-ui/themed';
@@ -104,6 +104,9 @@ export default function ChangePassword({navigation}) {
                                 You have succesfully changed your password!
                             </ToastDescription>
                             </VStack>
+                            <Pressable mt="$1" onPress={() => toast.close(id)}>
+                                <Icon as={CloseIcon} color="$black" />
+                            </Pressable>
                         </Toast>
                         )
                     },
@@ -128,6 +131,9 @@ export default function ChangePassword({navigation}) {
                             {errorMsg}
                         </ToastDescription>
                         </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
                     </Toast>
                     )
                 },
@@ -179,7 +185,7 @@ export default function ChangePassword({navigation}) {
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={30} color="white"/>
                     </TouchableHighlight>
                     <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                         Change Password
@@ -206,6 +212,7 @@ export default function ChangePassword({navigation}) {
                                 type={"password"}
                                 placeholder="Current Password"
                                 fontSize={'$xl'}
+                                autoCapitalize='none'
                                 color='white'
                                 placeholderTextColor={'rgba(255,255,255,0.5)'}
                                 value={currentPassword}
@@ -244,6 +251,7 @@ export default function ChangePassword({navigation}) {
                                 type={"password"}
                                 placeholder="New Password"
                                 fontSize={'$xl'}
+                                autoCapitalize='none'
                                 color='white'
                                 placeholderTextColor={'rgba(255,255,255,0.5)'}
                                 value={newPassword}
@@ -282,6 +290,7 @@ export default function ChangePassword({navigation}) {
                                 type={"password"}
                                 placeholder="Confirm New Password"
                                 fontSize={'$xl'}
+                                autoCapitalize='none'
                                 color='white'
                                 placeholderTextColor={'rgba(255,255,255,0.5)'}
                                 value={confirmNewPassword}
