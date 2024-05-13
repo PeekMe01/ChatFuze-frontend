@@ -23,6 +23,8 @@ import axios from 'axios'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import mime from "mime";
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { database } from "../../config/firebase";
 
 import debounce from 'lodash.debounce';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -338,6 +340,30 @@ export default function Login(props) {
             const { token, id } = response.data;
             await AsyncStorage.setItem('userToken', token);
             await AsyncStorage.setItem('id', String(id));
+              // const userToken = await AsyncStorage.getItem('userToken');
+              // const userId = await AsyncStorage.getItem('id');
+              // if (token) {
+              //     let active;
+              //     active = true;
+              //     try {
+              //         // Check if the document already exists
+              //         const docRef = doc(database, 'status', id);
+              //         const docSnapshot = await getDoc(docRef);
+                  
+              //         if (docSnapshot.exists()) {
+              //             // Update the existing document
+              //             await updateDoc(docRef, { active });
+              //         } else {
+              //             // If the document doesn't exist, create it
+              //             await setDoc(docRef, { userId: id, active });
+              //             console.log('User status record doesn\'t exist, please fire the devs.')
+              //         }
+                  
+              //         console.log('User status updated successfully.');
+              //     } catch (error) {
+              //         console.error('Error occurred while updating usersss status:', error);
+              //     }
+              // }
             setLoggedIn(true);
             setChangingPage(false);
             setAttemptingSignup(false)

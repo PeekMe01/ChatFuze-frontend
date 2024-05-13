@@ -21,6 +21,7 @@ export default function Chat({navigation,route}) {
     // Get the height of the camera cutout
     const cameraCutoutHeight = insets.top;
     const { receivingUser } = route.params;
+    const [userStatus, setUserStatus] = useState(false)
 
     const [messages, setMessages] = useState([])
     const headerHeight = useHeaderHeight();
@@ -53,7 +54,7 @@ export default function Chat({navigation,route}) {
                       <Text size='2xl' color='white' fontFamily='ArialRoundedMTBold' paddingTop={10}>
                         {receivingUser.username}
                       </Text>
-                      <Text fontFamily='ArialRoundedMTBold' style={{ color: '#2cd6d3', fontSize: 15 }}>{receivingUser.active === true ? 'online' : 'offline'}</Text>
+                      <Text fontFamily='ArialRoundedMTBold' style={{ color: userStatus===true?'#2cd6d3':'#727386', fontSize: 15 }}>{userStatus === true ? 'online' : 'offline'}</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
@@ -99,6 +100,32 @@ export default function Chat({navigation,route}) {
             return () => unsubscribe();  
         }
     }, [loggedInUserID, receivingUser]);
+
+    const updateFriendStatus = (userId, userStatus) => {
+        setUserStatus(userStatus)
+    };
+
+    // Set up the listener
+    useEffect(()=>{
+        // Create a query for each friend's status document
+        const friendStatusQuery = query(
+            collection(database, 'status'),
+            where('userId', '==', receivingUser.idusers) // Assuming 'userId' is the field storing the user ID in the 'status' documents
+        );
+
+        // Set up a real-time listener for each query
+        const unsubscribe = onSnapshot(friendStatusQuery, (snapshot) => {
+            console.log(`Snapshot received for friend ${receivingUser.idusers}`);
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added' || change.type === 'modified') {
+                    const friendData = change.doc.data();
+                    console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
+                    updateFriendStatus(friendData.userId, friendData.active)
+                    // Update UI or perform actions based on friend's status change
+                }
+            });
+        });
+    })
 
 
       const onSend = useCallback((messages = []) => {

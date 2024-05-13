@@ -1,12 +1,12 @@
 import 'react-native-gesture-handler';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GluestackUIProvider, View, Text, KeyboardAvoidingView } from '@gluestack-ui/themed';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import BubbleScene from './Components/Background/BubbleScene';
 import Login from './Components/Login/Login';
 import { config } from "@gluestack-ui/config"
-import { ImageBackground, Platform } from 'react-native'
+import {AppState, ImageBackground, Platform } from 'react-native'
 import SignUp from './Components/SignUp/SignUp';
 import { StatusBar } from 'react-native';
 import { useScroll } from '@react-three/drei';
@@ -38,28 +38,111 @@ import BottomTabBar from '@react-navigation/bottom-tabs';
 import Messages from './Components/Messages/Messages';
 import Chat from './Components/Messages/Chat';
 import ProfileMessages from './Components/Messages/ProfileMessages';
-
+import api from './Components/Config'
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { database } from "./config/firebase";
+// import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
 export default function App() {
+ 
+//   useEffect(() => {
+//     const initializePusher = async () => {
+//         try {
+//           const pusher = Pusher.getInstance();
+
+//           await pusher.init({
+//             apiKey: "2cce10c0baa7a9b0ba0c",
+//             cluster: "ap2"
+//           });
+            
+//           await pusher.connect();
+//           await pusher.subscribe({
+//             channelName: "my-channel", 
+//             onEvent: (event: PusherEvent) => {
+//               console.log(`Event received: ${event}`);
+//             }
+//           });
+//         } catch (error) {
+//             console.error('Error occurred while initializing Pusher:', error);
+//         }
+//     };
+
+//     initializePusher();
+
+//     return () => {
+//         // Cleanup logic if needed
+//     };
+// }, []);
 
   const [loginPage, setLoginPage] = useState(true);
   const [signupPage, setSignupPage] = useState(false);
   const [welcomePage, setWelcomePage] = useState(true);
   const [loggedIn, setLoggedIn] = useState(true);
-
+  const [userOnline, setUserOnline] = useState(false);
   useEffect(() => {
+    checkLoginStatus(); 
 
-    checkLoginStatus();
+    if (AppState) {
+      AppState.addEventListener('change', handleAppStateChange);
+    return () => {
+      AppState.removeEventListener('change', handleAppStateChange);
+    };
+  }
   }, []);
+
+  useEffect(() =>{
+    handleAppStateChange()
+  }, [loggedIn])
+
+//   useEffect(() => {
+//     const collectionRef = collection(database, 'chats');
+
+//     const receivingUserId = receivingUser.idusers; // Example receiving user ID
+//     const currentUserID = loggedInUserID; // Example current user ID
+
+//     if(loggedInUserID){
+//         console.log(parseInt(receivingUserId))
+//         console.log(parseInt(currentUserID))
+//         // const q = query(collectionRef, ref => ref.orderBy('createdAt', 'desc'));
+//         const q = query(
+//             collectionRef, 
+//             where('receivingUser', 'in', [parseInt(receivingUserId),parseInt(currentUserID)]), // Filter by receiving user
+//             where('user._id', 'in', [parseInt(receivingUserId),parseInt(currentUserID)]), // Filter by current user
+//             orderBy('createdAt', 'desc')
+//         );
+
+//         console.log(q)
+
+//         const unsubscribe = onSnapshot(q, snapshot => {
+//             console.log('snapshot');
+//             console.log("snap docs: " + snapshot.docs)
+//             setMessages(
+//                 snapshot.docs.map(doc => ({
+//                     _id: doc.id,
+//                     createdAt: doc.data().createdAt.toDate(),
+//                     text: doc.data().text,
+//                     user: doc.data().user
+//                 }))
+//             )
+//         })
+//         return () => unsubscribe();  
+//     }
+// }, [loggedInUserID, receivingUser]);
+
+// const onSend = useCallback((messages = []) => {
+//   setMessages(previousMessages =>
+//     GiftedChat.append(previousMessages, messages),
+//   )
+//   const { _id, createdAt, text, user } = messages[0];
+//   console.log(user)
+  
+// }, [])
 
   const checkLoginStatus = async () => {
     try {
       const userToken = await AsyncStorage.getItem('userToken');
-      // const id = await AsyncStorage.getItem('id');
       if (userToken) {
-        // setid(id)
         setLoggedIn(true);
       } else {
         setLoggedIn(false);
@@ -68,6 +151,39 @@ export default function App() {
       console.error('Error checking login status:', error);
     }
   };
+
+  const handleAppStateChange = useCallback(async (nextAppState) => {
+    const userToken = await AsyncStorage.getItem('userToken');
+    const userId = await AsyncStorage.getItem('id');
+    if (userToken) {
+        let active;
+        if (nextAppState === 'active' || !nextAppState) {
+            active = true;
+            setUserOnline(true);
+        } else {
+            active = false;
+            setUserOnline(false);
+        }
+
+        try {
+            // Check if the document already exists
+            const docRef = doc(database, 'status', userId);
+            const docSnapshot = await getDoc(docRef);
+
+            if (docSnapshot.exists()) {
+                // Update the existing document
+                await updateDoc(docRef, { active });
+            } else {
+                // If the document doesn't exist, create it
+                await setDoc(docRef, { userId: parseInt(userId), active });
+            }
+
+            console.log('User status updated successfully.');
+        } catch (error) {
+            console.error('Error occurreeEed while updating user status:', error);
+        }
+    }
+}, [AsyncStorage, setUserOnline]);
 
 
   function HomeScreen() {
@@ -236,6 +352,7 @@ export default function App() {
     
   );
   } else if (loggedIn) {
+
     return (
       // <SafeAreaProvider>
       <GluestackUIProvider config={config}>

@@ -12,6 +12,8 @@ import API_URL from '../Config'
 import logo from '../../assets/img/Logo/Logo_WithoutBackground.png'
 import api from '../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { database } from "../../config/firebase";
 
 export default function Login(props) {
   console.log(API_URL)
@@ -184,14 +186,31 @@ export default function Login(props) {
                 )
             },
             })
-          setTimeout(async function() {
-            const { token, id } = response.data;
-            await AsyncStorage.setItem('userToken', token);
-            await AsyncStorage.setItem('id', String(id));
-            setLoggedIn(true);
-            setChangingPage(false);
-            setAttemptingLogin(false)
-          }, 100); // 1000 milliseconds = 1 second
+            setTimeout(async function() {
+              const { token, id } = response.data;
+              await AsyncStorage.setItem('userToken', token);
+              await AsyncStorage.setItem('id', String(id));
+              // if (token) {
+              //     let active = true; // Assuming active is defined and has the expected value
+              //     try {
+              //         const docRef = doc(database, 'status', id);
+              //         const docSnapshot = await getDoc(docRef);
+                  
+              //         if (docSnapshot.exists()) {
+              //             await updateDoc(docRef, { active });
+              //             console.log('User status updated successfully.');
+              //         } else {
+              //             await setDoc(docRef, { userId: id, active });
+              //             console.log('User status record created successfully.');
+              //         }
+              //     } catch (error) {
+              //         console.error('Error occurred while updating user status from login file:', error);
+              //     }
+              // }
+              setLoggedIn(true);
+              setChangingPage(false);
+              setAttemptingLogin(false);
+          }, 100);
         }
 
       } catch (error) {

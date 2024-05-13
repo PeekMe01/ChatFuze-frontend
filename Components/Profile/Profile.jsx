@@ -40,7 +40,7 @@ export default function Profile({navigation}) {
              setRankName(response.data.rankname);
              setLeaderboardnumber(response.data.leaderboardnumber);
              setRoomCount(response.data.roomCount)
-             console.log(response.data.user)
+            //  console.log(response.data.user)
          } catch (error) {
              console.log(error)
          }

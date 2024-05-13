@@ -10,6 +10,9 @@ import SocialMedia from './SocialMedia';
 import api from '../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { database } from "../../config/firebase";
+// import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
 
 export default function FriendsList({navigation}) {
     const [refreshing, setRefreshing] = React.useState(false);
@@ -17,13 +20,58 @@ export default function FriendsList({navigation}) {
     const [friendsList, setFriendsList] = useState();
     const isFocused = useIsFocused();
 
+    const updateFriendStatus = (userId, newStatus) => {
+        setFriendsList(prevFriendsList => (
+            prevFriendsList.map(friend => {
+                if (friend.idusers === userId) { // Assuming `userId` uniquely identifies each friend
+                    return {
+                        ...friend,
+                        active: newStatus
+                    };
+                }
+                return friend;
+            })
+        ));
+    };
+
     async function fetchData(){
         try {
              const data = await AsyncStorage.getItem('id')
              const response = await api.get(`/messages/friends/${data}`);
              // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
              setFriendsList(response.data)
-             console.log(response.data)
+             // Create an array to store all listener unsubscribe functions
+            const unsubscribeFunctions = [];
+
+            // Assuming `friendIds` is an array of friend IDs
+            response.data.forEach((friend) => {
+                // Create a query for each friend's status document
+                const friendStatusQuery = query(
+                    collection(database, 'status'),
+                    where('userId', '==', friend.idusers) // Assuming 'userId' is the field storing the user ID in the 'status' documents
+                );
+
+                // Set up a real-time listener for each query
+                const unsubscribe = onSnapshot(friendStatusQuery, (snapshot) => {
+                    console.log(`Snapshot received for friend ${friend.idusers}`);
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === 'added' || change.type === 'modified') {
+                            const friendData = change.doc.data();
+                            console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
+                            updateFriendStatus(friendData.userId, friendData.active)
+                            // Update UI or perform actions based on friend's status change
+                        }
+                    });
+                });
+
+                // Add the unsubscribe function to the array
+                unsubscribeFunctions.push(unsubscribe);
+                });
+
+                // Return a cleanup function that unsubscribes all listeners
+                return () => {
+                    unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
+                };
          } catch (error) {
              console.log(error)
          }
@@ -32,6 +80,42 @@ export default function FriendsList({navigation}) {
     useEffect(() => {
         fetchData();
     }, [isFocused]);
+
+    useEffect(() =>{
+        if(friendsList){
+            console.log('hihi')
+            
+            }
+    }, [])
+
+    // useEffect(() => {
+    //     const initializePusher = async () => {
+    //         try {
+    //           const pusher = Pusher.getInstance();
+    
+    //           await pusher.init({
+    //             apiKey: "2cce10c0baa7a9b0ba0c",
+    //             cluster: "ap2"
+    //           });
+                
+    //           await pusher.connect();
+    //           await pusher.subscribe({
+    //             channelName: "my-channel", 
+    //             onEvent: (event: PusherEvent) => {
+    //               console.log(`Event received: ${event}`);
+    //             }
+    //           });
+    //         } catch (error) {
+    //             console.error('Error occurred while initializing Pusher:', error);
+    //         }
+    //     };
+    
+    //     initializePusher();
+    
+    //     return () => {
+    //         // Cleanup logic if needed
+    //     };
+    // }, []);
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
