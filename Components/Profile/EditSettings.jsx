@@ -11,6 +11,8 @@ import { AlertDialogContent } from '@gluestack-ui/themed';
 import { AlertDialogHeader } from '@gluestack-ui/themed';
 import { AlertDialogCloseButton } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { database } from "../../config/firebase";
 
 export default function EditSettings({ navigation,route }) {
     const { setLoggedIn, setLoginPage, setSignupPage } = route.params;
@@ -142,11 +144,34 @@ export default function EditSettings({ navigation,route }) {
                     onPress={async () => {
                     setShowAlertDialog(false)
                         try {
-                          await AsyncStorage.removeItem('userToken');
-                          await AsyncStorage.removeItem('id');
-                          setLoggedIn(false);
-                          setLoginPage(true);
-                          setSignupPage(false);
+                            const userToken = await AsyncStorage.getItem('userToken');
+                            const userId = await AsyncStorage.getItem('id');
+                            if (userToken) {
+                                    let active;
+                                    active = false;
+                                    try {
+                                        // Check if the document already exists
+                                        const docRef = doc(database, 'status', userId);
+                                        const docSnapshot = await getDoc(docRef);
+                                    
+                                        if (docSnapshot.exists()) {
+                                            // Update the existing document
+                                            await updateDoc(docRef, { active });
+                                        } else {
+                                            // If the document doesn't exist, create it
+                                            console.log('User status record doesn\'t exist, please fire the devs.')
+                                        }
+                                    
+                                        console.log('User status updated successfully.');
+                                    } catch (error) {
+                                        console.error('Error occurred while updating user status:', error);
+                                    }
+                                }
+                            await AsyncStorage.removeItem('userToken');
+                            await AsyncStorage.removeItem('id');
+                            setLoggedIn(false);
+                            setLoginPage(true);
+                            setSignupPage(false);
                           
                         } catch (error) {
                           console.error('Logout failed:', error);

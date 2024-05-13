@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GluestackUIProvider, View, Text, KeyboardAvoidingView } from '@gluestack-ui/themed';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BubbleScene from './Components/Background/BubbleScene';
@@ -38,35 +38,41 @@ import Messages from './Components/Messages/Messages';
 import Chat from './Components/Messages/Chat';
 import ProfileMessages from './Components/Messages/ProfileMessages';
 import api from './Components/Config'
-import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { database } from "./config/firebase";
+// import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 export default function App() {
  
-  useEffect(() => {
-    const initializePusher = async () => {
-      const pusher = Pusher.getInstance();
-      try {
-        await pusher.init({
-          apiKey: "f55dcf58564041046663",
-          cluster: "ap2",
-        });
-        const channel = pusher.subscribe('my-channel');
-        channel.bind('my-event', (data: PusherEvent) => {
-          console.log('Event received:', data);
-        });
-        await pusher.connect();
-      } catch (error) {
-        console.error('Error occurred while initializing Pusher:', error);
-      }
-    };
+//   useEffect(() => {
+//     const initializePusher = async () => {
+//         try {
+//           const pusher = Pusher.getInstance();
 
-    initializePusher();
+//           await pusher.init({
+//             apiKey: "2cce10c0baa7a9b0ba0c",
+//             cluster: "ap2"
+//           });
+            
+//           await pusher.connect();
+//           await pusher.subscribe({
+//             channelName: "my-channel", 
+//             onEvent: (event: PusherEvent) => {
+//               console.log(`Event received: ${event}`);
+//             }
+//           });
+//         } catch (error) {
+//             console.error('Error occurred while initializing Pusher:', error);
+//         }
+//     };
 
-    return () => {
-      // Cleanup logic if needed
-    };
-  }, []);
+//     initializePusher();
+
+//     return () => {
+//         // Cleanup logic if needed
+//     };
+// }, []);
 
   const [loginPage, setLoginPage] = useState(true);
   const [signupPage, setSignupPage] = useState(false);
@@ -74,14 +80,63 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(true);
   const [userOnline, setUserOnline] = useState(false);
   useEffect(() => {
-    checkLoginStatus();
-    
-    AppState.addEventListener('change', handleAppStateChange);
+    checkLoginStatus(); 
+
+    if (AppState) {
+      AppState.addEventListener('change', handleAppStateChange);
     return () => {
-      // Clean up listener when component unmounts
       AppState.removeEventListener('change', handleAppStateChange);
     };
+  }
   }, []);
+
+  useEffect(() =>{
+    handleAppStateChange()
+  }, [loggedIn])
+
+//   useEffect(() => {
+//     const collectionRef = collection(database, 'chats');
+
+//     const receivingUserId = receivingUser.idusers; // Example receiving user ID
+//     const currentUserID = loggedInUserID; // Example current user ID
+
+//     if(loggedInUserID){
+//         console.log(parseInt(receivingUserId))
+//         console.log(parseInt(currentUserID))
+//         // const q = query(collectionRef, ref => ref.orderBy('createdAt', 'desc'));
+//         const q = query(
+//             collectionRef, 
+//             where('receivingUser', 'in', [parseInt(receivingUserId),parseInt(currentUserID)]), // Filter by receiving user
+//             where('user._id', 'in', [parseInt(receivingUserId),parseInt(currentUserID)]), // Filter by current user
+//             orderBy('createdAt', 'desc')
+//         );
+
+//         console.log(q)
+
+//         const unsubscribe = onSnapshot(q, snapshot => {
+//             console.log('snapshot');
+//             console.log("snap docs: " + snapshot.docs)
+//             setMessages(
+//                 snapshot.docs.map(doc => ({
+//                     _id: doc.id,
+//                     createdAt: doc.data().createdAt.toDate(),
+//                     text: doc.data().text,
+//                     user: doc.data().user
+//                 }))
+//             )
+//         })
+//         return () => unsubscribe();  
+//     }
+// }, [loggedInUserID, receivingUser]);
+
+// const onSend = useCallback((messages = []) => {
+//   setMessages(previousMessages =>
+//     GiftedChat.append(previousMessages, messages),
+//   )
+//   const { _id, createdAt, text, user } = messages[0];
+//   console.log(user)
+  
+// }, [])
 
   const checkLoginStatus = async () => {
     try {
@@ -96,31 +151,38 @@ export default function App() {
     }
   };
 
-  const handleAppStateChange =async (nextAppState) => {
+  const handleAppStateChange = useCallback(async (nextAppState) => {
     const userToken = await AsyncStorage.getItem('userToken');
-    let userId=await AsyncStorage.getItem('id');
-    if(userToken){
-      let active;
-      if (nextAppState === 'active') {
-        active=true
-        setUserOnline(true); 
-        try {
-         
-          const response = await api.put(`/settings/updateStatus/${userId}/${active}`);
-        } catch (error) {
-          console.error('Error occurred while updating user status:', error);
+    const userId = await AsyncStorage.getItem('id');
+    if (userToken) {
+        let active;
+        if (nextAppState === 'active' || !nextAppState) {
+            active = true;
+            setUserOnline(true);
+        } else {
+            active = false;
+            setUserOnline(false);
         }
-      } else {
-        active=false
-        setUserOnline(false); 
-       try {
-        const response = await api.put(`/settings/updateStatus/${userId}/${active}`);
-      } catch (error) {
-        console.error('Error occurred while updating user status:', error);
-      }
-      }
+
+        try {
+            // Check if the document already exists
+            const docRef = doc(database, 'status', userId);
+            const docSnapshot = await getDoc(docRef);
+
+            if (docSnapshot.exists()) {
+                // Update the existing document
+                await updateDoc(docRef, { active });
+            } else {
+                // If the document doesn't exist, create it
+                await setDoc(docRef, { userId: parseInt(userId), active });
+            }
+
+            console.log('User status updated successfully.');
+        } catch (error) {
+            console.error('Error occurreeEed while updating user status:', error);
+        }
     }
-  };
+}, [AsyncStorage, setUserOnline]);
 
 
   function HomeScreen() {
@@ -285,6 +347,7 @@ export default function App() {
     
   );
   } else if (loggedIn) {
+
     return (
       // <SafeAreaProvider>
       <GluestackUIProvider config={config}>
