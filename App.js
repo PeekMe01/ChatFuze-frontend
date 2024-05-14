@@ -138,7 +138,25 @@ export default function App() {
 //   console.log(user)
   
 // }, [])
+function getCurrentDateTime() {
+  let currentDate = new Date();
+  let day = currentDate.getDate();
+  let month = currentDate.getMonth() + 1; // Months are zero-indexed, so we add 1
+  let year = currentDate.getFullYear();
+  let hours = currentDate.getHours();
+  let minutes = currentDate.getMinutes();
+  let seconds = currentDate.getSeconds();
 
+  // Format the date and time
+  let formattedDate = `${year}-${month}-${day}`;
+  let formattedTime = `${hours}:${minutes}:${seconds}`;
+
+  // Concatenate date and time
+  let dateTime = `${formattedDate} ${formattedTime}`;
+
+  // Return the concatenated date and time
+  return dateTime;
+}
   const checkLoginStatus = async () => {
     try {
       const userToken = await AsyncStorage.getItem('userToken');
@@ -169,13 +187,14 @@ export default function App() {
             // Check if the document already exists
             const docRef = doc(database, 'status', userId);
             const docSnapshot = await getDoc(docRef);
-
+            let datetime= getCurrentDateTime();
             if (docSnapshot.exists()) {
                 // Update the existing document
-                await updateDoc(docRef, { active });
+                
+                await updateDoc(docRef, { active ,datetime});
             } else {
                 // If the document doesn't exist, create it
-                await setDoc(docRef, { userId: parseInt(userId), active });
+                await setDoc(docRef, { userId: parseInt(userId), active ,datetime});
             }
 
             console.log('User status updated successfully.');

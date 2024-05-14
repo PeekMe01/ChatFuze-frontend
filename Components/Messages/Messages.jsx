@@ -11,12 +11,44 @@ import { AlertCircleIcon,Image, Box,HStack, Button, ButtonText, Center, Divider,
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { database } from "../../config/firebase";
-
+import { useIsFocused } from '@react-navigation/native';
 const Messages = ({navigation }) => {
+  const isFocused = useIsFocused();
     const [friendsuser,setfriendsuser]=useState([]);
     const [loading,setIsLoading]=useState(true)
     const [refreshing, setRefreshing] = React.useState(false);
 
+    function getFormattedTimeDifference(datetime) {
+      // Parse the given datetime string
+      let givenDatetime = new Date(datetime);
+  
+      // Get the current date and time
+      let currentDate = new Date();
+  
+      // Calculate the difference in milliseconds
+      let difference = currentDate - givenDatetime;
+  
+      // Convert milliseconds to days, hours, minutes, and seconds
+      let days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+  
+      // Construct the formatted string
+      let formattedTimeDifference = '';
+      if (days > 0) formattedTimeDifference += `${days} day${days > 1 ? 's' : ''} `;
+      if (hours > 0) formattedTimeDifference += `${hours}h `;
+      if (minutes > 0) formattedTimeDifference += `${minutes}min `;
+      
+      // Append a message if formattedTimeDifference is empty
+      if (formattedTimeDifference === '') {
+          formattedTimeDifference = "just now";
+      }
+  
+  
+      return formattedTimeDifference.trim();
+  }
+  
     const onRefresh = React.useCallback(async () => {
       setRefreshing(true);
       setfriendsuser();
@@ -26,13 +58,14 @@ const Messages = ({navigation }) => {
       
     }, []);
 
-    const updateFriendStatus = (userId, newStatus) => {
+    const updateFriendStatus = (userId, newStatus,dateTime) => {
       setfriendsuser(prevFriendsList => (
           prevFriendsList.map(friend => {
               if (friend.idusers === userId) { // Assuming `userId` uniquely identifies each friend
                   return {
                       ...friend,
-                      active: newStatus
+                      active: newStatus,
+                      datetime:dateTime
                   };
               }
               return friend;
@@ -64,7 +97,7 @@ const Messages = ({navigation }) => {
                     if (change.type === 'added' || change.type === 'modified') {
                         const friendData = change.doc.data();
                         console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
-                        updateFriendStatus(friendData.userId, friendData.active)
+                        updateFriendStatus(friendData.userId, friendData.active,friendData.datetime)
                         // Update UI or perform actions based on friend's status change
                     }
                 });
@@ -91,10 +124,13 @@ const Messages = ({navigation }) => {
       
         return unsubscribe;
       }, [navigation]);
+      useEffect(() => {
+        fetchData();
+    }, [isFocused]);
       
     const renderItem = ({ item, index }) => {
           return (
-            <TouchableOpacity key={index} style={{ flexDirection: 'row', alignItems:'flex-end', padding: 10,borderBottomWidth:1,borderColor:'white'}}
+            <TouchableOpacity key={index} style={{ flexDirection: 'row', alignItems:'center', padding: 10,borderBottomWidth:1,borderColor:'white'}}
             onPress={async ()=>{  navigation.push('Chat', { 
             receivingUser: item,
         });}}
@@ -104,7 +140,13 @@ const Messages = ({navigation }) => {
               <Text size='2xl' color='white' fontWeight='$bold' fontFamily='ArialRoundedMTBold' paddingTop={10}>
                     {item.username}
                 </Text>
-                <Text fontWeight='$bold' fontFamily='ArialRoundedMTBold'  style={{ color: item.active===true?'#2cd6d3':'#727386' }}>{item.active===true?'Online':'Offline'}</Text>
+                <Text fontWeight='bold' fontFamily='ArialRoundedMTBold' style={{ color: item.active === true ? '#2cd6d3' : '#727386' }}>
+                  {item.active === true
+                    ? 'Online'
+                    : getFormattedTimeDifference(item.datetime) === "just now"
+                      ? 'last seen just now'
+                      : 'last seen from: ' + getFormattedTimeDifference(item.datetime)}
+                </Text>
               </View>
               <AntDesign style={{alignSelf:'center'}} name="arrowright" size={24} color="white" />
             </TouchableOpacity>

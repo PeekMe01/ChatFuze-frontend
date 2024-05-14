@@ -101,7 +101,38 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
             setClickedButton(false);
         }, 1000);
     }
-
+    function getCurrentDateTime() {
+        let currentDate = new Date();
+        let day = currentDate.getDate();
+        let month = currentDate.getMonth() + 1; // Months are zero-indexed, so we add 1
+        let year = currentDate.getFullYear();
+        let hours = currentDate.getHours();
+        let minutes = currentDate.getMinutes();
+        let seconds = currentDate.getSeconds();
+      
+        // Format the date and time
+        let formattedDate = `${year}-${month}-${day}`;
+        let formattedTime = `${hours}:${minutes}:${seconds}`;
+      
+        // Concatenate date and time
+        let dateTime = `${formattedDate} ${formattedTime}`;
+      
+        // Return the concatenated date and time
+        return dateTime;
+      }
+        const checkLoginStatus = async () => {
+          try {
+            const userToken = await AsyncStorage.getItem('userToken');
+            if (userToken) {
+              setLoggedIn(true);
+            } else {
+              setLoggedIn(false);
+            }
+          } catch (error) {
+            console.error('Error checking login status:', error);
+          }
+        };
+      
   return (
     <ImageBackground
         source={require('../../assets/img/HomePage1.png')}
@@ -157,7 +188,8 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
                                     
                                         if (docSnapshot.exists()) {
                                             // Update the existing document
-                                            await updateDoc(docRef, { active });
+                                               let datetime= getCurrentDateTime();
+                                            await updateDoc(docRef, { active,datetime });
                                         } else {
                                             // If the document doesn't exist, create it
                                             console.log('User status record doesn\'t exist, please fire the devs.')
