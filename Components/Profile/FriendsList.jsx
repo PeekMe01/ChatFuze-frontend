@@ -12,6 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { database } from "../../config/firebase";
+import userimg from '../../assets/img/user.png'
 // import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
 
 export default function FriendsList({navigation}) {
@@ -185,16 +186,29 @@ export default function FriendsList({navigation}) {
                     <TouchableHighlight onPress={()=>{handleProfileVisit(user)}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                         <View justifyContent='center' alignItems='center' flexDirection='row' gap= {10}>
+                        {user.imageurl?
                         <Image
                             alt='profilePic'
                             borderColor='white'
-                            borderWidth={1}
-                            size="sm"
+                            borderWidth={2}
+                            border
+                            size='sm'
+                            zIndex={-1}
                             borderRadius="$full"
                             source={{
-                                uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+                                uri: user.imageurl,
                             }}
                         />
+                        :<Image
+                            alt='profilePic'
+                            borderColor='white'
+                            borderWidth={2}
+                            border
+                            size='sm'
+                            zIndex={-1}
+                            borderRadius="$full"
+                            source={userimg}
+                        />}
                         <View>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 {user.username}

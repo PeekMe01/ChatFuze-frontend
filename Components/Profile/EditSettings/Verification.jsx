@@ -8,11 +8,11 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native';
 import { Textarea } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../../Config'
+import {api,API_URL} from '../../Config'
 import { FormControl } from '@gluestack-ui/themed';
 import { FormControlErrorText } from '@gluestack-ui/themed';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { Camera, CameraType } from 'expo-camera';
+import { Camera ,CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { StyleSheet, TouchableHighlight } from 'react-native';
 import axios from 'axios';
@@ -25,6 +25,7 @@ export default function Verification({navigation}) {
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
     const [clickedButton, setClickedButton] = useState(false);
+
 
     const [userHasAnIdVerificationRequest, setUserHasAnIdVerificationRequest] = useState(false);
     const [userAlreadyVerified, setUserAlreadyVerified] = useState(false);
@@ -172,10 +173,9 @@ export default function Verification({navigation}) {
             </ImageBackground>
         ) 
     }
-
-    const [hasCameraPermission, setHasCameraPermission] = useState(null);
-    const [type, setType] = useState(Camera.Constants.Type.back);
-    const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
+    const [permission, requestPermission] = useCameraPermissions();
+    const [type, setType] = useState('back');
+    const [flash, setFlash] = useState('off');
     const cameraRef = useRef(null);
 
     const snap = async () => {
@@ -190,13 +190,13 @@ export default function Verification({navigation}) {
         setOpenCamera(false);
     }
 
-    useEffect(() => {
-        (async () => {
-            MediaLibrary.requestPermissionsAsync();
-            const cameraStatus = await Camera.requestCameraPermissionsAsync();
-            setHasCameraPermission(cameraStatus.status === 'granted');
-        })();
-      }, [])
+    // useEffect(() => {
+    //     (async () => {
+    //         MediaLibrary.requestPermissionsAsync();
+    //         const cameraStatus = await Camera.requestCameraPermissionsAsync();
+    //         setHasCameraPermission(cameraStatus.status === 'granted');
+    //     })();
+    //   }, [])
 
     const submitID = async () =>{
         const formData = new FormData();
@@ -214,7 +214,7 @@ export default function Verification({navigation}) {
         formData.append('userid', userid);
 
         try {
-            const response = await axios.post('http://192.168.0.102:3001/Accounts/applyForIDVerification', formData ,{
+            const response = await axios.post(`http://${API_URL}/Accounts/applyForIDVerification`, formData ,{
             headers:{
               'x-expo-app': 'chatfuze-frontend',
               Accept: 'application/json',
@@ -360,7 +360,7 @@ export default function Verification({navigation}) {
                             $active={{
                                 bg: "#2c94d6",
                             }}
-                            onPress={()=>{setOpenCamera(true);setImage(null); setInvalidImage(false)}}
+                            onPress={()=>{setOpenCamera(true);setImage(null); setInvalidImage(false); if(permission&&!permission.granted){requestPermission()}}}
                             >
                             <ButtonText fontSize="$xl" fontWeight="$medium">
                             Upload ID

@@ -1,3 +1,4 @@
+import { AppState } from 'react-native';
 import 'react-native-gesture-handler';
 import React, { useCallback, useEffect, useState } from 'react';
 import { GluestackUIProvider, View, Text, KeyboardAvoidingView } from '@gluestack-ui/themed';
@@ -6,7 +7,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import BubbleScene from './Components/Background/BubbleScene';
 import Login from './Components/Login/Login';
 import { config } from "@gluestack-ui/config"
-import {AppState, ImageBackground, Platform } from 'react-native'
+import {ImageBackground, Platform } from 'react-native'
 import SignUp from './Components/SignUp/SignUp';
 import { StatusBar } from 'react-native';
 import { useScroll } from '@react-three/drei';
@@ -41,45 +42,18 @@ import ProfileMessages from './Components/Messages/ProfileMessages';
 import api from './Components/Config'
 import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { database } from "./config/firebase";
+import ChangeProfilePicture from './Components/Profile/EditProfile/ChangeProfilePicture';
 // import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 export default function App() {
- 
-//   useEffect(() => {
-//     const initializePusher = async () => {
-//         try {
-//           const pusher = Pusher.getInstance();
-
-//           await pusher.init({
-//             apiKey: "2cce10c0baa7a9b0ba0c",
-//             cluster: "ap2"
-//           });
-            
-//           await pusher.connect();
-//           await pusher.subscribe({
-//             channelName: "my-channel", 
-//             onEvent: (event: PusherEvent) => {
-//               console.log(`Event received: ${event}`);
-//             }
-//           });
-//         } catch (error) {
-//             console.error('Error occurred while initializing Pusher:', error);
-//         }
-//     };
-
-//     initializePusher();
-
-//     return () => {
-//         // Cleanup logic if needed
-//     };
-// }, []);
 
   const [loginPage, setLoginPage] = useState(true);
   const [signupPage, setSignupPage] = useState(false);
   const [welcomePage, setWelcomePage] = useState(true);
   const [loggedIn, setLoggedIn] = useState(true);
   const [userOnline, setUserOnline] = useState(false);
+  const [imagePickerOpen, setImagePickerOpen] = useState(false);
   useEffect(() => {
     checkLoginStatus(); 
 
@@ -95,49 +69,6 @@ export default function App() {
     handleAppStateChange()
   }, [loggedIn])
 
-//   useEffect(() => {
-//     const collectionRef = collection(database, 'chats');
-
-//     const receivingUserId = receivingUser.idusers; // Example receiving user ID
-//     const currentUserID = loggedInUserID; // Example current user ID
-
-//     if(loggedInUserID){
-//         console.log(parseInt(receivingUserId))
-//         console.log(parseInt(currentUserID))
-//         // const q = query(collectionRef, ref => ref.orderBy('createdAt', 'desc'));
-//         const q = query(
-//             collectionRef, 
-//             where('receivingUser', 'in', [parseInt(receivingUserId),parseInt(currentUserID)]), // Filter by receiving user
-//             where('user._id', 'in', [parseInt(receivingUserId),parseInt(currentUserID)]), // Filter by current user
-//             orderBy('createdAt', 'desc')
-//         );
-
-//         console.log(q)
-
-//         const unsubscribe = onSnapshot(q, snapshot => {
-//             console.log('snapshot');
-//             console.log("snap docs: " + snapshot.docs)
-//             setMessages(
-//                 snapshot.docs.map(doc => ({
-//                     _id: doc.id,
-//                     createdAt: doc.data().createdAt.toDate(),
-//                     text: doc.data().text,
-//                     user: doc.data().user
-//                 }))
-//             )
-//         })
-//         return () => unsubscribe();  
-//     }
-// }, [loggedInUserID, receivingUser]);
-
-// const onSend = useCallback((messages = []) => {
-//   setMessages(previousMessages =>
-//     GiftedChat.append(previousMessages, messages),
-//   )
-//   const { _id, createdAt, text, user } = messages[0];
-//   console.log(user)
-  
-// }, [])
 function getCurrentDateTime() {
   let currentDate = new Date();
   let day = currentDate.getDate();
@@ -175,6 +106,10 @@ function getCurrentDateTime() {
     const userId = await AsyncStorage.getItem('id');
     if (userToken) {
         let active;
+        console.log("App.js " + imagePickerOpen)
+        // if(imagePickerOpen){
+        //   return;
+        // }
         if (nextAppState === 'active' || !nextAppState) {
             active = true;
             setUserOnline(true);
@@ -197,12 +132,12 @@ function getCurrentDateTime() {
                 await setDoc(docRef, { userId: parseInt(userId), active ,datetime});
             }
 
-            console.log('User status updated successfully.');
+            console.log('User status updated successfully App.js.');
         } catch (error) {
             console.error('Error occurreeEed while updating user status:', error);
         }
     }
-}, [AsyncStorage, setUserOnline]);
+}, [setUserOnline]);
 
 
   function HomeScreen() {
@@ -322,6 +257,9 @@ function getCurrentDateTime() {
               <Stack.Screen name="ChangeCountry" component={ChangeCountry}/>
               <Stack.Screen name="EditBio" component={EditBio}/>
               <Stack.Screen name="EditSocials" component={EditSocials}/>
+              <Stack.Screen name="ChangeProfilePicture">
+                { ({ navigation }) => <ChangeProfilePicture navigation={navigation} imagePickerOpen={imagePickerOpen} setImagePickerOpen={setImagePickerOpen}/> }
+              </Stack.Screen>
             </Stack.Navigator>
        </View>
     );

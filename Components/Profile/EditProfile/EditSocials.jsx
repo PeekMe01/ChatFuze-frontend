@@ -230,7 +230,7 @@ export default function EditSocials({navigation, route}) {
                 source={require('../../../assets/img/HomePage1.png')}
                 style={{ flex:1 ,resizeMode: 'cover'}}
             >
-                    <HStack space="sm">
+                    <HStack space="sm" justifyContent='center' alignItems='center'>
                         <Text>LOADING...</Text><Spinner size="large" color="#321bb9" />
                     </HStack>
             </ImageBackground>

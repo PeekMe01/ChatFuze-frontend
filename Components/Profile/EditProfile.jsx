@@ -37,6 +37,14 @@ export default function EditProfile({navigation, route }) {
         }, 1000);
     }
 
+    const handleChangeProfilePicturePage = () => {
+        navigation.push('ChangeProfilePicture');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
     const handleChangeCountryPage = () => {
         navigation.push('ChangeCountry');
         setClickedButton(true);
@@ -91,6 +99,15 @@ export default function EditProfile({navigation, route }) {
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
                                 Change Username
+                            </Text>
+                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                        </View>
+                    </TouchableHighlight>
+                    <Divider/>
+                    <TouchableHighlight onPress={()=>{handleChangeProfilePicturePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                                Change Profile Picture
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
                         </View>

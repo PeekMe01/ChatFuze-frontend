@@ -12,6 +12,7 @@ import api from '../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Center } from '@gluestack-ui/themed';
 import { useIsFocused } from '@react-navigation/native';
+import userimg from '../../assets/img/user.png'
 
 import beginnerRank from '../../assets/img/RankFrames/Beginner.png'
 import amateurRank from '../../assets/img/RankFrames/Amateur.png'
@@ -149,7 +150,21 @@ export default function Profile({navigation}) {
                         alignSelf='center'
                         
                     > */}
-                    <Image
+                    {user.imageurl?
+                        <Image
+                            alt='profilePic'
+                            borderColor='white'
+                            borderWidth={2}
+                            border
+                            w={140}
+                            h={140}
+                            zIndex={-1}
+                            borderRadius="$full"
+                            source={{
+                                uri: user.imageurl,
+                            }}
+                        />
+                    :<Image
                         alt='profilePic'
                         borderColor='white'
                         borderWidth={2}
@@ -158,10 +173,8 @@ export default function Profile({navigation}) {
                         h={140}
                         zIndex={-1}
                         borderRadius="$full"
-                        source={{
-                            uri: user.imageurl?user.imageurl:"https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-                        }}
-                    />
+                        source={userimg}
+                    />}
 
                     <Image
                         marginTop={-160}

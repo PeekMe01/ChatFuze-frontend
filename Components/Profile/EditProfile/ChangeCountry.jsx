@@ -202,7 +202,7 @@ export default function ChangeCountry({navigation, route}) {
                 style={{ flex:1 ,resizeMode: 'cover'}}
             >
                 <Center h={'$full'}>
-                    <HStack space="sm">
+                    <HStack space="sm" justifyContent='center' alignItems='center'>
                         <Text>LOADING...</Text><Spinner size="large" color="#321bb9" />
                     </HStack>
                 </Center>
@@ -281,59 +281,6 @@ export default function ChangeCountry({navigation, route}) {
 
                 <Center>
                 <Box h="$96" w="$64" style={{ display: 'flex', gap: 40, justifyContent: 'center'}}>
-
-                        {/* <FormControl isInvalid={invalidCurrentCountry} isReadOnly={false} isRequired={true}>
-                            <Animatable.View animation={invalidCurrentCountry?"shake":null}>
-                            
-                            <Select
-                            selectedValue={currentCountry}
-                            borderRadius={5}
-                            bgColor='rgba(255,255,255,0.2)'
-                            borderWidth={2}
-                            borderColor={invalidCurrentCountry?'#512095':'white'}
-                            isInvalid={invalidCurrentCountry}
-                            isDisabled={attemptingChangeCountry}
-                            onValueChange={(value)=>{setCurrentCountry(value); setInvalidCurrentCountry(false)}}
-                            >
-                            <SelectTrigger size="md" borderColor='rgba(255,255,255,0)'>
-                                <SelectInput placeholderTextColor={'rgba(255,255,255,0.5)'} placeholder="Select Country" style={{ color: 'white' }}/>
-                                <SelectIcon mr="$3">
-                                    <MaterialIcons as={ChevronDownIcon} style={{color: 'white'}}/>
-                                </SelectIcon>
-                            </SelectTrigger>
-                            <SelectPortal>
-                                <SelectBackdrop/>
-                                <SelectContent>
-                                <SelectDragIndicatorWrapper>
-                                    <SelectDragIndicator />
-                                </SelectDragIndicatorWrapper>
-
-                                <SelectItem label="Lebanon" value="Lebanon" />
-                                <SelectItem label="Syria" value="Syria" />
-                                <SelectItem label="United States" value="United States" />
-                                <SelectItem label="Canada" value="Canada" />
-                                <SelectItem label="Japan" value="Japan" />
-                                <SelectItem label="France" value="France" />
-                                <SelectItem label="Russia" value="Russia" />
-                                
-
-
-                                </SelectContent>
-                            </SelectPortal>
-                            </Select>
-
-                            </Animatable.View>
-                            <FormControlError mb={-24}>
-                            <FormControlErrorIcon
-                                color='#512095'
-                                as={AlertCircleIcon}
-                            />
-                            <FormControlErrorText color='#512095'>
-                                {invalidCurrentCountryErrorMessage}
-                            </FormControlErrorText>
-                            </FormControlError>
-                        </FormControl> */}
-
                         <FormControl isInvalid={invalidCurrentCountry} isReadOnly={false} isRequired={true}>
                             <Animatable.View animation={invalidCurrentCountry?"shake":null}>
                             <SelectDropdown

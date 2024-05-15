@@ -165,7 +165,7 @@ export default function ChangeUsername({navigation, route}) {
                 style={{ flex:1 ,resizeMode: 'cover'}}
             >
                 <Center h={'$full'}>
-                    <HStack space="sm">
+                    <HStack space="sm" justifyContent='center' alignItems='center'>
                         <Text>LOADING...</Text><Spinner size="large" color="#321bb9" />
                     </HStack>
                 </Center>
