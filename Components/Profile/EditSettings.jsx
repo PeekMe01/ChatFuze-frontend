@@ -230,7 +230,7 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
                 <View w="$80" alignSelf='center' marginVertical={100}>
                     <TouchableHighlight onPress={()=>{handleChangePasswordPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 Change Password
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -239,7 +239,7 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleInsightsPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 Insights
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -248,7 +248,7 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleLanguagePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 Language
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -257,7 +257,7 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleAboutUsPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 About us
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -266,7 +266,7 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleFeedbackPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 Feedback
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -275,7 +275,7 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleVerificationPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 Verification
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -284,7 +284,7 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleLogoutPressed()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 Logout
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
