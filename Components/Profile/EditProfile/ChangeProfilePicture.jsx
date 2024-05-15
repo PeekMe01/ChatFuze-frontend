@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import * as ImagePicker from 'expo-image-picker';
-import { Box, Center, HStack, Image, ImageBackground, Spinner, Text, View, ScrollView, VStack, ToastTitle, ToastDescription, useToast } from '@gluestack-ui/themed';
+import { Box, Center, HStack, Image, ImageBackground, Spinner, Text, View, ScrollView, VStack, ToastTitle, ToastDescription, useToast, Pressable, CloseIcon } from '@gluestack-ui/themed';
 import { useFonts } from 'expo-font';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,10 +12,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Dimensions, StyleSheet } from 'react-native';
 import userimg from '../../../assets/img/user.png'
 import { Toast } from '@gluestack-ui/themed';
+import { Icon } from '@gluestack-ui/themed';
 
 const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen}) => {
 
     const toast = useToast()
+    const storage = getStorage();
 
     const [image, setImage] = useState(null);
     const [user, setUser] = useState(null);
@@ -51,7 +53,7 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
           const selectedAsset = result.assets[0];
           if (selectedAsset && selectedAsset.uri) {
             setImage(selectedAsset.uri);
-            uploadImage()
+            uploadImage(selectedAsset.uri)
           } else {
             console.error('Error: Selected asset or its URI is null.');
           }
@@ -67,46 +69,30 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
     }
     
       const uploadImage = async (imageUri) => {
+        var downloadUrl;
         try {
             const resp = await fetch(imageUri);
             const blob = await resp.blob();
             const storageRef = ref(storage, 'ChatFuze/Profile/' + Date.now() + '.jpg');
+            console.log("store:"+storageRef)
             await uploadBytes(storageRef, blob);
-            const downloadUrl = await getDownloadURL(storageRef);
+            downloadUrl = await getDownloadURL(storageRef);
+        } catch (error) {
+            console.log('there was an error connecting to firebase.')
+            console.log(error)
+        }
 
-            try {
-                // 
-                const userid = await AsyncStorage.getItem('id');
-                const data = {
-                    userid: userid,
-                    profileURL: downloadUrl,
-                }
+        try {
+            // 
+            const userid = await AsyncStorage.getItem('id');
+            const data = {
+                userid: userid,
+                profileURL: downloadUrl,
+            }
 
-                const response = await api.get(`/updateProfilePicture`, data);
+            const response = await api.put(`/settings/updateProfilePicture`, data);
 
-                if(response){
-                    toast.show({
-                        duration: 5000,
-                        placement: "top",
-                        render: ({ id }) => {
-                            const toastId = "toast-" + id
-                            return (
-                            <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
-                                <VStack space="xs">
-                                <ToastTitle>Success</ToastTitle>
-                                <ToastDescription>
-                                    You have succesfully updated your profile picture!
-                                </ToastDescription>
-                                </VStack>
-                                <Pressable mt="$1" onPress={() => toast.close(id)}>
-                                    <Icon as={CloseIcon} color="$black" />
-                                </Pressable>
-                            </Toast>
-                            )
-                        },
-                    })
-                }
-            } catch (error) {
+            if(response){
                 toast.show({
                     duration: 5000,
                     placement: "top",
@@ -117,7 +103,7 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
                             <VStack space="xs">
                             <ToastTitle>Success</ToastTitle>
                             <ToastDescription>
-                                There was an error updating your profile picture!
+                                You have succesfully updated your profile picture!
                             </ToastDescription>
                             </VStack>
                             <Pressable mt="$1" onPress={() => toast.close(id)}>
@@ -129,7 +115,27 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
                 })
             }
         } catch (error) {
-            console.log('there was an error connecting to firebase.')
+            console.log(error)
+            toast.show({
+                duration: 5000,
+                placement: "top",
+                render: ({ id }) => {
+                    const toastId = "toast-" + id
+                    return (
+                    <Toast nativeID={toastId} action="error" variant="solid" marginTop={40}>
+                        <VStack space="xs">
+                        <ToastTitle>Error</ToastTitle>
+                        <ToastDescription>
+                            There was an error updating your profile picture!
+                        </ToastDescription>
+                        </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
+                    </Toast>
+                    )
+                },
+            })
         }
         // return downloadUrl;
       };
