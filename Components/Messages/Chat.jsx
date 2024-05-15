@@ -13,8 +13,37 @@ import { collection, addDoc, orderBy, query, onSnapshot, where } from 'firebase/
 import { database } from "../../config/firebase";
 
 export default function Chat({navigation,route}) {
+    
     const[loggedInUserID, setLoggedInUserID] = useState();
-
+    function getFormattedTimeDifference(datetime) {
+        // Parse the given datetime string
+        let givenDatetime = new Date(datetime);
+    
+        // Get the current date and time
+        let currentDate = new Date();
+    
+        // Calculate the difference in milliseconds
+        let difference = currentDate - givenDatetime;
+    
+        // Convert milliseconds to days, hours, minutes, and seconds
+        let days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    
+        // Construct the formatted string
+        let formattedTimeDifference = '';
+        if (days > 0) formattedTimeDifference += `${days} day${days > 1 ? 's' : ''} `;
+        if (hours > 0) formattedTimeDifference += `${hours}h `;
+        if (minutes > 0) formattedTimeDifference += `${minutes}min `;
+        
+        // Append a message if formattedTimeDifference is empty
+        if (formattedTimeDifference === '') {
+            formattedTimeDifference = "just now";
+        }
+    
+        return formattedTimeDifference.trim();
+    }
     // Get the safe area insets
     const insets = useSafeAreaInsets();
 
@@ -42,11 +71,11 @@ export default function Chat({navigation,route}) {
             headerLeft: () => null, // Remove the default back button
             headerTintColor: 'white',
             headerTitle: () => (
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 20, width: '100%' }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',borderBottomColor:'white', paddingHorizontal: 20, paddingTop: 20, width: '100%',borderBottomWidth:.5,paddingBottom:10 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <AntDesign name="arrowleft" size={30} color="white" onPress={() => navigation.goBack()} marginLeft={-20} />
                     {receivingUser.imageurl ? <Text>profile image</Text> : <Image source={userimg} alt='' style={{ borderRadius: 50, width: 60, height: 60, marginLeft: 10 }} />}
-                    <TouchableOpacity style={{ marginLeft: 10 }} onPress={() => {
+                    <TouchableOpacity style={{ marginLeft: 10,width:'90%' }} onPress={() => {
                       navigation.push('ProfileMessages', {
                         user: receivingUser,
                       });
@@ -54,7 +83,13 @@ export default function Chat({navigation,route}) {
                       <Text size='2xl' color='white' fontFamily='ArialRoundedMTBold' paddingTop={10}>
                         {receivingUser.username}
                       </Text>
-                      <Text fontFamily='ArialRoundedMTBold' style={{ color: userStatus===true?'#2cd6d3':'#727386', fontSize: 15 }}>{userStatus === true ? 'online' : 'offline'}</Text>
+                      <Text fontFamily='ArialRoundedMTBold' style={{ color: userStatus === true ? '#2cd6d3' : '#727386', fontSize: 15 }}>
+                                {userStatus === true
+                                    ? 'online'
+                                    : getFormattedTimeDifference(receivingUser.datetime) === "just now"
+                                    ? 'last seen just now'
+                                    : 'last seen from: ' + getFormattedTimeDifference(receivingUser.datetime)}
+                                </Text>
                     </TouchableOpacity>
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
@@ -101,8 +136,9 @@ export default function Chat({navigation,route}) {
         }
     }, [loggedInUserID, receivingUser]);
 
-    const updateFriendStatus = (userId, userStatus) => {
+    const updateFriendStatus = (userId, userStatus,datetime) => {
         setUserStatus(userStatus)
+        receivingUser.datetime=datetime
     };
 
     // Set up the listener
@@ -120,7 +156,7 @@ export default function Chat({navigation,route}) {
                 if (change.type === 'added' || change.type === 'modified') {
                     const friendData = change.doc.data();
                     console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
-                    updateFriendStatus(friendData.userId, friendData.active)
+                    updateFriendStatus(friendData.userId, friendData.active,friendData.datetime)
                     // Update UI or perform actions based on friend's status change
                 }
             });
