@@ -126,7 +126,20 @@ const Messages = ({navigation }) => {
             receivingUser: item,
         });}}
              >
-            {item.imageurl?<Text>profile image</Text>:<Image source={userimg} alt='' style={{ borderRadius: 40 }} />}
+            {item.imageurl? <Image
+                            alt='profilePic'
+                            borderColor='white'
+                            borderWidth={2}
+                            border
+                            w={140}
+                            h={140}
+                            zIndex={-1}
+							style={{width:90,height:90}}
+                            borderRadius="$full"
+                            source={{
+                                uri: item.imageurl,
+                            }}
+                        />:<Image source={userimg} alt='' style={{ borderRadius: 40 }} />}
               <View style={{ flexDirection: 'column', paddingHorizontal: 20, flex: 1, padding: 10, borderRadius: 30}}>
               <Text size='2xl' color='white' fontWeight='$bold' fontFamily='ArialRoundedMTBold' paddingTop={10}>
                     {item.username}
