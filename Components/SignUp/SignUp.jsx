@@ -306,8 +306,7 @@ export default function Login(props) {
           //     Accept: 'application/json',
           //     'Content-Type' : 'multipart/form-data',
           //   },
-          // })
-          
+          // })      
           const response = await axios.post(`http://${API_URL}/Accounts/register`, formData ,{
             headers:{
               'x-expo-app': 'chatfuze-frontend',

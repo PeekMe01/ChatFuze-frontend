@@ -16,25 +16,54 @@ import userimg from '../../assets/img/user.png'
 // import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
 
 export default function FriendsList({navigation}) {
-    const [refreshing, setRefreshing] = React.useState(false);
     const [clickedButton, setClickedButton] = useState(false);
     const [friendsList, setFriendsList] = useState();
     const isFocused = useIsFocused();
 
-    const updateFriendStatus = (userId, newStatus) => {
+    const updateFriendStatus = (userId, newStatus,datetime) => {
         setFriendsList(prevFriendsList => (
             prevFriendsList.map(friend => {
                 if (friend.idusers === userId) { // Assuming `userId` uniquely identifies each friend
                     return {
                         ...friend,
-                        active: newStatus
+                        active: newStatus,
+                        datetime:datetime
                     };
                 }
                 return friend;
             })
         ));
     };
-
+    function getFormattedTimeDifference(datetime) {
+        // Parse the given datetime string
+        let givenDatetime = new Date(datetime);
+    
+        // Get the current date and time
+        let currentDate = new Date();
+    
+        // Calculate the difference in milliseconds
+        let difference = currentDate - givenDatetime;
+    
+        // Convert milliseconds to days, hours, minutes, and seconds
+        let days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    
+        // Construct the formatted string
+        let formattedTimeDifference = '';
+        if (days > 0) formattedTimeDifference += `${days} day${days > 1 ? 's' : ''} `;
+        if (hours > 0) formattedTimeDifference += `${hours}h `;
+        if (minutes > 0) formattedTimeDifference += `${minutes}min `;
+        
+        // Append a message if formattedTimeDifference is empty
+        if (formattedTimeDifference === '') {
+            formattedTimeDifference = "just now";
+        }
+    
+    
+        return formattedTimeDifference.trim();
+    }
     async function fetchData(){
         try {
              const data = await AsyncStorage.getItem('id')
@@ -59,7 +88,7 @@ export default function FriendsList({navigation}) {
                         if (change.type === 'added' || change.type === 'modified') {
                             const friendData = change.doc.data();
                             console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
-                            updateFriendStatus(friendData.userId, friendData.active)
+                            updateFriendStatus(friendData.userId, friendData.active,friendData.datetime)
                             // Update UI or perform actions based on friend's status change
                         }
                     });
@@ -89,42 +118,7 @@ export default function FriendsList({navigation}) {
             }
     }, [])
 
-    // useEffect(() => {
-    //     const initializePusher = async () => {
-    //         try {
-    //           const pusher = Pusher.getInstance();
-    
-    //           await pusher.init({
-    //             apiKey: "2cce10c0baa7a9b0ba0c",
-    //             cluster: "ap2"
-    //           });
-                
-    //           await pusher.connect();
-    //           await pusher.subscribe({
-    //             channelName: "my-channel", 
-    //             onEvent: (event: PusherEvent) => {
-    //               console.log(`Event received: ${event}`);
-    //             }
-    //           });
-    //         } catch (error) {
-    //             console.error('Error occurred while initializing Pusher:', error);
-    //         }
-    //     };
-    
-    //     initializePusher();
-    
-    //     return () => {
-    //         // Cleanup logic if needed
-    //     };
-    // }, []);
-
-    const onRefresh = React.useCallback(async () => {
-        setRefreshing(true);
-        setFriendsList()
-        setTimeout(() => {
-          setRefreshing(false);
-        }, await fetchData());
-    }, []);
+   
 
     const handleProfileVisit = (user) =>{
         navigation.push('ProfileVisit', { 
@@ -179,12 +173,12 @@ export default function FriendsList({navigation}) {
                         Friends ({friendsList?friendsList.length:0})
                     </Text>
                 </View>
-            <ScrollView style={{ marginTop: friendsList?0:250 }} fadingEdgeLength={100} showsVerticalScrollIndicator = {false} refreshControl={<RefreshControl colors={["#321bb9"]} refreshing={refreshing} onRefresh={onRefresh}/>}>
+            <ScrollView style={{ marginTop: friendsList?0:250 }} fadingEdgeLength={100} showsVerticalScrollIndicator = {false} >
                 <View w="$80" alignSelf='center' marginVertical={50}>
                     {friendsList&&friendsList.length>0?friendsList.map((user)=>(
                 <React.Fragment key={user.idusers}>
-                    <TouchableHighlight onPress={()=>{handleProfileVisit(user)}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
-                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                    <TouchableHighlight onPress={()=>{handleProfileVisit(user)}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10,paddingHorizontal:10 }} disabled={clickedButton}>
+                        <View justifyContent='space-between' alignItems='center' flexDirection='row' >
                         <View justifyContent='center' alignItems='center' flexDirection='row' gap= {10}>
                         {user.imageurl?
                         <Image
@@ -214,7 +208,11 @@ export default function FriendsList({navigation}) {
                                 {user.username}
                             </Text>
                             <Text size='sm' color={user.active?'#2cd6d3':'#727386'} fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-                                {user.active?"Active":"Offline"}
+                            {user.active === true
+                    ? 'Active'
+                    : getFormattedTimeDifference(user.datetime) === "just now"
+                      ? 'last seen just now'
+                      : 'last seen from: ' + getFormattedTimeDifference(user.datetime)}
                             </Text>
                         </View>
                             

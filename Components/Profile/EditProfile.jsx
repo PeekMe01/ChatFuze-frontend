@@ -97,7 +97,7 @@ export default function EditProfile({navigation, route }) {
                 <View w="$80" alignSelf='center' marginVertical={100}>
                     <TouchableHighlight onPress={()=>{handleChangeUsernamePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 Change Username
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -115,7 +115,7 @@ export default function EditProfile({navigation, route }) {
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleChangeCountryPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 Change Country
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -124,7 +124,7 @@ export default function EditProfile({navigation, route }) {
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleChangeBioPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 Edit Bio
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -133,7 +133,7 @@ export default function EditProfile({navigation, route }) {
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleChangeSocialsPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:5}}>
                                 Edit Social Media Links
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>

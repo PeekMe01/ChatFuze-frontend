@@ -83,7 +83,7 @@ export default function Chat({navigation,route}) {
                       <Text size='2xl' color='white' fontFamily='ArialRoundedMTBold' paddingTop={10}>
                         {receivingUser.username}
                       </Text>
-                      <Text fontFamily='ArialRoundedMTBold' style={{ color: userStatus === true ? '#2cd6d3' : '#727386', fontSize: 15 }}>
+                      <Text size='sm' fontFamily='ArialRoundedMTBold' style={{ color: userStatus === true ? '#2cd6d3' : '#727386', fontSize: 15 }}>
                                 {userStatus === true
                                     ? 'online'
                                     : getFormattedTimeDifference(receivingUser.datetime) === "just now"
