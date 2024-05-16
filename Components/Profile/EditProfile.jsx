@@ -106,7 +106,7 @@ export default function EditProfile({navigation, route }) {
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleChangeProfilePicturePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
                                 Change Profile Picture
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>

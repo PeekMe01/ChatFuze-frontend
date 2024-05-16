@@ -25,6 +25,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import mime from "mime";
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { database } from "../../config/firebase";
 
 import debounce from 'lodash.debounce';
@@ -38,6 +39,7 @@ let goodOTP = false;
 export default function Login(props) {
 
   const toast = useToast()
+  const storage = getStorage();
 
   const [emailErrorText, setEmailErrorText] = useState(null);
   const [usernameErrorText, setUsernameErrorText] = useState(null);
@@ -280,21 +282,45 @@ export default function Login(props) {
 
       if(goodOTP){
         setAttemptingSignup(true);
+
+        var downloadUrl;
+        try {
+            const resp = await fetch(image.uri);
+            const blob = await resp.blob();
+            const storageRef = ref(storage, 'ChatFuze/Verification/' + Date.now() + '.jpg');
+            console.log("store:"+storageRef)
+            await uploadBytes(storageRef, blob);
+            downloadUrl = await getDownloadURL(storageRef);
+        } catch (error) {
+            console.log('there was an error connecting to firebase.')
+            console.log(error)
+        }
         
         const formData = new FormData();
 
-        formData.append('image', {
-          name: `${username}_${email.toLowerCase()}.jpg`,
-          uri: image.uri,
-          type: 'image/jpg'
-        })
+        // formData.append('image', {
+        //   name: `${username}_${email.toLowerCase()}.jpg`,
+        //   uri: image.uri,
+        //   type: 'image/jpg'
+        // })
         // console.log(formData);
-        formData.append('email',email);
-        formData.append('username',username);
-        formData.append('password',password);
-        formData.append('dateOfBirth',dateOfBirth+"");
-        formData.append('country',country);
-        formData.append('gender',gender);
+        formData.append('imageURL', downloadUrl);
+        formData.append('email', email);
+        formData.append('username', username);
+        formData.append('password', password);
+        formData.append('dateOfBirth', dateOfBirth+"");
+        formData.append('country', country);
+        formData.append('gender', gender);
+
+        const data = {
+          'imageURL': downloadUrl,
+          'email': email,
+          'username': username,
+          'password': password,
+          'dateOfBirth': dateOfBirth,
+          'country': country,
+          'gender': gender,
+        }
 
         // const data = {email, username, password, dateOfBirth, country, gender};
 
@@ -307,13 +333,14 @@ export default function Login(props) {
           //     'Content-Type' : 'multipart/form-data',
           //   },
           // })      
-          const response = await axios.post(`http://${API_URL}/Accounts/register`, formData ,{
-            headers:{
-              'x-expo-app': 'chatfuze-frontend',
-              Accept: 'application/json',
-              'Content-Type' : 'multipart/form-data',
-            },
-          })
+          // const response = await axios.post(`http://${API_URL}/Accounts/register`, formData ,{
+          //   headers:{
+          //     'x-expo-app': 'chatfuze-frontend',
+          //     Accept: 'application/json',
+          //     'Content-Type' : 'multipart/form-data',
+          //   },
+          // })
+          const response = await api.post(`/Accounts/register`, data);
           console.log(response.data)
           // console.log(responsePhoto.data)
           setChangingPage(true)
@@ -380,7 +407,7 @@ export default function Login(props) {
             render: ({ id }) => {
                 const toastId = "toast-" + id
                 return (
-                <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
+                <Toast nativeID={toastId} action="error" variant="solid" marginTop={40}>
                     <VStack space="xs">
                     <ToastTitle>Error</ToastTitle>
                     <ToastDescription>
