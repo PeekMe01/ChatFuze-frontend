@@ -9,12 +9,125 @@ import userimg from '../../assets/img/user.png'
 import { useHeaderHeight } from '@react-navigation/elements';
 import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { collection, addDoc, orderBy, query, onSnapshot, where } from 'firebase/firestore';
+import { collection, addDoc, orderBy, query, onSnapshot, where , doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
 import { database } from "../../config/firebase";
 
 export default function Chat({navigation,route}) {
     
     const[loggedInUserID, setLoggedInUserID] = useState();
+    const [typing,setTyping]=useState(false)
+    const [receiverTyping,setReceiverTyping]=useState(false);
+    // const handleAppStateChange = useCallback(async (nextAppState) => {
+    //     const userToken = await AsyncStorage.getItem('userToken');
+    //     const userId = await AsyncStorage.getItem('id');
+    //     if (userToken) {
+    //         let active;
+    //         console.log("App.js " + imagePickerOpen)
+    //         // if(imagePickerOpen){
+    //         //   return;
+    //         // }
+    //         if (nextAppState === 'active' || !nextAppState) {
+    //             active = true;
+    //             setUserOnline(true);
+    //         } else {
+    //             active = false;
+    //             setUserOnline(false);
+    //         }
+    
+    //         try {
+    //             // Check if the document already exists
+    //             const docRef = doc(database, 'status', userId);
+    //             const docSnapshot = await getDoc(docRef);
+    //             let datetime= getCurrentDateTime();
+    //             if (docSnapshot.exists()) {
+    //                 // Update the existing document
+                    
+    //                 await updateDoc(docRef, { active ,datetime});
+    //             } else {
+    //                 // If the document doesn't exist, create it
+    //                 await setDoc(docRef, { userId: parseInt(userId), active ,datetime});
+    //             }
+    
+    //             console.log('User status updated successfully App.js.');
+    //         } catch (error) {
+    //             console.error('Error occurreeEed while updating user status:', error);
+    //         }
+    //     }
+    // }, [setUserOnline]);
+
+
+    const timeoutRef = useRef(null);
+    const clearTypingTimeout = () => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+      };
+      const updateTyping= async(typing)=>{
+        try {
+            let senderid=loggedInUserID
+            let receiverid=receivingUser.idusers
+            console.log(senderid)
+            console.log(receiverid)
+            console.log(typing)
+            const docId = `${senderid}_${receiverid}`;
+            const docRef = doc(database, 'typing', docId);
+            
+            const docSnapshot = await getDoc(docRef);
+            
+            if (docSnapshot.exists()) {
+                await updateDoc(docRef, {
+                    typing: typing
+                });
+            } else {
+                await setDoc(docRef, {
+                    senderid: parseInt(senderid),
+                    receiverid: parseInt(receiverid),
+                    typing: typing
+                });
+            }
+    
+            console.log('User typing status updated successfully.');
+        } catch (error) {
+            console.error('Error occurred while updating user typing status:', error);
+        }
+      }
+      const onInputTextChanged = text => {
+        clearTypingTimeout();
+        setTyping(true);
+        if(!typing)
+            updateTyping(true);
+        timeoutRef.current = setTimeout(() => {
+          setTyping(false);
+          updateTyping(false);
+        }, 2000);
+      };
+      useEffect(()=>{
+        let senderid=loggedInUserID
+        let receiverid=receivingUser.idusers
+        const docId = `${receiverid}_${senderid}`;
+        const typingStatusQuery = query(
+            collection(database, 'typing'),
+            where('receiverid', '==',parseInt(senderid)) ,
+            where('senderid', '==',parseInt(receiverid)) 
+        );
+
+        // Set up a real-time listener for each query
+        const unsubscribe = onSnapshot(typingStatusQuery, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added' || change.type === 'modified') {
+                    const data = change.doc.data();
+                    console.log("hello world")
+                 
+                    setReceiverTyping(data.typing);
+                    // console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
+                    // updateFriendStatus(friendData.userId, friendData.active,friendData.datetime)
+                    // Update UI or perform actions based on friend's status change
+                }
+            });
+        });
+    })
+    
     function getFormattedTimeDifference(datetime) {
         // Parse the given datetime string
         let givenDatetime = new Date(datetime);
@@ -223,12 +336,10 @@ export default function Chat({navigation,route}) {
                         messageContainerRef={messageContainerRef}
                         renderAvatarOnTop={true}
                         renderAvatar = {null}
+                        onInputTextChanged={onInputTextChanged}
+                       isTyping ={receiverTyping}
+                      scrollToBottom ={true}
                     />
-                    {/* <Center h={'$full'}>
-                        <HStack space="sm">
-                            <Text>LOADING...</Text><Spinner size="large" color="#321bb9" />
-                        </HStack>
-                    </Center> */}
                     {
                         Platform.OS === 'android' && <KeyboardAvoidingView behavior="padding" />
                     }
