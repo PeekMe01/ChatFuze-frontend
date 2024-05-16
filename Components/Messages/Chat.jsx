@@ -187,7 +187,20 @@ export default function Chat({navigation,route}) {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',borderBottomColor:'white', paddingHorizontal: 20, paddingTop: 20, width: '100%',borderBottomWidth:.5,paddingBottom:10 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <AntDesign name="arrowleft" size={30} color="white" onPress={() => navigation.goBack()} marginLeft={-20} />
-                    {receivingUser.imageurl ? <Text>profile image</Text> : <Image source={userimg} alt='' style={{ borderRadius: 50, width: 60, height: 60, marginLeft: 10 }} />}
+                    {receivingUser.imageurl ? <Image
+                            alt='profilePic'
+                            borderColor='white'
+                            borderWidth={2}
+                            border
+                            w={140}
+                            h={140}
+                            zIndex={-1}
+							style={{width:60,height:60}}
+                            borderRadius="$full"
+                            source={{
+                                uri: receivingUser.imageurl,
+                            }}
+                        /> : <Image source={userimg} alt='' style={{ borderRadius: 50, width: 60, height: 60, marginLeft: 10 }} />}
                     <TouchableOpacity style={{ marginLeft: 10,width:'90%' }} onPress={() => {
                       navigation.push('ProfileMessages', {
                         user: receivingUser,
