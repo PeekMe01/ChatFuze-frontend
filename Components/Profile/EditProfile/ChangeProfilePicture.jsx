@@ -14,6 +14,8 @@ import userimg from '../../../assets/img/user.png'
 import { Toast } from '@gluestack-ui/themed';
 import { Icon } from '@gluestack-ui/themed';
 
+var img = null;
+
 const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen}) => {
 
     const toast = useToast()
@@ -23,6 +25,7 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
     const [user, setUser] = useState(null);
     const [changingPage, setChangingPage] = useState(false);
     const [clickedButton, setClickedButton] = useState(false);
+    const [changedPic, setChangedPic] = useState(false);
 
     async function fetchData(){
         try {
@@ -53,7 +56,7 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
           const selectedAsset = result.assets[0];
           if (selectedAsset && selectedAsset.uri) {
             setImage(selectedAsset.uri);
-            uploadImage(selectedAsset.uri)
+            uploadImage(selectedAsset.uri);
           } else {
             console.error('Error: Selected asset or its URI is null.');
           }
@@ -93,6 +96,8 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
             const response = await api.put(`/settings/updateProfilePicture`, data);
 
             if(response){
+                setChangedPic(true)
+                img=downloadUrl
                 toast.show({
                     duration: 5000,
                     placement: "top",
@@ -177,7 +182,20 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
             <View gap={20}>
                 <Center>
                     <Box h="$96" w="$64" style={{ display: 'flex', gap: 20, justifyContent: 'center', alignItems: 'center'}}>
-                    {user.imageurl?
+                    {img?
+                    <Image
+                        alt='profilePic'
+                        borderColor='white'
+                        borderWidth={2}
+                        border
+                        w={140}
+                        h={140}
+                        borderRadius="$full"
+                        source={{
+                            uri: img,
+                        }}
+                    />:
+                    user.imageurl?
                         <Image
                             alt='profilePic'
                             borderColor='white'

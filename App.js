@@ -40,9 +40,10 @@ import Messages from './Components/Messages/Messages';
 import Chat from './Components/Messages/Chat';
 import ProfileMessages from './Components/Messages/ProfileMessages';
 import api from './Components/Config'
-import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { database } from "./config/firebase";
 import ChangeProfilePicture from './Components/Profile/EditProfile/ChangeProfilePicture';
+import { TotpMultiFactorGenerator } from 'firebase/auth';
 // import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -54,6 +55,77 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(true);
   const [userOnline, setUserOnline] = useState(false);
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
+
+  const [totalUnreadMessages, setTotalUnreadMessages] = useState(0);
+
+  //Let's added listeners for when user receives new messages
+  useEffect(()=>{
+    setupTotalMessages()
+    setupListeners();
+  }, [loggedIn])
+
+  const setupTotalMessages = async () => {
+    const data = await AsyncStorage.getItem('id')
+    const response = await api.get(`/messages/friends/${data}`);
+    response.data.forEach(async (friend) => {
+      const friendStatusQuery = query(
+        collection(database, 'unread'),
+        where('senderID', '==', friend.idusers),
+        where('receiverID', '==', parseInt(data))
+      );
+
+      const querySnapshot = await getDocs(friendStatusQuery);
+      querySnapshot.forEach((doc) => {
+        console.log(doc.data().messages);
+        setTotalUnreadMessages(totalUnreadMessages+doc.data().messages)
+      });
+    })
+  }
+
+  const setupListeners = async () => {
+    try {
+      const data = await AsyncStorage.getItem('id')
+      const response = await api.get(`/messages/friends/${data}`);
+      const unsubscribeFunctions = [];
+
+     response.data.forEach(async (friend) => {
+         const friendStatusQuery = query(
+             collection(database, 'unread'),
+             where('senderID', '==', friend.idusers),
+             where('receiverID', '==', parseInt(data))
+         );
+         
+        //  const querySnapshot = await getDocs(friendStatusQuery);
+        //  querySnapshot.forEach((doc) => {
+        //   console.log(doc.data().messages);
+        //   setTotalUnreadMessages(totalUnreadMessages+doc.data().messages)
+        // });
+
+         // Set up a real-time listener for each query
+         const unsubscribe = onSnapshot(friendStatusQuery, (snapshot) => {
+             console.log(`Snapshot received for friend ${friend.idusers}`);
+             snapshot.docChanges().forEach((change) => {
+                 if (change.type === 'added' ||change.type === 'modified') {
+                     console.log(`Friend ${friend.idusers} has sent you a message`);
+                     setupTotalMessages()
+                 }
+             });
+         });
+
+         // Add the unsubscribe function to the array
+         unsubscribeFunctions.push(unsubscribe);
+         });
+
+         // Return a cleanup function that unsubscribes all listeners
+         return () => {
+             unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
+         };
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
+
   useEffect(() => {
     checkLoginStatus(); 
 
@@ -323,7 +395,7 @@ function getCurrentDateTime() {
               // tabBarIcon: () => <Icon name="home" size={24} color="#2cd6d3" />,
               tabBarIcon: () => <MaterialIcons name="home" size={30} color="white" />,
               tabBarActiveTintColor: "white",
-              title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>
+              title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>,
             }} />
           <Tab.Screen 
             name="Messages" 
@@ -333,7 +405,9 @@ function getCurrentDateTime() {
               // tabBarIcon: () => <Icon name="inbox" size={24} color="#2cd6d3" />,
               tabBarIcon: () => <MaterialIcons name="inbox" size={30} color="white" />,
               tabBarActiveTintColor: "white",
-              title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>
+              title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>,
+              tabBarBadge: totalUnreadMessages,
+              tabBarBadgeStyle: {backgroundColor: '#512095', display: totalUnreadMessages>0?'flex':'none'}
             }} />
           <Tab.Screen 
           name="Leaderboard" 
