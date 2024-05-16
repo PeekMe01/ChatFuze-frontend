@@ -12,13 +12,14 @@ import * as Animatable from 'react-native-animatable';
 import SecondPage from './SecondPage';
 import ThirdPage from './ThirdPage';
 import { StyleSheet, TouchableHighlight } from 'react-native';
-import { Camera, CameraType } from 'expo-camera';
+import { Camera ,CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import Buttons from './Buttons';
 import FourthPage from './FourthPage'
 import { useToast, Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
-import api from '../Config'
+import api from '../Config';
+import { API_URL } from '../Config';
 import axios from 'axios'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import mime from "mime";
@@ -50,18 +51,18 @@ export default function Login(props) {
     welcomePage
   } = props
 
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
-  const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
+  console.log(CameraView)
+  const [permission, requestPermission] = useCameraPermissions();
+  const [type, setType] = useState('back');
+  const [flash, setFlash] = useState('off');
   const cameraRef = useRef(null);
 
-  useEffect(() => {
-    (async () => {
-        MediaLibrary.requestPermissionsAsync();
-        const cameraStatus = await Camera.requestCameraPermissionsAsync();
-        setHasCameraPermission(cameraStatus.status === 'granted');
-    })();
-  }, [])
+  // useEffect(() => {
+  //   (async () => {
+  //       MediaLibrary.requestPermissionsAsync();
+  //       const cameraStatus = await requestPermission();
+  //   })();
+  // }, [])
 
   // const takePicture = async () => {
   //   if(cameraRef) {
@@ -287,6 +288,7 @@ export default function Login(props) {
           uri: image.uri,
           type: 'image/jpg'
         })
+        // console.log(formData);
         formData.append('email',email);
         formData.append('username',username);
         formData.append('password',password);
@@ -304,8 +306,8 @@ export default function Login(props) {
           //     Accept: 'application/json',
           //     'Content-Type' : 'multipart/form-data',
           //   },
-          // })
-          const response = await axios.post('http://192.168.146.92:3001/Accounts/register', formData ,{
+          // })      
+          const response = await axios.post(`http://${API_URL}/Accounts/register`, formData ,{
             headers:{
               'x-expo-app': 'chatfuze-frontend',
               Accept: 'application/json',
@@ -430,10 +432,10 @@ export default function Login(props) {
     setOpenCamera(false);
   }
 
-  if(hasCameraPermission&&changePage==2&&openCamera){
+  if(permission&&permission.granted&&changePage==2&&openCamera){
     return (
       <View style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        {!image&&<Camera
+        {!image&&<CameraView
           style={styles.container}
           type={type}
           flashMode={flash}
@@ -575,6 +577,8 @@ export default function Login(props) {
                 :changePage==2?
                 <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
                 <ThirdPage
+                  permission={permission}
+                  requestPermission={requestPermission}
                   openCamera={openCamera}
                   setOpenCamera={setOpenCamera}
                   image={image}

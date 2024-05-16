@@ -18,6 +18,7 @@ import superstarRank from '../../assets/img/RankFrames/Superstar.png'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VStack } from '@gluestack-ui/themed';
 import { Pressable } from '@gluestack-ui/themed';
+import userimg from '../../assets/img/user.png'
 
 export default function ProfileVisit({navigation, route}) {
     const toast = useToast()
@@ -394,7 +395,21 @@ export default function ProfileVisit({navigation, route}) {
                         alignSelf='center'
                         
                     > */}
-                    <Image
+                    {friend.imageurl?
+                        <Image
+                            alt='profilePic'
+                            borderColor='white'
+                            borderWidth={2}
+                            border
+                            w={140}
+                            h={140}
+                            zIndex={-1}
+                            borderRadius="$full"
+                            source={{
+                                uri: friend.imageurl,
+                            }}
+                        />
+                    :<Image
                         alt='profilePic'
                         borderColor='white'
                         borderWidth={2}
@@ -403,10 +418,8 @@ export default function ProfileVisit({navigation, route}) {
                         h={140}
                         zIndex={-1}
                         borderRadius="$full"
-                        source={{
-                            uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-                        }}
-                    />
+                        source={userimg}
+                    />}
 
                     <Image
                         marginTop={-160}

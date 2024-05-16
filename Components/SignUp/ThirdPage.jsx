@@ -11,7 +11,7 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import { Platform, StyleSheet } from 'react-native';
 import { Radio } from '@gluestack-ui/themed';
 import { CircleIcon } from '@gluestack-ui/themed';
-import { Camera, CameraType } from 'expo-camera';
+import { Camera, CameraType, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import Buttons from './Buttons';
 
@@ -28,6 +28,8 @@ export default function SecondPage(props) {
     setChangePage,
     setOpenCamera,
     openCamera,
+    permission,
+    requestPermission,
   } = props;
 
   return (
@@ -50,7 +52,7 @@ export default function SecondPage(props) {
             $active={{
                 bg: "#2c94d6",
             }}
-            onPress={()=>{setOpenCamera(true);setImage(null); setInvalidImage(false)}}
+            onPress={()=>{setOpenCamera(true);setImage(null); setInvalidImage(false); if(permission&&!permission.granted){requestPermission()}}}
             >
             <ButtonText fontSize="$xl" fontWeight="$medium">
               Upload ID
