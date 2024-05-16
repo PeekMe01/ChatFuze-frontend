@@ -18,7 +18,8 @@ import Buttons from './Buttons';
 import FourthPage from './FourthPage'
 import { useToast, Toast } from '@gluestack-ui/themed';
 import { VStack } from '@gluestack-ui/themed';
-import {api,API_URL} from '../Config'
+import api from '../Config';
+import { API_URL } from '../Config';
 import axios from 'axios'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import mime from "mime";

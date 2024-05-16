@@ -8,7 +8,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native';
 import { Textarea } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {api,API_URL} from '../../Config'
+import api from '../../Config';
 import { FormControl } from '@gluestack-ui/themed';
 import { FormControlErrorText } from '@gluestack-ui/themed';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
@@ -17,10 +17,13 @@ import * as MediaLibrary from 'expo-media-library';
 import { StyleSheet, TouchableHighlight } from 'react-native';
 import axios from 'axios';
 import { CloseIcon } from '@gluestack-ui/themed';
+import { API_URL } from '../../Config';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 export default function Verification({navigation}) {
 
     const toast = useToast()
+    const storage = getStorage();
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
@@ -81,78 +84,6 @@ export default function Verification({navigation}) {
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
 
-    // const handleSendFeedback = async () => {
-    //     let goodFeedback = false;
-    //     setAttemptingSendFeedback(true);
-    //     if(!feedback||feedback.length<20){
-    //         setInvalidFeedback(true);
-    //         goodFeedback = false;
-    //     }else{
-    //         goodFeedback = true
-    //         setInvalidFeedback(false);
-    //     }
-
-    //     if(goodFeedback){
-    //         const data = {
-    //             userid: await AsyncStorage.getItem('id'),
-    //             message: feedback
-    //         }
-
-    //         try {
-    //             // const response = await axios.post(`${API_URL}/settings/changepassword`, data);
-    //             const response = await api.post(`/settings/sendfeedback`, data);
-    //             if(response){
-    //                 setFeedback('');
-    //             toast.show({
-    //                 duration: 5000,
-    //                 placement: "top",
-    //                 render: ({ id }) => {
-    //                     const toastId = "toast-" + id
-    //                     return (
-    //                     <Toast nativeID={toastId} action="success" variant="solid" marginTop={40}>
-    //                         <VStack space="xs">
-    //                         <ToastTitle>Success</ToastTitle>
-    //                         <ToastDescription>
-    //                             Your voice has been heard!
-    //                         </ToastDescription>
-    //                         </VStack>
-    //                     </Toast>
-    //                     )
-    //                 },
-    //                 })
-                    
-    //             }
-    //             setAttemptingSendFeedback(false);
-    //         } catch (error) {
-    //             // console.log(error.response.data.error)
-    //             console.log(error)
-    //             const errorMsg = await error.response.data.error;
-    //             toast.show({
-    //             duration: 5000,
-    //             placement: "top",
-    //             render: ({ id }) => {
-    //                 const toastId = "toast-" + id
-    //                 return (
-    //                 <Toast nativeID={toastId} action="error" variant="solid" marginTop={40}>
-    //                     <VStack space="xs">
-    //                     <ToastTitle>There was an error while sending your feedback.</ToastTitle>
-    //                     <ToastDescription>
-    //                         {errorMsg}
-    //                     </ToastDescription>
-    //                     </VStack>
-    //                 </Toast>
-    //                 )
-    //             },
-    //             })
-    //             setAttemptingSendFeedback(false);
-    //         }
-    //     }else{
-    //         setTimeout(() => {
-    //             setAttemptingSendFeedback(false);
-    //         }, 1000);
-    //     }
-    // }
-
     const handleGoBackPressed = () => {
         setClickedButton(true);
         navigation.goBack();
@@ -180,7 +111,10 @@ export default function Verification({navigation}) {
 
     const snap = async () => {
         if (cameraRef) {
-            let photo = await cameraRef.current.takePictureAsync();
+            let photo = await cameraRef.current.takePictureAsync({
+                quality: 0.3, // Adjust this value (0.0 - 1.0) for picture quality
+                skipProcessing: true,   
+            });
             console.log("THE PHOTOS ARE HERE, MILDRED", photo);
             setImage(photo);
         }
@@ -190,37 +124,41 @@ export default function Verification({navigation}) {
         setOpenCamera(false);
     }
 
-    // useEffect(() => {
-    //     (async () => {
-    //         MediaLibrary.requestPermissionsAsync();
-    //         const cameraStatus = await Camera.requestCameraPermissionsAsync();
-    //         setHasCameraPermission(cameraStatus.status === 'granted');
-    //     })();
-    //   }, [])
+    const submitID = async (imageUri) =>{
+        var downloadUrl;
+        try {
+            const resp = await fetch(imageUri);
+            const blob = await resp.blob();
+            const storageRef = ref(storage, 'ChatFuze/Verification/' + Date.now() + '.jpg');
+            console.log("store:"+storageRef)
+            await uploadBytes(storageRef, blob);
+            downloadUrl = await getDownloadURL(storageRef);
+        } catch (error) {
+            console.log('there was an error connecting to firebase.')
+            console.log(error)
+        }
 
-    const submitID = async () =>{
-        const formData = new FormData();
+        // const formData = new FormData();
 
         const userid = await AsyncStorage.getItem('id');
 
-        const responseUser = await api.get(`/settings/getinsight/${userid}`);
+        const data = {
+            userid: userid,
+            imageURL: downloadUrl
+        }
 
-        formData.append('image', {
-          name: `${responseUser.data.user.username}_${responseUser.data.user.email}.jpg`,
-          uri: image.uri,
-          type: 'image/jpg'
-        })
+        // const responseUser = await api.get(`/settings/getinsight/${userid}`);
+
+        // formData.append('image', {
+        //   name: `${responseUser.data.user.username}_${responseUser.data.user.email}.jpg`,
+        //   uri: image.uri,
+        //   type: 'image/jpg'
+        // })
         
-        formData.append('userid', userid);
+        // formData.append('userid', userid);
 
         try {
-            const response = await axios.post(`http://${API_URL}/Accounts/applyForIDVerification`, formData ,{
-            headers:{
-              'x-expo-app': 'chatfuze-frontend',
-              Accept: 'application/json',
-              'Content-Type' : 'multipart/form-data',
-            },
-          })
+          const response = await api.post(`/Accounts/applyForIDVerification`, data);
 
           if(response){
             setClickedButton(false);
@@ -276,7 +214,7 @@ export default function Verification({navigation}) {
     if(openCamera){
         return (
             <View style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              {!image&&<Camera
+              {!image&&<CameraView
                 style={styles.container}
                 type={type}
                 flashMode={flash}
@@ -400,7 +338,7 @@ export default function Verification({navigation}) {
                             $active={{
                                 bg: "#2c94d6",
                             }}
-                            onPress={()=>{setClickedButton(true);submitID()}}
+                            onPress={()=>{setClickedButton(true);submitID(image.uri)}}
                             >
                             <ButtonText fontSize="$xl" fontWeight="$medium">
                             Submit
