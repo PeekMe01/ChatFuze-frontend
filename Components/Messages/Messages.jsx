@@ -16,7 +16,6 @@ const Messages = ({navigation }) => {
   const isFocused = useIsFocused();
     const [friendsuser,setfriendsuser]=useState([]);
     const [loading,setIsLoading]=useState(true)
-    const [refreshing, setRefreshing] = React.useState(false);
 
     function getFormattedTimeDifference(datetime) {
       // Parse the given datetime string
@@ -49,14 +48,6 @@ const Messages = ({navigation }) => {
       return formattedTimeDifference.trim();
   }
   
-    const onRefresh = React.useCallback(async () => {
-      setRefreshing(true);
-      setfriendsuser();
-      setTimeout(() => {
-        setRefreshing(false);
-      }, await fetchData());
-      
-    }, []);
 
     const updateFriendStatus = (userId, newStatus,dateTime) => {
       setfriendsuser(prevFriendsList => (
@@ -140,7 +131,7 @@ const Messages = ({navigation }) => {
               <Text size='2xl' color='white' fontWeight='$bold' fontFamily='ArialRoundedMTBold' paddingTop={10}>
                     {item.username}
                 </Text>
-                <Text fontWeight='bold' fontFamily='ArialRoundedMTBold' style={{ color: item.active === true ? '#2cd6d3' : '#727386' }}>
+                <Text size='sm' fontWeight='bold' fontFamily='ArialRoundedMTBold' style={{ color: item.active === true ? '#2cd6d3' : '#727386' }}>
                   {item.active === true
                     ? 'Online'
                     : getFormattedTimeDifference(item.datetime) === "just now"
@@ -206,7 +197,6 @@ const Messages = ({navigation }) => {
                     renderItem={renderItem}
                     showsVerticalScrollIndicator={false}
                     fadingEdgeLength={100}
-                    refreshControl={<RefreshControl  colors={["#321bb9"]} refreshing={refreshing} onRefresh={onRefresh}/>}
                 /> :<>
                 <Text size='2xl' color='white' fontWeight='$bold' fontFamily='ArialRoundedMTBold' style={{textAlign:'center' }}>No Friends Available!</Text>
                 </>}

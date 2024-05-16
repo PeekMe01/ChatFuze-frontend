@@ -305,7 +305,7 @@ export default function Login(props) {
           //     'Content-Type' : 'multipart/form-data',
           //   },
           // })
-          const response = await axios.post('http://192.168.0.102:3001/Accounts/register', formData ,{
+          const response = await axios.post('http://192.168.146.92:3001/Accounts/register', formData ,{
             headers:{
               'x-expo-app': 'chatfuze-frontend',
               Accept: 'application/json',
