@@ -1,6 +1,6 @@
 import { AppState } from 'react-native';
 import 'react-native-gesture-handler';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { GluestackUIProvider, View, Text, KeyboardAvoidingView } from '@gluestack-ui/themed';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
@@ -40,12 +40,17 @@ import Messages from './Components/Messages/Messages';
 import Chat from './Components/Messages/Chat';
 import ProfileMessages from './Components/Messages/ProfileMessages';
 import api from './Components/Config'
-import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { database } from "./config/firebase";
 import ChangeProfilePicture from './Components/Profile/EditProfile/ChangeProfilePicture';
+import { TotpMultiFactorGenerator } from 'firebase/auth';
 // import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
+
+import { UnreadMessagesProvider, useUnreadMessages } from './Components/UnreadMessages/UnreadMessagesProvider'; // Adjust the path accordingly
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
 export default function App() {
 
   const [loginPage, setLoginPage] = useState(true);
@@ -54,6 +59,76 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(true);
   const [userOnline, setUserOnline] = useState(false);
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
+
+  // const { totalUnreadMessages, setTotalUnreadMessages } = useUnreadMessages();
+  // const unsubscribesRef = useRef([]);
+
+  // useEffect(() => {
+  //   if (loggedIn) {
+  //     setupTotalMessages();
+  //     const unsubscribeListeners = setupListeners();
+  //     return () => {
+  //       unsubscribeListeners.forEach((unsub) => unsub());
+  //     };
+  //   }
+  // }, [loggedIn]);
+
+  // const setupTotalMessages = async () => {
+  //   try {
+  //     const userId = await AsyncStorage.getItem('id');
+  //     const response = await api.get(`/messages/friends/${userId}`);
+  //     let total = 0;
+  //     for (const friend of response.data) {
+  //       const friendStatusQuery = query(
+  //         collection(database, 'unread'),
+  //         where('senderID', '==', friend.idusers),
+  //         where('receiverID', '==', parseInt(userId))
+  //       );
+
+  //       const querySnapshot = await getDocs(friendStatusQuery);
+  //       querySnapshot.forEach((doc) => {
+  //         total += doc.data().messages;
+  //       });
+  //     }
+  //     setTotalUnreadMessages(total);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  // const setupListeners = async () => {
+  //   try {
+  //     const userId = await AsyncStorage.getItem('id');
+  //     const response = await api.get(`/messages/friends/${userId}`);
+  //     const unsubscribeFunctions = [];
+
+  //     for (const friend of response.data) {
+  //       const friendStatusQuery = query(
+  //         collection(database, 'unread'),
+  //         where('senderID', '==', friend.idusers),
+  //         where('receiverID', '==', parseInt(userId))
+  //       );
+
+  //       const unsubscribe = onSnapshot(friendStatusQuery, (snapshot) => {
+  //         let total = 0;
+  //         snapshot.docChanges().forEach((change) => {
+  //           if (change.type === 'added' || change.type === 'modified') {
+  //             total += change.doc.data().messages;
+  //           }
+  //         });
+  //         setTotalUnreadMessages(prevTotal => prevTotal + total);
+  //       });
+
+  //       unsubscribeFunctions.push(unsubscribe);
+  //     }
+
+  //     unsubscribesRef.current = unsubscribeFunctions;
+  //     return unsubscribeFunctions;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
   useEffect(() => {
     checkLoginStatus(); 
 
@@ -68,38 +143,6 @@ export default function App() {
   useEffect(() =>{
     handleAppStateChange()
   }, [loggedIn])
-
-function getCurrentDateTime() {
-  let currentDate = new Date();
-  let day = currentDate.getDate();
-  let month = currentDate.getMonth() + 1; // Months are zero-indexed, so we add 1
-  let year = currentDate.getFullYear();
-  let hours = currentDate.getHours();
-  let minutes = currentDate.getMinutes();
-  let seconds = currentDate.getSeconds();
-
-  // Format the date and time
-  let formattedDate = `${year}-${month}-${day}`;
-  let formattedTime = `${hours}:${minutes}:${seconds}`;
-
-  // Concatenate date and time
-  let dateTime = `${formattedDate} ${formattedTime}`;
-
-  // Return the concatenated date and time
-  return dateTime;
-}
-  const checkLoginStatus = async () => {
-    try {
-      const userToken = await AsyncStorage.getItem('userToken');
-      if (userToken) {
-        setLoggedIn(true);
-      } else {
-        setLoggedIn(false);
-      }
-    } catch (error) {
-      console.error('Error checking login status:', error);
-    }
-  };
 
   const handleAppStateChange = useCallback(async (nextAppState) => {
     const userToken = await AsyncStorage.getItem('userToken');
@@ -137,7 +180,310 @@ function getCurrentDateTime() {
             console.error('Error occurreeEed while updating user status:', error);
         }
     }
-}, [setUserOnline]);
+  }, [setUserOnline]);
+
+  function getCurrentDateTime() {
+    let currentDate = new Date();
+    let day = currentDate.getDate();
+    let month = currentDate.getMonth() + 1;
+    let year = currentDate.getFullYear();
+    let hours = currentDate.getHours();
+    let minutes = currentDate.getMinutes();
+    let seconds = currentDate.getSeconds();
+
+    let formattedDate = `${year}-${month}-${day}`;
+    let formattedTime = `${hours}:${minutes}:${seconds}`;
+    let dateTime = `${formattedDate} ${formattedTime}`;
+
+    return dateTime;
+  }
+
+  const MainApp = () => {
+    const { totalUnreadMessages, setTotalUnreadMessages } = useUnreadMessages();
+    const unsubscribesRef = useRef([]);
+    const appState = useRef(AppState.currentState);
+    const { updateUnreadCounts } = useUnreadMessages();
+
+  useEffect(() => {
+    if (loggedIn) {
+      setupTotalMessages(updateUnreadCounts);
+      const unsubscribeListeners = setupListeners();
+      return () => {
+        // unsubscribeListeners.forEach((unsub) => unsub());
+      };
+    }
+  }, [loggedIn]);
+
+  const setupTotalMessages = async (updateUnreadCounts) => {
+    try {
+      const userId = await AsyncStorage.getItem('id');
+      const response = await api.get(`/messages/friends/${userId}`);
+      let total = 0;
+      for (const friend of response.data) {
+        const friendStatusQuery = query(
+          collection(database, 'unread'),
+          where('senderID', '==', friend.idusers),
+          where('receiverID', '==', parseInt(userId))
+        );
+
+        const querySnapshot = await getDocs(friendStatusQuery);
+        querySnapshot.forEach((doc) => {
+          total += doc.data().messages;
+        });
+      }
+      setTotalUnreadMessages(total);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const setupListeners = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('id');
+      const response = await api.get(`/messages/friends/${userId}`);
+      const unsubscribeFunctions = [];
+      // const friendUnreadCounts = {};
+
+      for (const friend of response.data) {
+        const friendStatusQuery = query(
+          collection(database, 'unread'),
+          where('senderID', '==', friend.idusers),
+          where('receiverID', '==', parseInt(userId))
+        );
+
+        if(friendStatusQuery){
+          const unsubscribe = onSnapshot(friendStatusQuery, (snapshot) => {
+            let count = 0;
+            snapshot.docChanges().forEach((change) => {
+              if (change.type === 'added' || change.type === 'modified') {
+                count  += change.doc.data().messages;
+              }
+            });
+            // // Update the count for this friend
+            // friendUnreadCounts[friend.idusers] = count;
+  
+            // // Calculate total unread messages count by summing up counts for all friends
+            // const totalUnread = Object.values(friendUnreadCounts).reduce((acc, curr) => acc + curr, 0);
+            // console.log(friendUnreadCounts)
+            // setTotalUnreadMessages(totalUnread);
+            updateUnreadCounts(friend.idusers, count);
+          });
+  
+          unsubscribeFunctions.push(unsubscribe);
+        }
+      }
+
+      unsubscribesRef.current = unsubscribeFunctions;
+      return unsubscribeFunctions;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+    return (
+      <NavigationContainer>
+        <Tab.Navigator screenOptions={{ headerShown: false }}>
+          <Tab.Screen 
+            name="Home" 
+            component={HomeScreen}
+            options={{ 
+              tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
+              tabBarIcon: () => <MaterialIcons name="home" size={30} color="white" />,
+              tabBarActiveTintColor: "white",
+              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>,
+            }} 
+          />
+          <Tab.Screen 
+            name="Messages" 
+            component={MessagesScreen} 
+            options={{
+              tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
+              tabBarIcon: () => <MaterialIcons name="inbox" size={30} color="white" />,
+              tabBarActiveTintColor: "white",
+              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>,
+              tabBarBadge: totalUnreadMessages,
+              tabBarBadgeStyle: { backgroundColor: '#512095', display: totalUnreadMessages > 0 ? 'flex' : 'none' }
+            }} 
+          />
+          <Tab.Screen 
+            name="Leaderboard" 
+            component={LeaderboardScreen} 
+            options={{ 
+              tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
+              tabBarIcon: () => <MaterialIcons name="leaderboard" size={30} color="white" />,
+              tabBarActiveTintColor: "white",
+              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>
+            }} 
+          />
+          <Tab.Screen 
+            name="Profile" 
+            component={ProfileScreen} 
+            options={{ 
+              tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
+              tabBarIcon: () => <MaterialIcons name="person" size={30} color="white" />,
+              tabBarActiveTintColor: "white",
+              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>
+            }} 
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
+    );
+  };
+
+  // const [totalUnreadMessages, setTotalUnreadMessages] = useState(0);
+
+  // // //Let's added listeners for when user receives new messages
+  // useEffect(()=>{
+  //   setupTotalMessages()
+  //   setupListeners();
+  // }, [loggedIn])
+
+  // const setupTotalMessages = async () => {
+  //   const data = await AsyncStorage.getItem('id')
+  //   const response = await api.get(`/messages/friends/${data}`);
+  //   response.data.forEach(async (friend) => {
+  //     const friendStatusQuery = query(
+  //       collection(database, 'unread'),
+  //       where('senderID', '==', friend.idusers),
+  //       where('receiverID', '==', parseInt(data))
+  //     );
+
+  //     const querySnapshot = await getDocs(friendStatusQuery);
+  //     querySnapshot.forEach((doc) => {
+  //       console.log(doc.data().messages);
+  //       setTotalUnreadMessages(totalUnreadMessages+doc.data().messages)
+  //     });
+  //   })
+  // }
+
+  // const setupListeners = async () => {
+  //   try {
+  //     const data = await AsyncStorage.getItem('id')
+  //     const response = await api.get(`/messages/friends/${data}`);
+  //     const unsubscribeFunctions = [];
+
+  //    response.data.forEach(async (friend) => {
+  //        const friendStatusQuery = query(
+  //            collection(database, 'unread'),
+  //            where('senderID', '==', friend.idusers),
+  //            where('receiverID', '==', parseInt(data))
+  //        );
+         
+  //       //  const querySnapshot = await getDocs(friendStatusQuery);
+  //       //  querySnapshot.forEach((doc) => {
+  //       //   console.log(doc.data().messages);
+  //       //   setTotalUnreadMessages(totalUnreadMessages+doc.data().messages)
+  //       // });
+
+  //        // Set up a real-time listener for each query
+  //        const unsubscribe = onSnapshot(friendStatusQuery, (snapshot) => {
+  //            console.log(`Snapshot received for friend ${friend.idusers}`);
+  //            snapshot.docChanges().forEach((change) => {
+  //                if (change.type === 'added' ||change.type === 'modified') {
+  //                    console.log(`Friend ${friend.idusers} has sent you a message`);
+  //                    setupTotalMessages()
+  //                }
+  //            });
+  //        });
+
+  //        // Add the unsubscribe function to the array
+  //        unsubscribeFunctions.push(unsubscribe);
+  //        });
+
+  //        // Return a cleanup function that unsubscribes all listeners
+  //        return () => {
+  //            unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
+  //        };
+  //   } catch (error) {
+  //       console.log(error)
+  //   }
+  // }
+
+
+  // useEffect(() => {
+  //   checkLoginStatus(); 
+
+  //   if (AppState) {
+  //     AppState.addEventListener('change', handleAppStateChange);
+  //   return () => {
+  //     AppState.removeEventListener('change', handleAppStateChange);
+  //   };
+  // }
+  // }, []);
+
+  // useEffect(() =>{
+  //   handleAppStateChange()
+  // }, [loggedIn])
+
+// function getCurrentDateTime() {
+//   let currentDate = new Date();
+//   let day = currentDate.getDate();
+//   let month = currentDate.getMonth() + 1; // Months are zero-indexed, so we add 1
+//   let year = currentDate.getFullYear();
+//   let hours = currentDate.getHours();
+//   let minutes = currentDate.getMinutes();
+//   let seconds = currentDate.getSeconds();
+
+//   // Format the date and time
+//   let formattedDate = `${year}-${month}-${day}`;
+//   let formattedTime = `${hours}:${minutes}:${seconds}`;
+
+//   // Concatenate date and time
+//   let dateTime = `${formattedDate} ${formattedTime}`;
+
+//   // Return the concatenated date and time
+//   return dateTime;
+// }
+  const checkLoginStatus = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (userToken) {
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+    } catch (error) {
+      console.error('Error checking login status:', error);
+    }
+  };
+
+//   const handleAppStateChange = useCallback(async (nextAppState) => {
+//     const userToken = await AsyncStorage.getItem('userToken');
+//     const userId = await AsyncStorage.getItem('id');
+//     if (userToken) {
+//         let active;
+//         console.log("App.js " + imagePickerOpen)
+//         // if(imagePickerOpen){
+//         //   return;
+//         // }
+//         if (nextAppState === 'active' || !nextAppState) {
+//             active = true;
+//             setUserOnline(true);
+//         } else {
+//             active = false;
+//             setUserOnline(false);
+//         }
+
+//         try {
+//             // Check if the document already exists
+//             const docRef = doc(database, 'status', userId);
+//             const docSnapshot = await getDoc(docRef);
+//             let datetime= getCurrentDateTime();
+//             if (docSnapshot.exists()) {
+//                 // Update the existing document
+                
+//                 await updateDoc(docRef, { active ,datetime});
+//             } else {
+//                 // If the document doesn't exist, create it
+//                 await setDoc(docRef, { userId: parseInt(userId), active ,datetime});
+//             }
+
+//             console.log('User status updated successfully App.js.');
+//         } catch (error) {
+//             console.error('Error occurreeEed while updating user status:', error);
+//         }
+//     }
+// }, [setUserOnline]);
 
 
   function HomeScreen() {
@@ -311,53 +657,11 @@ function getCurrentDateTime() {
   } else if (loggedIn) {
 
     return (
-      // <SafeAreaProvider>
-      <GluestackUIProvider config={config}>
-      <NavigationContainer>
-        <Tab.Navigator screenOptions={{ headerShown: false}}>
-          <Tab.Screen 
-            name="Home" 
-            component={HomeScreen}
-            options={{ 
-              tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-              // tabBarIcon: () => <Icon name="home" size={24} color="#2cd6d3" />,
-              tabBarIcon: () => <MaterialIcons name="home" size={30} color="white" />,
-              tabBarActiveTintColor: "white",
-              title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>
-            }} />
-          <Tab.Screen 
-            name="Messages" 
-            component={MessagesScreen} 
-            options={{
-              tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' }, 
-              // tabBarIcon: () => <Icon name="inbox" size={24} color="#2cd6d3" />,
-              tabBarIcon: () => <MaterialIcons name="inbox" size={30} color="white" />,
-              tabBarActiveTintColor: "white",
-              title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>
-            }} />
-          <Tab.Screen 
-          name="Leaderboard" 
-          component={LeaderboardScreen} 
-          options={{ 
-            tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-            tabBarIcon: () => <MaterialIcons name="leaderboard" size={30} color="white" />,
-            tabBarActiveTintColor: "white",
-            title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>
-          }} />
-          <Tab.Screen 
-            name="Profile" 
-            component={ProfileScreen} 
-            options={{ 
-              tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-              tabBarIcon: () => <MaterialIcons name="person" size={30} color="white" />,
-              tabBarActiveTintColor: "white",
-              title: ({focused}) => focused?<Octicons name="dot-fill" size={15} color="#512095" />:<></>
-             }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </GluestackUIProvider>
-    // </SafeAreaProvider>
+        <UnreadMessagesProvider>
+          <GluestackUIProvider config={config}>
+            <MainApp />
+          </GluestackUIProvider>
+        </UnreadMessagesProvider>
     )
     
   }

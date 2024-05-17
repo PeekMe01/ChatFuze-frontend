@@ -12,6 +12,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { collection, addDoc, orderBy, query, onSnapshot, where , doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
 import { database } from "../../config/firebase";
 
+const error = console.error; console.error = (...args) => { if (/defaultProps/.test(args[0])) return; error(...args); };
+
 export default function Chat({navigation,route}) {
     
     const[loggedInUserID, setLoggedInUserID] = useState();
@@ -92,16 +94,25 @@ export default function Chat({navigation,route}) {
             console.error('Error occurred while updating user typing status:', error);
         }
       }
-      const onInputTextChanged = text => {
+      const isFirstInput = useRef(true);
+
+        const onInputTextChanged = text => {
         clearTypingTimeout();
         setTyping(true);
-        if(!typing)
+        
+        if (isFirstInput.current) {
+            isFirstInput.current = false;
+        } else {
+            if (!typing) {
             updateTyping(true);
+            }
+        }
+
         timeoutRef.current = setTimeout(() => {
-          setTyping(false);
-          updateTyping(false);
-        }, 2000);
-      };
+            setTyping(false);
+            updateTyping(false);
+          }, 3000);
+        };
       useEffect(()=>{
         let senderid=loggedInUserID
         let receiverid=receivingUser.idusers
@@ -118,6 +129,7 @@ export default function Chat({navigation,route}) {
                 if (change.type === 'added' || change.type === 'modified') {
                     const data = change.doc.data();
                     console.log("hello world")
+                    console.log(data.typing)
                  
                     setReceiverTyping(data.typing);
                     // console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
@@ -171,6 +183,37 @@ export default function Chat({navigation,route}) {
     useEffect(()=>{
         getLoggedInUserId()
     }, [])
+
+    useEffect(()=>{
+        clearUnreadMessages()
+    },[messages])
+
+    const clearUnreadMessages = async () => {
+        try {
+            let receiverid=loggedInUserID;
+            let senderid=receivingUser.idusers;
+
+            if(receiverid){
+                const docId = `${senderid}_${receiverid}`;
+                const docRef = doc(database, 'unread', docId);
+                
+                const docSnapshot = await getDoc(docRef);
+
+                if (docSnapshot.exists()) {
+                    // Update the existing document
+                    
+                    await updateDoc(docRef, { messages: 0});
+                } else {
+                    // If the document doesn't exist, create it
+                    await setDoc(docRef, { senderID: parseInt(senderid), receiverID: parseInt(receiverid) , messages: 0});
+                }
+
+                console.log('User status updated successfully App.js.');
+            }
+        } catch (error) {
+            console.error('Error occurreeEed while updating user status:', error);
+        }
+    }
 
     getLoggedInUserId = async () => {
         const userId = await AsyncStorage.getItem('id');
@@ -290,7 +333,7 @@ export default function Chat({navigation,route}) {
     })
 
 
-      const onSend = useCallback((messages = []) => {
+      const onSend = useCallback(async (messages = []) => {
         setMessages(previousMessages =>
           GiftedChat.append(previousMessages, messages),
         )
@@ -303,6 +346,18 @@ export default function Chat({navigation,route}) {
             user,
             receivingUser: receivingUser.idusers
         });
+        try {
+            // Check if the document already exists
+            const docRef = doc(database, 'unread', user._id+'_'+receivingUser.idusers);
+            const docSnapshot = await getDoc(docRef);
+            if (docSnapshot.exists()) {
+                await updateDoc(docRef, { messages: docSnapshot.data().messages+1 });
+            } else {
+                await setDoc(docRef, { senderID: parseInt(user._id), receiverID: parseInt(receivingUser.idusers) , messages: 1});
+            }
+        } catch (error) {
+            console.error(error);
+        }
       }, [])
 
     // Create a ref for the FlatList inside GiftedChat
@@ -347,7 +402,7 @@ export default function Chat({navigation,route}) {
                             _id: parseInt(loggedInUserID),
                         }}
                         messageContainerRef={messageContainerRef}
-                        renderAvatarOnTop={true}
+                        // renderAvatarOnTop={true}
                         renderAvatar = {null}
                         onInputTextChanged={onInputTextChanged}
                        isTyping ={receiverTyping}

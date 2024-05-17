@@ -12,8 +12,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { database } from "../../config/firebase";
 import { useIsFocused } from '@react-navigation/native';
+import { useUnreadMessages } from '../UnreadMessages/UnreadMessagesProvider';
 const Messages = ({navigation }) => {
-  const isFocused = useIsFocused();
+    const { friendUnreadCounts } = useUnreadMessages();
+    const isFocused = useIsFocused();
     const [friendsuser,setfriendsuser]=useState([]);
     const [loading,setIsLoading]=useState(true)
 
@@ -141,7 +143,7 @@ const Messages = ({navigation }) => {
                             }}
                         />:<Image source={userimg} alt='' style={{ borderRadius: 40 }} />}
               <View style={{ flexDirection: 'column', paddingHorizontal: 20, flex: 1, padding: 10, borderRadius: 30}}>
-              <Text size='2xl' color='white' fontWeight='$bold' fontFamily='ArialRoundedMTBold' paddingTop={10}>
+                <Text size='2xl' color='white' fontWeight='$bold' fontFamily='ArialRoundedMTBold' paddingTop={10}>
                     {item.username}
                 </Text>
                 <Text size='sm' fontWeight='bold' fontFamily='ArialRoundedMTBold' style={{ color: item.active === true ? '#2cd6d3' : '#727386' }}>
@@ -152,6 +154,9 @@ const Messages = ({navigation }) => {
                       : 'last seen from: ' + getFormattedTimeDifference(item.datetime)}
                 </Text>
               </View>
+              {friendUnreadCounts[item.idusers]!=0?<Text size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={10} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
+                    {friendUnreadCounts[item.idusers]}
+                </Text>:null}
               <AntDesign style={{alignSelf:'center'}} name="arrowright" size={24} color="white" />
             </TouchableOpacity>
           );
@@ -205,7 +210,7 @@ const Messages = ({navigation }) => {
                 </Text>
             </ScrollView>
             
-              {friendsuser&&friendsuser.length>=1? <FlatList style={{height:'75%'}}
+              {friendsuser&&friendsuser.length>=1? <FlatList style={{height:'78%'}}
                     data={friendsuser}
                     renderItem={renderItem}
                     showsVerticalScrollIndicator={false}
