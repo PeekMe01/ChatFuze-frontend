@@ -88,16 +88,16 @@ export default function EditProfile({navigation, route }) {
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <Icon name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='4xl' color='white' fontFamily='Roboto_500Medium'>
                         Edit Profile
                     </Text>
                 </View>
                 <View w="$80" alignSelf='center' marginVertical={100}>
                     <TouchableHighlight onPress={()=>{handleChangeUsernamePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Change Username
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -106,7 +106,7 @@ export default function EditProfile({navigation, route }) {
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleChangeProfilePicturePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Change Profile Picture
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -115,7 +115,7 @@ export default function EditProfile({navigation, route }) {
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleChangeCountryPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Change Country
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -124,7 +124,7 @@ export default function EditProfile({navigation, route }) {
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleChangeBioPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Edit Bio
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
@@ -133,7 +133,7 @@ export default function EditProfile({navigation, route }) {
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleChangeSocialsPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:5}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Edit Social Media Links
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>

@@ -76,7 +76,8 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
         try {
             const resp = await fetch(imageUri);
             const blob = await resp.blob();
-            const storageRef = ref(storage, 'ChatFuze/Profile/' + Date.now() + '.jpg');
+            const data = await AsyncStorage.getItem('id')
+            const storageRef = ref(storage, 'ChatFuze/Profile/'+ data + Date.now() + '.jpg');
             console.log("store:"+storageRef)
             await uploadBytes(storageRef, blob);
             downloadUrl = await getDownloadURL(storageRef);
@@ -173,9 +174,9 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
         <View margin={30} marginBottom={100}>
             <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                 <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                    <MaterialIcons name="arrow-back" size={30} color="white"/>
+                    <MaterialIcons name="arrow-back" size={25} color="white"/>
                 </TouchableHighlight>
-                <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                <Text size='2xl' color='white' fontFamily='Roboto_500Medium'>
                     Change Profile Picture
                 </Text>
             </View>
@@ -185,9 +186,9 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
                     {img?
                     <Image
                         alt='profilePic'
-                        borderColor='white'
-                        borderWidth={2}
-                        border
+                        // borderColor='white'
+                        // borderWidth={2}
+                        // border
                         w={140}
                         h={140}
                         borderRadius="$full"
@@ -198,9 +199,9 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
                     user.imageurl?
                         <Image
                             alt='profilePic'
-                            borderColor='white'
-                            borderWidth={2}
-                            border
+                            // borderColor='white'
+                            // borderWidth={2}
+                            // border
                             w={140}
                             h={140}
                             borderRadius="$full"
@@ -210,9 +211,9 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
                         />
                         :<Image
                             alt='profilePic'
-                            borderColor='white'
-                            borderWidth={2}
-                            border
+                            // borderColor='white'
+                            // borderWidth={2}
+                            // border
                             w={140}
                             h={140}
                             borderRadius="$full"
@@ -263,6 +264,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingVertical: 16,
     paddingHorizontal: 40,
+    fontFamily: 'Roboto_400Regular'
     // borderColor: 'white',
     // borderWidth: 1
   },

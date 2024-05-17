@@ -1,7 +1,7 @@
 import { AppState } from 'react-native';
 import 'react-native-gesture-handler';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { GluestackUIProvider, View, Text, KeyboardAvoidingView } from '@gluestack-ui/themed';
+import { GluestackUIProvider, View, Text, KeyboardAvoidingView, HStack, Spinner, Center } from '@gluestack-ui/themed';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import BubbleScene from './Components/Background/BubbleScene';
@@ -45,8 +45,24 @@ import { database } from "./config/firebase";
 import ChangeProfilePicture from './Components/Profile/EditProfile/ChangeProfilePicture';
 import { TotpMultiFactorGenerator } from 'firebase/auth';
 // import { Pusher, PusherEvent } from '@pusher/pusher-websocket-react-native';
+import {
+  Roboto_100Thin,
+  Roboto_100Thin_Italic,
+  Roboto_300Light,
+  Roboto_300Light_Italic,
+  Roboto_400Regular,
+  Roboto_400Regular_Italic,
+  Roboto_500Medium,
+  Roboto_500Medium_Italic,
+  Roboto_700Bold,
+  Roboto_700Bold_Italic,
+  Roboto_900Black,
+  Roboto_900Black_Italic,
+} from '@expo-google-fonts/roboto';
 
 import { UnreadMessagesProvider, useUnreadMessages } from './Components/UnreadMessages/UnreadMessagesProvider'; // Adjust the path accordingly
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -128,6 +144,22 @@ export default function App() {
   //     console.error(error);
   //   }
   // };
+
+  const [fontsLoaded] = useFonts({
+    'ArialRoundedMTBold': require('./assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
+    Roboto_100Thin,
+    Roboto_100Thin_Italic,
+    Roboto_300Light,
+    Roboto_300Light_Italic,
+    Roboto_400Regular,
+    Roboto_400Regular_Italic,
+    Roboto_500Medium,
+    Roboto_500Medium_Italic,
+    Roboto_700Bold,
+    Roboto_700Bold_Italic,
+    Roboto_900Black,
+    Roboto_900Black_Italic,
+});
 
   useEffect(() => {
     checkLoginStatus(); 
@@ -298,7 +330,7 @@ export default function App() {
             component={MessagesScreen} 
             options={{
               tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-              tabBarIcon: () => <MaterialIcons name="inbox" size={30} color="white" />,
+              tabBarIcon: () => <MaterialCommunityIcons name="message" size={30} color="white" />,
               tabBarActiveTintColor: "white",
               title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>,
               tabBarBadge: totalUnreadMessages,

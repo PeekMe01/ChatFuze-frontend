@@ -287,7 +287,7 @@ export default function Login(props) {
         try {
             const resp = await fetch(image.uri);
             const blob = await resp.blob();
-            const storageRef = ref(storage, 'ChatFuze/Verification/' + Date.now() + '.jpg');
+            const storageRef = ref(storage, 'ChatFuze/Verification/'+ email + Date.now() + '.jpg');
             console.log("store:"+storageRef)
             await uploadBytes(storageRef, blob);
             downloadUrl = await getDownloadURL(storageRef);

@@ -13,6 +13,20 @@ import { AlertDialogCloseButton } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { database } from "../../config/firebase";
+import {
+    Roboto_100Thin,
+    Roboto_100Thin_Italic,
+    Roboto_300Light,
+    Roboto_300Light_Italic,
+    Roboto_400Regular,
+    Roboto_400Regular_Italic,
+    Roboto_500Medium,
+    Roboto_500Medium_Italic,
+    Roboto_700Bold,
+    Roboto_700Bold_Italic,
+    Roboto_900Black,
+    Roboto_900Black_Italic,
+  } from '@expo-google-fonts/roboto';
 
 export default function EditSettings({ navigation, setLoggedIn, setLoginPage, setSignupPage }) {
     // console.log(props)
@@ -24,6 +38,18 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
     const [showAlertDialog, setShowAlertDialog] = useState(false)
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
+        Roboto_100Thin,
+        Roboto_100Thin_Italic,
+        Roboto_300Light,
+        Roboto_300Light_Italic,
+        Roboto_400Regular,
+        Roboto_400Regular_Italic,
+        Roboto_500Medium,
+        Roboto_500Medium_Italic,
+        Roboto_700Bold,
+        Roboto_700Bold_Italic,
+        Roboto_900Black,
+        Roboto_900Black_Italic,
     });
     if (!fontsLoaded) {
         return (
@@ -221,73 +247,73 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <Icon name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='4xl' color='white' fontFamily='Roboto_500Medium'>
                         Edit Settings
                     </Text>
                 </View>
                 <View w="$80" alignSelf='center' marginVertical={100}>
                     <TouchableHighlight onPress={()=>{handleChangePasswordPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Change Password
                             </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                            <Icon name="keyboard-arrow-right" size={25} color="white"/>
                         </View>
                     </TouchableHighlight>
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleInsightsPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Insights
                             </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                            <Icon name="keyboard-arrow-right" size={25} color="white"/>
                         </View>
                     </TouchableHighlight>
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleLanguagePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Language
                             </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                            <Icon name="keyboard-arrow-right" size={25} color="white"/>
                         </View>
                     </TouchableHighlight>
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleAboutUsPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 About us
                             </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                            <Icon name="keyboard-arrow-right" size={25} color="white"/>
                         </View>
                     </TouchableHighlight>
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleFeedbackPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Feedback
                             </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                            <Icon name="keyboard-arrow-right" size={25} color="white"/>
                         </View>
                     </TouchableHighlight>
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleVerificationPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Verification
                             </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                            <Icon name="keyboard-arrow-right" size={25} color="white"/>
                         </View>
                     </TouchableHighlight>
                     <Divider/>
                     <TouchableHighlight onPress={()=>{handleLogoutPressed()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' style={{paddingLeft:10}}>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Logout
                             </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                            <Icon name="keyboard-arrow-right" size={25} color="white"/>
                         </View>
                     </TouchableHighlight>
                     <Divider/>

@@ -49,9 +49,9 @@ export default function AboutUs({navigation}) {
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <Icon name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                         About us
                     </Text>
                 </View>
@@ -68,12 +68,18 @@ export default function AboutUs({navigation}) {
                     />
                 </View>
 
-                <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' padding={30} textAlign='center'>
+                <Text size='3xl' color='white' fontFamily='Roboto_500Medium' padding={30} textAlign='center'>
                     ChatFuze
                 </Text>
                 
-                <Text color='white' fontWeight='$light' size='lg' textAlign='center'>
-                    ChatFuze is a forward-thinking Lebanese website development company that specializes in creating customized digital solutions for businesses. With a focus on creativity and quality, we design and develop visually appealing, user-friendly websites tailored to meet the unique needs of our clients. Our team of experts collaborates closely with each client to understand their goals and deliver websites that not only look great but also drive engagement and growth. Whether you need a new website, an e-commerce platform, or a website redesign, ChatFuze has the expertise to bring your vision to life and enhance your online presence. 
+                <Text color='white' fontFamily='Roboto_400Regular' size='lg' textAlign='left'>
+                    ChatFuze is a forward-thinking Lebanese website development company that specializes in creating customized digital solutions for businesses. With a focus on creativity and quality, we design and develop visually appealing, user-friendly websites tailored to meet the unique needs of our clients. 
+                </Text>
+                <Text>
+                    
+                </Text>
+                <Text color='white' fontFamily='Roboto_400Regular' size='lg' textAlign='left'>
+                    Our team of experts collaborates closely with each client to understand their goals and deliver websites that not only look great but also drive engagement and growth. Whether you need a new website, an e-commerce platform, or a website redesign, ChatFuze has the expertise to bring your vision to life and enhance your online presence. 
                 </Text>
             </ScrollView>
             </View>

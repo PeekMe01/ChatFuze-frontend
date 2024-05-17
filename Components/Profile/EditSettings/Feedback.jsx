@@ -138,15 +138,15 @@ export default function Feedback({navigation}) {
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <MaterialIcons name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                         Feedback
                     </Text>
                 </View>
 
             <View alignItems='center' justifyContent='center' margin={10}>
-                <Text size='2xl' color='white' marginVertical={30}>Your feedback matters!</Text>
+                <Text size='2xl' color='white' fontFamily='Roboto_500Medium' marginVertical={30}>Your feedback matters!</Text>
                 <FormControl isDisabled={attemptingSendFeedback} isInvalid={invalidFeedback} isReadOnly={false} isRequired={true} w={'$full'} >
                     <Animatable.View animation={invalidFeedback?"shake":null}>
                     <Textarea
@@ -167,6 +167,7 @@ export default function Feedback({navigation}) {
                             
                             maxLength={300}
                             color='white'
+                            fontFamily='Roboto_400Regular'
                             placeholderTextColor={'#ffffff50'}
                             $active-borderWidth={30}
                             borderColor='white'
@@ -204,7 +205,7 @@ export default function Feedback({navigation}) {
                     }}
                     onPress={()=>{handleSendFeedback()}}
                     >
-                    <ButtonText fontSize="$xl" fontWeight="$medium">
+                    <ButtonText fontSize="$xl" fontFamily='Roboto_400Regular'>
                     Submit
                     </ButtonText>
                 </Button>
