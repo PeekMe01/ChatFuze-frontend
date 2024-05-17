@@ -184,6 +184,37 @@ export default function Chat({navigation,route}) {
         getLoggedInUserId()
     }, [])
 
+    useEffect(()=>{
+        clearUnreadMessages()
+    },[messages])
+
+    const clearUnreadMessages = async () => {
+        try {
+            let receiverid=loggedInUserID;
+            let senderid=receivingUser.idusers;
+
+            if(receiverid){
+                const docId = `${senderid}_${receiverid}`;
+                const docRef = doc(database, 'unread', docId);
+                
+                const docSnapshot = await getDoc(docRef);
+
+                if (docSnapshot.exists()) {
+                    // Update the existing document
+                    
+                    await updateDoc(docRef, { messages: 0});
+                } else {
+                    // If the document doesn't exist, create it
+                    await setDoc(docRef, { senderID: parseInt(senderid), receiverID: parseInt(receiverid) , messages: 0});
+                }
+
+                console.log('User status updated successfully App.js.');
+            }
+        } catch (error) {
+            console.error('Error occurreeEed while updating user status:', error);
+        }
+    }
+
     getLoggedInUserId = async () => {
         const userId = await AsyncStorage.getItem('id');
         setLoggedInUserID(userId)
