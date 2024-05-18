@@ -157,11 +157,14 @@ const Messages = ({navigation }) => {
                                 : 'last seen from: ' + getFormattedTimeDifference(item.datetime)}
                             </Text>
                         </View>
-              {friendUnreadCounts[item.idusers]!=0?<Text size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={10} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
+              
+                </View>
+                <View style={{flexDirection:'row'}}>
+                {friendUnreadCounts[item.idusers]!=0?<Text size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={10} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
                     {friendUnreadCounts[item.idusers]}
                 </Text>:null}
-                </View>
               <AntDesign style={{alignSelf:'center'}} name="arrowright" size={24} color="white" />
+              </View>
               </View>
             </TouchableOpacity>
           );
