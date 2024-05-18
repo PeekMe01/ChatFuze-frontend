@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VStack } from '@gluestack-ui/themed';
 import { Pressable } from '@gluestack-ui/themed';
 import userimg from '../../assets/img/user.png'
+import { AntDesign } from '@expo/vector-icons';
 
 export default function ProfileVisit({navigation, route}) {
     const toast = useToast()
@@ -38,6 +39,11 @@ export default function ProfileVisit({navigation, route}) {
     const[invalidtext,setinvalidtext]=useState(false)
     const [disablebutton,setdisablebutton]=useState(false);
     const[disabledeletebutton,setdisabledeletebutton]=useState(false)
+    const [expanded, setExpanded] = useState(false);
+
+    const toggleBio = () => {
+      setExpanded(!expanded);
+    };
 
     const removefriend =async()=>{
         try {
@@ -296,7 +302,7 @@ export default function ProfileVisit({navigation, route}) {
                 <TouchableWithoutFeedback onPress={dismissKeyboard}>
                     <View> 
                         <AlertDialogHeader>
-                            <Heading size="lg" color='#512095'>Report Friend?</Heading>
+                            <Heading size="lg" color='#512095'>Report User</Heading>
                                 <AlertDialogCloseButton>
                                 <MaterialIcons as={CloseIcon} />
                             </AlertDialogCloseButton>
@@ -341,6 +347,7 @@ export default function ProfileVisit({navigation, route}) {
                                     minHeight: 100,
                                     textAlignVertical: 'top',
                                 }}
+                                blurOnSubmit = {true}
                                 value={message}
                                 onChangeText={(text) => {
                                     setmessage(text);
@@ -380,9 +387,9 @@ export default function ProfileVisit({navigation, route}) {
             <View margin={30}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <MaterialIcons name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='4xl' color='white' fontFamily='Roboto_500Medium'>
                         Profile
                     </Text>
                 </View>
@@ -473,72 +480,93 @@ export default function ProfileVisit({navigation, route}) {
                     </View> */}
                 </View>
 
-                <Divider marginVertical={10}/>
+                <Divider marginVertical={10} marginTop={20}/>
 
-                <View style={{ alignItems: 'center', flexDirection: 'column', marginTop: 0, gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                <View style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 10}}>
+                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                         Bio
                     </Text>
-                    <Text color='white' fontWeight='$light' textAlign='center'>
-                        {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. */}
-                        {!friend.bio?"No bio yet!":friend.bio}
+                    <Text color='white' fontFamily='Roboto_300Light' size='lg'  numberOfLines={expanded ? undefined : 3}   ellipsizeMode="clip"  >
+                        {!friend.bio ? "No bio yet!" : friend.bio}
                     </Text>
+                    {friend.bio && (friend.bio.split('\n').length > 3 || friend.bio.length>120) && (
+                        <TouchableOpacity onPress={toggleBio} >
+                        <Text color='white' fontFamily='Roboto_300Light' size='lg'>
+                            {expanded ? "See less... " : "See more... "}
+                            <AntDesign
+                            name={expanded ? "arrowup" : "arrowdown"}
+                            size={20}
+                            color="white"
+                            />
+                        </Text>
+                        </TouchableOpacity>
+                                )}
                 </View>
 
                 <Divider marginVertical={10}/>
 
-                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                <View style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 10}}>
+                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                         Gender
                     </Text>
                     <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
                         <MaterialIcons name={friend.gender=="Male"?"male":"female"} size={30} color="white"/>
-                        <Text color='white' fontWeight='$light'>
+                        <Text color='white' fontFamily='Roboto_300Light' size='lg'>
                             {friend.gender}
                         </Text>
                     </View>
                 </View>
 
-                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                <Divider marginVertical={10}/>
+
+                <View style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 10}}>
+                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                         Global ranking spot
                     </Text>
                     <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
-                        <Text color='white' fontWeight='$light'>
+                        <Text color='white' fontFamily='Roboto_300Light' size='lg'>
                             #{leaderboardnumber}
                         </Text>
                     </View>
                 </View>
 
-                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                <Divider marginVertical={10}/>
+
+                <View style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 10}}>
+                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                         Total chat rooms joined
                     </Text>
                     <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
-                        <Text color='white' fontWeight='$light'>
+                        <Text color='white' fontFamily='Roboto_300Light' size='lg'>
                             {roomCount}
                         </Text>
                     </View>
                 </View>
 
-                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 10, gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                <Divider marginVertical={10}/>
+
+                <View style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 10}}>
+                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                         Country of residence
                     </Text>
-                    <Text color='white' fontWeight='$light'>
+                    <Text color='white' fontFamily='Roboto_300Light' size='lg'>
                         {friend.country}
                     </Text>
                 </View>
 
-                <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                <Divider marginVertical={10}/>
+
+                <View style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 10}}>
+                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                         Birthday
                     </Text>
-                    <Text color='white' fontWeight='$light'>
+                    <Text color='white' fontFamily='Roboto_300Light' size='lg'>
                         {/* 17 April 2003 */}
                         {formatDateOfBirth(friend.dateOfBirth)}
                     </Text>
                 </View>
+
+                <Divider marginVertical={10}/>
 
                 <SocialMedia instagram={friend.instagramlink} facebook={friend.facebooklink}/>
 

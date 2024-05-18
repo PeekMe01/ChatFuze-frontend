@@ -248,9 +248,9 @@ export default function EditSocials({navigation, route}) {
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <MaterialIcons name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                         Edit Socials
                     </Text>
                 </View>
@@ -258,7 +258,7 @@ export default function EditSocials({navigation, route}) {
                     <Box style={{ display: 'flex', gap: 40, justifyContent: 'center', marginVertical: 80}}>
                         {user&&user.instagramlink&&<View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
                             <FontAwesome5 name="instagram" size={30} color="white"/>
-                            <Text color='white' fontWeight='$light'>
+                            <Text color='white' fontFamily='Roboto_400Regular'>
                                 Go to Instagram profile
                             </Text>
                             <TouchableHighlight onPress={()=>{}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
@@ -269,7 +269,7 @@ export default function EditSocials({navigation, route}) {
                         </View>}
                         {user&&!user.instagramlink&&<View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
                             <FontAwesome5 name="instagram" size={30} color="white"/>
-                            <Text color='white' fontWeight='$light'>
+                            <Text color='white' fontFamily='Roboto_400Regular'>
                                 INSTAGRAM
                             </Text>
                             <TouchableHighlight onPress={()=>{}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
@@ -284,7 +284,7 @@ export default function EditSocials({navigation, route}) {
                             <Link href={user.facebooklink}>
                                 <TouchableHighlight onPress={()=>{Linking.openURL(user.facebooklink)}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
                                     <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
-                                        <LinkText textDecorationLine='none' color='white' fontWeight='$light'>Visit Profile </LinkText><Feather name="link" size={20} color="white"/>
+                                        <LinkText textDecorationLine='none' color='white' fontFamily='Roboto_400Regular'>Visit Profile </LinkText><Feather name="link" size={20} color="white"/>
                                     </View>
                                 </TouchableHighlight>
                             </Link>
@@ -296,7 +296,7 @@ export default function EditSocials({navigation, route}) {
                         </View>}
                         {user&&!user.facebooklink&&<View display='flex' flexDirection='row' gap={10} justifyContent='space-around' alignItems='center'>
                             <FontAwesome5 name="facebook" size={30} color="white"/>
-                            <Text color='white' fontWeight='$light'>
+                            <Text color='white' fontFamily='Roboto_400Regular'>
                                 FACEBOOK
                             </Text>
                             <TouchableHighlight onPress={()=>{handlePressAsync()}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>

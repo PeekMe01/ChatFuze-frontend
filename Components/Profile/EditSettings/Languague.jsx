@@ -6,6 +6,7 @@ import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, ScrollView, TouchableHighlight } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function Language({navigation}) {
 
@@ -48,18 +49,19 @@ export default function Language({navigation}) {
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <Icon name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                         Language
                     </Text>
                 </View>
                 <View w="$80" alignSelf='center' marginVertical={100}>
                     <TouchableHighlight onPress={()=>{}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
-                        <View justifyContent='center' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                                 English
                             </Text>
+                            <AntDesign name='check' size={24} color={'white'}/>
                             {/* <Icon name="keyboard-arrow-right" size={30} color="white"/> */}
                         </View>
                     </TouchableHighlight>

@@ -227,37 +227,38 @@ export default function Chat({navigation,route}) {
             headerLeft: () => null, // Remove the default back button
             headerTintColor: 'white',
             headerTitle: () => (
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',borderBottomColor:'white', paddingHorizontal: 20, paddingTop: 20, width: '100%',borderBottomWidth:.5,paddingBottom:10 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <AntDesign name="arrowleft" size={30} color="white" onPress={() => navigation.goBack()} marginLeft={-20} />
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',borderBottomColor:'white', paddingTop: 30, width: '100%',borderBottomWidth:.5,paddingBottom:10 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                    <AntDesign name="arrowleft" size={25} color="white" onPress={() => navigation.goBack()} padding={10}/>
                     {receivingUser.imageurl ? <Image
                             alt='profilePic'
-                            borderColor='white'
-                            borderWidth={2}
-                            border
+                            // borderColor='white'
+                            // borderWidth={2}
+                            // border
                             w={140}
                             h={140}
                             zIndex={-1}
-							style={{width:60,height:60}}
+							style={{width:50,height:50}}
                             borderRadius="$full"
                             source={{
                                 uri: receivingUser.imageurl,
                             }}
-                        /> : <Image source={userimg} alt='' style={{ borderRadius: 50, width: 60, height: 60, marginLeft: 10 }} />}
-                    <TouchableOpacity style={{ marginLeft: 10,width:'90%' }} onPress={() => {
+                        /> : <Image source={userimg} alt='' style={{ borderRadius: 50, width: 50, height: 50, marginLeft: 1 }} />}
+                    <TouchableOpacity style={{ marginLeft: 10,width:'100%', display: 'flex', flexDirection: 'column' }} onPress={() => {
                       navigation.push('ProfileMessages', {
                         user: receivingUser,
                       });
                     }}>
-                      <Text size='2xl' color='white' fontFamily='ArialRoundedMTBold' paddingTop={10}>
-                        {receivingUser.username}
+                      <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
+                        {/* {receivingUser.username} */}
+                        {receivingUser.username.length<=10?receivingUser.username:receivingUser.username.substring(0, 10)+'...'}
                       </Text>
-                      <Text size='sm' fontFamily='ArialRoundedMTBold' style={{ color: userStatus === true ? '#2cd6d3' : '#727386', fontSize: 15 }}>
+                      <Text size='sm' fontFamily='Roboto_400Regular' style={{ color: userStatus === true ? '#2cd6d3' : '#727386' }}>
                                 {userStatus === true
                                     ? 'online'
                                     : getFormattedTimeDifference(receivingUser.datetime) === "just now"
                                     ? 'last seen just now'
-                                    : 'last seen from: ' + getFormattedTimeDifference(receivingUser.datetime)}
+                                    : 'last seen ' + getFormattedTimeDifference(receivingUser.datetime) + ' ago'}
                                 </Text>
                     </TouchableOpacity>
                   </View>

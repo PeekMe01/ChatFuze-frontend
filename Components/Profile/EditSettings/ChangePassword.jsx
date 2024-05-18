@@ -185,9 +185,9 @@ export default function ChangePassword({navigation}) {
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <MaterialIcons name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                         Change Password
                     </Text>
                 </View>
@@ -210,6 +210,7 @@ export default function ChangePassword({navigation}) {
                                 >
                                 <InputField
                                 type={"password"}
+                                fontFamily='Roboto_400Regular'
                                 placeholder="Current Password"
                                 fontSize={'$xl'}
                                 autoCapitalize='none'
@@ -250,6 +251,7 @@ export default function ChangePassword({navigation}) {
                                 <InputField
                                 type={"password"}
                                 placeholder="New Password"
+                                fontFamily='Roboto_400Regular'
                                 fontSize={'$xl'}
                                 autoCapitalize='none'
                                 color='white'
@@ -291,6 +293,7 @@ export default function ChangePassword({navigation}) {
                                 placeholder="Confirm New Password"
                                 fontSize={'$xl'}
                                 autoCapitalize='none'
+                                fontFamily='Roboto_400Regular'
                                 color='white'
                                 placeholderTextColor={'rgba(255,255,255,0.5)'}
                                 value={confirmNewPassword}
@@ -333,7 +336,7 @@ export default function ChangePassword({navigation}) {
                             }}
                             onPress={validate}
                             >
-                            <ButtonText fontSize="$xl" fontWeight="$medium">
+                            <ButtonText fontSize="$xl" fontFamily='Roboto_400Regular'>
                             Save
                             </ButtonText>
                         </Button>

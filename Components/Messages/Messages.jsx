@@ -123,41 +123,48 @@ const Messages = ({navigation }) => {
       
     const renderItem = ({ item, index }) => {
           return (
-            <TouchableOpacity key={index} style={{ flexDirection: 'row', alignItems:'center', padding: 10,borderBottomWidth:1,borderColor:'white'}}
+            <TouchableOpacity key={index} style={{ padding: 10,borderBottomWidth:1,borderColor:'white'}}
             onPress={async ()=>{  navigation.push('Chat', { 
             receivingUser: item,
         });}}
              >
+                <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                <View justifyContent='center' alignItems='center' flexDirection='row' gap= {10}>
             {item.imageurl? <Image
                             alt='profilePic'
-                            borderColor='white'
-                            borderWidth={2}
-                            border
+                            // borderColor='white'
+                            // borderWidth={2}
+                            // border
                             w={140}
                             h={140}
                             zIndex={-1}
-							style={{width:90,height:90}}
+							style={{width:60,height:60}}
                             borderRadius="$full"
                             source={{
                                 uri: item.imageurl,
                             }}
-                        />:<Image source={userimg} alt='' style={{ borderRadius: 40 }} />}
-              <View style={{ flexDirection: 'column', paddingHorizontal: 20, flex: 1, padding: 10, borderRadius: 30}}>
-                <Text size='2xl' color='white' fontWeight='$bold' fontFamily='ArialRoundedMTBold' paddingTop={10}>
-                    {item.username}
-                </Text>
-                <Text size='sm' fontWeight='bold' fontFamily='ArialRoundedMTBold' style={{ color: item.active === true ? '#2cd6d3' : '#727386' }}>
-                  {item.active === true
-                    ? 'Online'
-                    : getFormattedTimeDifference(item.datetime) === "just now"
-                      ? 'last seen just now'
-                      : 'last seen from: ' + getFormattedTimeDifference(item.datetime)}
-                </Text>
-              </View>
-              {friendUnreadCounts[item.idusers]!=0?<Text size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={10} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
-                    {friendUnreadCounts[item.idusers]}
-                </Text>:null}
+                        />:<Image source={userimg} alt='' borderRadius="$full" style={{ width:60, height:60 }} />}
+                        <View>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
+                                {item.username.length<=10?item.username:item.username.substring(0, 10)+'...'}
+                                {/* {item.username} */}
+                            </Text>
+                            <Text size='sm' color={item.active?'#2cd6d3':'#727386'} fontFamily='Roboto_400Regular'>
+                            {item.active === true
+                                ? 'Active'
+                                : getFormattedTimeDifference(item.datetime) === "just now"
+                                ? 'last seen just now'
+                                : 'last seen from: ' + getFormattedTimeDifference(item.datetime)}
+                            </Text>
+                        </View>
+                </View>
+                <View flex={1}>
+                    {friendUnreadCounts[item.idusers]!=0?<Text width={friendUnreadCounts[item.idusers]>9?40:30} textAlign='center' alignSelf='flex-end' size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={10} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
+                        {friendUnreadCounts[item.idusers]>9?'9+':friendUnreadCounts[item.idusers]}
+                    </Text>:null}
+                </View>
               <AntDesign style={{alignSelf:'center'}} name="arrowright" size={24} color="white" />
+              </View>
             </TouchableOpacity>
           );
       };
@@ -204,19 +211,19 @@ const Messages = ({navigation }) => {
 >
     <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
         <View margin={30}>
-            <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false} style={{marginBottom:70}}>
-                <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' paddingTop={10}>
+            <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false} style={{marginBottom:20}}>
+                <Text size='4xl' color='white' fontFamily='Roboto_500Medium' paddingTop={10}>
                     Messages
                 </Text>
             </ScrollView>
             
-              {friendsuser&&friendsuser.length>=1? <FlatList style={{height:'78%'}}
+              {friendsuser&&friendsuser.length>=1? <FlatList style={{height:'85%'}}
                     data={friendsuser}
                     renderItem={renderItem}
                     showsVerticalScrollIndicator={false}
                     fadingEdgeLength={100}
                 /> :<>
-                <Text size='2xl' color='white' fontWeight='$bold' fontFamily='ArialRoundedMTBold' style={{textAlign:'center' }}>No Friends Available!</Text>
+                <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{textAlign:'center' }}>No Friends Available!</Text>
                 </>}
                    
         </View>

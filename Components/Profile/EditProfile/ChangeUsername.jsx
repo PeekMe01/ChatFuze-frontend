@@ -184,9 +184,9 @@ export default function ChangeUsername({navigation, route}) {
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <MaterialIcons name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                         Change Username
                     </Text>
                 </View>
@@ -194,11 +194,7 @@ export default function ChangeUsername({navigation, route}) {
 
                 <Center>
                 <Box h="$96" w="$64" style={{ display: 'flex', gap: 40, justifyContent: 'center'}}>
-                        {/* Old Password */}
                         <FormControl isDisabled={attemptingChangeUsername} isInvalid={invalidCurrentUsername} isReadOnly={false} isRequired={true} >
-                            {/* <FormControlLabel mb='$1'>
-                            <FormControlLabelText>Password</FormControlLabelText>
-                            </FormControlLabel> */}
                             <Animatable.View animation={invalidCurrentUsername?"shake":null}>
                             <Input 
                                 p={5} 
@@ -212,6 +208,7 @@ export default function ChangeUsername({navigation, route}) {
                                 placeholder="Username"
                                 fontSize={'$xl'}
                                 color='white'
+                                fontFamily='Roboto_400Regular'
                                 placeholderTextColor={'rgba(255,255,255,0.5)'}
                                 value={currentUsername}
                                 onChange={(newValue)=>{
@@ -253,7 +250,7 @@ export default function ChangeUsername({navigation, route}) {
                             }}
                             onPress={validate}
                             >
-                            <ButtonText fontSize="$xl" fontWeight="$medium">
+                            <ButtonText fontSize="$xl" fontFamily='Roboto_400Regular'>
                             Save
                             </ButtonText>
                         </Button>

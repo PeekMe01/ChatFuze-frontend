@@ -182,9 +182,9 @@ export default function EditBio({navigation, route}) {
             {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <MaterialIcons name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                         Edit Bio
                     </Text>
                 </View>
@@ -215,6 +215,7 @@ export default function EditBio({navigation, route}) {
                                     }}
                                     maxLength={300}
                                     color='white'
+                                    fontFamily='Roboto_400Regular'
                                     placeholderTextColor={'#ffffff50'}
                                     $active-borderWidth={30}
                                     borderColor='white'
@@ -253,7 +254,7 @@ export default function EditBio({navigation, route}) {
                             }}
                             onPress={validate}
                             >
-                            <ButtonText fontSize="$xl" fontWeight="$medium">
+                            <ButtonText fontSize="$xl" fontFamily='Roboto_400Regular'>
                             Save
                             </ButtonText>
                         </Button>

@@ -64,9 +64,9 @@ export default function Insights({navigation}) {
                  */}
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10} style={{marginBottom:'30%'}}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton} >
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <Icon name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                         Insights
                     </Text>
                 </View>

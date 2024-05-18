@@ -167,9 +167,9 @@ export default function FriendsList({navigation}) {
             <View margin={30} marginBottom={230}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={30} color="white"/>
+                        <Icon name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='4xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='4xl' color='white' fontFamily='Roboto_500Medium'>
                         Friends ({friendsList?friendsList.length:0})
                     </Text>
                 </View>
@@ -177,17 +177,18 @@ export default function FriendsList({navigation}) {
                 <View w="$80" alignSelf='center' marginVertical={50}>
                     {friendsList&&friendsList.length>0?friendsList.map((user)=>(
                 <React.Fragment key={user.idusers}>
-                    <TouchableHighlight onPress={()=>{handleProfileVisit(user)}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10,paddingHorizontal:10 }} disabled={clickedButton}>
+                    <TouchableHighlight onPress={()=>{handleProfileVisit(user)}} underlayColor={'#ffffff50'} style={{ padding:10 }} disabled={clickedButton}>
                         <View justifyContent='space-between' alignItems='center' flexDirection='row' >
                         <View justifyContent='center' alignItems='center' flexDirection='row' gap= {10}>
                         {user.imageurl?
                         <Image
                             alt='profilePic'
-                            borderColor='white'
-                            borderWidth={2}
-                            border
+                            // borderColor='white'
+                            // borderWidth={2}
+                            // border
                             size='sm'
                             zIndex={-1}
+                            style={{width:60,height:60}}
                             borderRadius="$full"
                             source={{
                                 uri: user.imageurl,
@@ -195,29 +196,30 @@ export default function FriendsList({navigation}) {
                         />
                         :<Image
                             alt='profilePic'
-                            borderColor='white'
-                            borderWidth={2}
-                            border
+                            // borderColor='white'
+                            // borderWidth={2}
+                            // border
                             size='sm'
                             zIndex={-1}
                             borderRadius="$full"
                             source={userimg}
+                            style={{ width:60, height:60 }}
                         />}
                         <View>
-                            <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                                 {user.username}
                             </Text>
-                            <Text size='sm' color={user.active?'#2cd6d3':'#727386'} fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                            <Text size='sm' color={user.active?'#2cd6d3':'#727386'} fontFamily='Roboto_400Regular'>
                             {user.active === true
-                    ? 'Active'
-                    : getFormattedTimeDifference(user.datetime) === "just now"
-                      ? 'last seen just now'
-                      : 'last seen from: ' + getFormattedTimeDifference(user.datetime)}
+                                ? 'Active'
+                                : getFormattedTimeDifference(user.datetime) === "just now"
+                                ? 'last seen just now'
+                                : 'last seen from: ' + getFormattedTimeDifference(user.datetime)}
                             </Text>
                         </View>
                             
                         </View>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                            <Icon name="keyboard-arrow-right" size={24} color="white"/>
                         </View>
                     </TouchableHighlight>
 

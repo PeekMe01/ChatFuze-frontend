@@ -129,7 +129,8 @@ export default function Verification({navigation}) {
         try {
             const resp = await fetch(imageUri);
             const blob = await resp.blob();
-            const storageRef = ref(storage, 'ChatFuze/Verification/' + Date.now() + '.jpg');
+            const data = await AsyncStorage.getItem('id')
+            const storageRef = ref(storage, 'ChatFuze/Verification/'+ data + Date.now() + '.jpg');
             console.log("store:"+storageRef)
             await uploadBytes(storageRef, blob);
             downloadUrl = await getDownloadURL(storageRef);
@@ -259,27 +260,27 @@ export default function Verification({navigation}) {
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <MaterialIcons name="arrow-back" size={30} color="white"/>
+                        <MaterialIcons name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='3xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                         Verification
                     </Text>
                 </View>
 
             <View alignItems='center' justifyContent='center' margin={10} marginTop={'20%'}>
                 {userHasAnIdVerificationRequest&&
-                    <Text size='xl' color='white' fontWeight='$light'>
+                    <Text size='xl' color='white' fontFamily='Roboto_400Regular'>
                         You're ID verification request is being proccessed...
                     </Text>
                 }
                 {userAlreadyVerified&&
-                    <Text size='xl' color='white' fontWeight='$light'>
+                    <Text size='xl' color='white' fontFamily='Roboto_400Regular'>
                         You are already verified!
                     </Text>
                 }
                 {!userHasAnIdVerificationRequest&&!userAlreadyVerified&&!image&&
                     <View gap={20}>
-                        <Text size='xl' color='white' fontWeight='$light'>
+                        <Text size='xl' color='white' fontFamily='Roboto_400Regular'>
                             Please upload your ID photo and submit it
                         </Text>
                         <Button
@@ -300,7 +301,7 @@ export default function Verification({navigation}) {
                             }}
                             onPress={()=>{setOpenCamera(true);setImage(null); setInvalidImage(false); if(permission&&!permission.granted){requestPermission()}}}
                             >
-                            <ButtonText fontSize="$xl" fontWeight="$medium">
+                            <ButtonText fontSize="$xl" fontFamily='Roboto_400Regular'>
                             Upload ID
                             </ButtonText>
                         </Button>
