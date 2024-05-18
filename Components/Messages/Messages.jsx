@@ -128,7 +128,7 @@ const Messages = ({navigation }) => {
             receivingUser: item,
         });}}
              >
-                <View justifyContent='space-between' alignItems='center' flexDirection='row' >
+                <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                 <View justifyContent='center' alignItems='center' flexDirection='row' gap= {10}>
             {item.imageurl? <Image
                             alt='profilePic'
@@ -146,8 +146,8 @@ const Messages = ({navigation }) => {
                         />:<Image source={userimg} alt='' borderRadius="$full" style={{ width:60, height:60 }} />}
                         <View>
                             <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
-                                {/* {item.username.length<=10?item.username:item.username.substring(0, 10)+'...'} */}
-                                {item.username}
+                                {item.username.length<=10?item.username:item.username.substring(0, 10)+'...'}
+                                {/* {item.username} */}
                             </Text>
                             <Text size='sm' color={item.active?'#2cd6d3':'#727386'} fontFamily='Roboto_400Regular'>
                             {item.active === true
@@ -157,9 +157,11 @@ const Messages = ({navigation }) => {
                                 : 'last seen from: ' + getFormattedTimeDifference(item.datetime)}
                             </Text>
                         </View>
-              {friendUnreadCounts[item.idusers]!=0?<Text size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={10} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
-                    {friendUnreadCounts[item.idusers]}
-                </Text>:null}
+                </View>
+                <View flex={1}>
+                    {friendUnreadCounts[item.idusers]!=0?<Text width={friendUnreadCounts[item.idusers]>9?40:30} textAlign='center' alignSelf='flex-end' size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={10} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
+                        {friendUnreadCounts[item.idusers]>9?'9+':friendUnreadCounts[item.idusers]}
+                    </Text>:null}
                 </View>
               <AntDesign style={{alignSelf:'center'}} name="arrowright" size={24} color="white" />
               </View>

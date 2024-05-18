@@ -16,7 +16,7 @@ import { Icon } from '@gluestack-ui/themed';
 
 var img = null;
 
-const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen}) => {
+const ChangeProfilePicture = ({navigation}) => {
 
     const toast = useToast()
     const storage = getStorage();
@@ -40,7 +40,6 @@ const ChangeProfilePicture = ({navigation, imagePickerOpen, setImagePickerOpen})
     // const isFocused = useIsFocused();
 
     useEffect(() => {
-        setImagePickerOpen(true)
         fetchData();
     }, [!user]);
 

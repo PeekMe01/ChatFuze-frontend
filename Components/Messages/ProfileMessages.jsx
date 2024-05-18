@@ -15,6 +15,7 @@ import SocialMedia from '../Profile/SocialMedia';
 import { Icon } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import userimg from '../../assets/img/user.png'
+import { AntDesign } from '@expo/vector-icons';
 
 export default function ProfileMessages({navigation, route}) {
 
@@ -33,6 +34,12 @@ export default function ProfileMessages({navigation, route}) {
     const[invalidtext,setinvalidtext]=useState(false)
     const [disablebutton,setdisablebutton]=useState(false);
     const[disabledeletebutton,setdisabledeletebutton]=useState(false)
+    const [expanded, setExpanded] = useState(false);
+
+    const toggleBio = () => {
+      setExpanded(!expanded);
+    };
+
     async function fetchData(){
         try {
              const data = user.idusers;
@@ -450,10 +457,21 @@ export default function ProfileMessages({navigation, route}) {
                         <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                             Bio
                         </Text>
-                        <Text color='white' fontFamily='Roboto_300Light' textAlign='center' size='lg'>
-                            {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. */}
-                            {!friend.bio?"No bio yet!":friend.bio}
+                        <Text color='white' fontFamily='Roboto_300Light' size='lg'  numberOfLines={expanded ? undefined : 3}   ellipsizeMode="clip"  >
+                        {!friend.bio ? "No bio yet!" : friend.bio}
+                    </Text>
+                    {friend.bio && (friend.bio.split('\n').length > 3 || friend.bio.length>120) && (
+                        <TouchableOpacity onPress={toggleBio} >
+                        <Text color='white' fontFamily='Roboto_300Light' size='lg'>
+                            {expanded ? "See less... " : "See more... "}
+                            <AntDesign
+                            name={expanded ? "arrowup" : "arrowdown"}
+                            size={20}
+                            color="white"
+                            />
                         </Text>
+                        </TouchableOpacity>
+                                )}
                     </View>
     
                     <Divider marginVertical={10}/>

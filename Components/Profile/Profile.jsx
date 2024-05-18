@@ -5,7 +5,7 @@ import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Button, ScrollView, TouchableHighlight } from 'react-native';
+import { Button, ScrollView, TouchableHighlight,TouchableOpacity } from 'react-native';
 import SocialMedia from './SocialMedia';
 import { RefreshControl } from '@gluestack-ui/themed';
 import api from '../Config'
@@ -22,7 +22,7 @@ import champRank from '../../assets/img/RankFrames/Champ.png'
 import superstarRank from '../../assets/img/RankFrames/Superstar.png'
 import EditProfile from './EditProfile';
 import { Divider } from '@gluestack-ui/themed';
-
+import { AntDesign } from '@expo/vector-icons';
 export default function Profile({navigation}) {
 
     const [refreshing, setRefreshing] = React.useState(false);
@@ -30,9 +30,12 @@ export default function Profile({navigation}) {
     const [rankName, setRankName] = useState();
     const [leaderboardnumber, setLeaderboardnumber] = useState();
     const [roomCount, setRoomCount] = useState();
-
     const [user, setUser] = useState();
+    const [expanded, setExpanded] = useState(false);
 
+    const toggleBio = () => {
+      setExpanded(!expanded);
+    };
     async function fetchData(){
         try {
              const data = await AsyncStorage.getItem('id')
@@ -131,6 +134,7 @@ export default function Profile({navigation}) {
             </ImageBackground>
         ) 
     }
+    
   return (
     <ImageBackground
         source={require('../../assets/img/HomePage1.png')}
@@ -234,10 +238,21 @@ export default function Profile({navigation}) {
                     <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                         Bio
                     </Text>
-                    <Text color='white' fontFamily='Roboto_300Light' size='lg' numberOfLines={4}>
-                        {!user.bio?"No bio yet!":user.bio}
-                        {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. */}
+                    <Text color='white' fontFamily='Roboto_300Light' size='lg'  numberOfLines={expanded ? undefined : 3}   ellipsizeMode="clip"  >
+                        {!user.bio ? "No bio yet!" : user.bio}
                     </Text>
+                    {user.bio && (user.bio.split('\n').length > 3 || user.bio.length>120) && (
+                        <TouchableOpacity onPress={toggleBio} >
+                        <Text color='white' fontFamily='Roboto_300Light' size='lg'>
+                            {expanded ? "See less... " : "See more... "}
+                            <AntDesign
+                            name={expanded ? "arrowup" : "arrowdown"}
+                            size={20}
+                            color="white"
+                            />
+                        </Text>
+                        </TouchableOpacity>
+                                )}
                 </View>
 
                 <Divider marginVertical={10}/>
