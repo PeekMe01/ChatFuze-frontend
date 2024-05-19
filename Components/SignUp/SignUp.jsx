@@ -195,9 +195,13 @@ export default function Login(props) {
           usernameGood = false;
           setUsernameErrorText("Username is too short")
           setInvalidUsername(true)
+      }else if((username&&username.length>16)||!username||invalidUsername){
+        usernameGood = false;
+        setUsernameErrorText("Username is too long")
+        setInvalidUsername(true)
       }else{
-          setInvalidUsername(false)
-          usernameGood = true;
+        setInvalidUsername(false)
+        usernameGood = true;
       }
       usernameGood = false;
       emailGood = false;
