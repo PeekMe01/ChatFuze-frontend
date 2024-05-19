@@ -58,14 +58,6 @@ export default function ChangeUsername({navigation, route}) {
     const validate = async () => {
         let goodUsername = false;
         setAttemptingChangeUsername(true);
-        if(currentUsername.length<3){
-            goodUsername = false;
-            setInvalidCurrentUsername(true);
-            setInvalidCurrentUsernameErrorMessage('Username is too short!')
-        }else{
-            setInvalidCurrentUsername(false);
-            goodUsername=true;
-        }
         if(currentUsername===oldUsername){
             goodUsername = false;
             setInvalidCurrentUsername(true);
@@ -73,6 +65,19 @@ export default function ChangeUsername({navigation, route}) {
         }else{
             setInvalidCurrentUsername(false);
             goodUsername=true;
+            if(currentUsername.length<3){
+                goodUsername = false;
+                setInvalidCurrentUsername(true);
+                setInvalidCurrentUsernameErrorMessage('Username is too short!')
+            } else if(currentUsername.length>16){
+                goodUsername = false;
+                setInvalidCurrentUsername(true);
+                setInvalidCurrentUsernameErrorMessage('Username is too long!')
+            }
+            else{
+                setInvalidCurrentUsername(false);
+                goodUsername=true;
+            }
         }
 
         if(goodUsername){
