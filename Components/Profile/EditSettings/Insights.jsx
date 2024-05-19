@@ -1,4 +1,4 @@
-import { AddIcon, Divider, HStack, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
+import { AddIcon, Divider, HStack, Image, ImageBackground, Progress, ProgressFilledTrack, Spinner, Text } from '@gluestack-ui/themed';
 import { View } from '@gluestack-ui/themed';
 import React from 'react'
 import { useState,useEffect } from 'react';
@@ -14,6 +14,9 @@ export default function Insights({navigation}) {
     const [changingPage, setChangingPage] = useState(false)
     const [clickedButton, setClickedButton] = useState(false);
     const [insights, setInsights] = useState(null);
+    // var percentage = 0;
+    const [percentage, setPercentage] = useState(0);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -21,6 +24,7 @@ export default function Insights({navigation}) {
                 const response = await api.get(`/settings/getinsight/${idusers}`);
                 const data = await response.data;
                 setInsights(data);
+                setPercentage(((1 - data.roomCount / data.maxRoomCountPerUser) * 100).toFixed(2));
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -58,15 +62,13 @@ export default function Insights({navigation}) {
         style={{ flex:1 ,resizeMode: 'cover'}}
     >
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
-            <View margin={30} marginBottom={100}>
+            <View margin={30} marginBottom={'15%'}>
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
-                {/* <View flexDirection='row' backgroundColor='blue' alignItems='center'>
-                 */}
-                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10} style={{marginBottom:'30%'}}>
+                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10} style={{marginBottom:'20%'}}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton} >
                         <Icon name="arrow-back" size={25} color="white"/>
                     </TouchableHighlight>
-                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
+                    <Text size='4xl' color='white' fontFamily='Roboto_500Medium' >
                         Insights
                     </Text>
                 </View>
@@ -76,46 +78,58 @@ export default function Insights({navigation}) {
         <View >
           
           <View style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-                    Room Count: {insights.roomCount}
+                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
+                    Rooms Count: {insights.roomCount}
                     </Text>
-                    <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
-                        <Text color='white' fontWeight='$light'>
-                        You rank in the top {((1- insights.roomCount / insights.maxRoomCountPerUser) * 100).toFixed(2)}% of users!
+                    <View display='flex' flexDirection='column' justifyContent='center' gap={10} alignItems='center'>
+                         <Text color='white' fontFamily='Roboto_300Light' size='lg'>
+                         {percentage == '0.00'
+								  ? 'You rank in the top 0.01% of users!'
+								  : `You rank in the top ${percentage}% of users!`}
                         </Text>
+                        <Progress value={100-percentage} w={300} size="md">
+                            <ProgressFilledTrack bgColor='#7478d4'/>
+                        </Progress>
                     </View>
+					<Divider marginVertical={10} />
                 </View>
+				 
                 <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                   <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                     Friends Count: {insights.friendsCount}
                     </Text>
-                    
+                    <Divider marginVertical={10} />
                 </View>
                 <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                     <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                     Leaderboard Number: {insights.leaderboardnumber}
                     </Text>
-                    <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
-                        <Text color='white' fontWeight='$light'>
+                    <View display='flex' flexDirection='column' justifyContent='center' gap={10} alignItems='center'>
+                        <Text color='white' fontFamily='Roboto_300Light' size='lg'>
                         You rank in the top {(( insights.leaderboardnumber / insights.users.length) * 100).toFixed(2)}% of users!
                         </Text>
+                        <Progress value={100-(( insights.leaderboardnumber / insights.users.length) * 100).toFixed(2)} w={300} size="md">
+                            <ProgressFilledTrack bgColor='#7478d4'/>
+                        </Progress>
                     </View>
+					 <Divider marginVertical={10} />
                 </View>
 
                 <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-                    Rank Name:
+                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
+                    Rank: {insights.rankname}
                     </Text>
-                    <View display='flex' flexDirection='column' justifyContent='center' alignItems='flex-start' gap={10}>
-                        <Text color='white' fontWeight='$light'>{insights.rankname}</Text>
-                        <Text color='white' fontWeight='$light'>You rank {insights.userrankk}{insights.userrankk==1?'st':insights.userrankk==2?'nd':insights.userrankk==4?'rd':'th'} among the {insights.usersbyrankpoints.length} users in your rank.</Text>
-                    </View>
+                    <Text color='white' fontFamily='Roboto_300Light' size='lg'>You rank {insights.userrankk}{insights.userrankk==1?'st':insights.userrankk==2?'nd':insights.userrankk==3?'rd':'th'} among the {insights.usersbyrankpoints.length} users in your rank.</Text>
+					 <Divider marginVertical={10} />
                 </View>
 
                 <View style={{ alignItems: 'flex-start', flexDirection: 'column', marginTop: 20, gap: 10}}>
-                    <Text size='2xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
+                     <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                     Rank Points: {insights.user.rankpoints} pts
                     </Text>
+                    {insights.user.rankpoints==0?<Text size='md' color='white' fontFamily='Roboto_100Thin'>
+                    Hint: Join rooms to get more points
+                    </Text>:null}
                     
                 </View>
         </View>
