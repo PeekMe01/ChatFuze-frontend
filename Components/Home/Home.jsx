@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font';
 import React, { useContext, useEffect, useState } from 'react'
 import * as Animatable from 'react-native-animatable';
 import Autocomplete from 'react-native-autocomplete-input';
+import userimg from '../../assets/img/user.png'
 import {
     Roboto_100Thin,
     Roboto_100Thin_Italic,

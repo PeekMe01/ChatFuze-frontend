@@ -24,6 +24,9 @@ export default function MatchMakingScreen({navigation}) {
     useEffect(() => {
         const handleRoomCreated = (data) => {
         console.log('Joined room',data);
+        navigation.push('ChatRoom', { 
+            receivingUser: {"active": true, "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.jrejfjejdsjvoekgkrodjwpc", "country": "Congo", "createdAt": null, "dateOfBirth": "2000-01-01T00:00:00.000Z", "email": "user1@gmail.com", "facebooklink": null, "gender": "Male", "idusers": 1, "imageurl": "https://firebasestorage.googleapis.com/v0/b/chatfuze-e6658.appspot.com/o/ChatFuze%2FProfile%2F11716367377958.jpg?alt=media&token=6f614cda-a1eb-4829-a0c5-f4d2d5ec0333", "instagramlink": null, "password": "$2b$10$aqCf.2qvFFPMk8oCErtcXecEMCYL.0uU93S6hR2pLPOMv2hAJm3mi", "rankid": 1, "rankpoints": 0, "updatedAt": "2024-05-22T08:42:59.000Z", "username": "user1", "verified": false},
+        });
         socket.emit('roomCreated',data);
         };
 
