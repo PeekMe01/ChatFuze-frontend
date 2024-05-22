@@ -57,7 +57,7 @@ const Home = ({navigation}) => {
     const [attemptingJoinRoom, setAttemptingJoinRoom] = useState(false);
 
     const { requestID, setRequestID } = useContext(RequestContext);
-
+    const { userId, setUserId } = useContext(RequestContext);
     const handleSelect = (item) => {
         setSelectedItems([...selectedItems, item]);
         setFilteredData(filteredData.filter((dataItem) => dataItem !== item));
@@ -74,6 +74,7 @@ const Home = ({navigation}) => {
     async function fetchData(){
         try {
              const data = await AsyncStorage.getItem('id')
+             setUserId(data);
              const response = await api.get(`/settings/getinsight/${data}`);
              // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
              setUser(response.data.user);
@@ -206,11 +207,11 @@ const Home = ({navigation}) => {
   source={require('../../assets/img/HomePage1.png')}
   style={{ flex: 1, resizeMode: 'cover' }}
 >
-<TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
-  <Animatable.View animation={changingPage ? "fadeOut" : "fadeIn"} duration={500}>
+<TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }  >
+  <Animatable.View animation={changingPage ? "fadeOut" : "fadeIn"} duration={500} >
     <View margin={30} marginTop={40} justifyContent='center' alignItems='center'>
-      <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false}>
-        <View gap={10} display='flex' flexDirection='row'>
+      <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false} >
+        <View gap={2} display='flex' flexDirection='row' >
           {user.imageurl ? (
             <Image
               alt='profilePic'
@@ -357,7 +358,7 @@ const Home = ({navigation}) => {
             </View>
           </View>
         </View>
-
+        
         <View gap={10}>
           <Text size='xl' color='white' fontFamily='Roboto_300Light'>
             Pick a gender
@@ -382,7 +383,6 @@ const Home = ({navigation}) => {
             </View>
           </View>
         </View>
-
         <Button
           isDisabled={attemptingJoinRoom}
           size="lg"
@@ -395,10 +395,11 @@ const Home = ({navigation}) => {
           }}
           onPress={joinRoom}
           >
-          <ButtonText fontSize="$xl" fontWeight="$medium">
+          <ButtonText fontSize="$xl" fontWeight="$medium" >
             Jump In
           </ButtonText>
         </Button>
+       
       </Box>
     </View>
   </Animatable.View>

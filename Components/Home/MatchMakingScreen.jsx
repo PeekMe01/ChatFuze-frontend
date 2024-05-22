@@ -17,40 +17,39 @@ const socket = io.connect(`${API_URL}`);
 export default function MatchMakingScreen({navigation}) {
     const [attemptingCancel, setAttemptingCancel] = useState(false);
     const [dots, setDots] = useState('');
-
     const { requestID, setRequestID } = useContext(RequestContext);
-
-    let id=requestID; //room id
+    const { userId, setUserID } = useContext(RequestContext);
     useEffect(() => {
         const handleRoomCreated = (data) => {
-        console.log('Joined room',data);
-        socket.emit('roomCreated',data);
+        if(data.userdid1==userId || data.userdid2==userId){
+             socket.emit('roomCreated',data);
+             navigation.push("HomeScreen");
+        }
         };
 
-        const handleRoomClosed = (data) => {
-            if(data.idmessages==id)
-                console.log('Room closed', data);
-        };
+        // const handleRoomClosed = (data) => {
+        //     if(data.idmessages==id)
+        //         console.log('Room closed', data);
+        // };
         socket.on('roomCreated', handleRoomCreated);
-        socket.on('roomClosed', handleRoomClosed);
+        // socket.on('roomClosed', handleRoomClosed);
         
-    }, [requestID]);
+    }, [socket]);
 
     // send the id to the server to start looking for a person who wants you as much you want them.
-    useEffect(() => {
+     useEffect( () => {
         startMatchMaking();
-
         const backHandler = BackHandler.addEventListener(
             "hardwareBackPress",
             cancelRequest
           );
     
           return () => backHandler.remove();
-    }, [requestID])
+    }, [])
 
     const startMatchMaking = async () => {
         try {
-            console.log(requestID.id)
+            // console.log(requestID.id)
             const response = await api.get(`/home/matching/${requestID.id}`)
             if(response){
                 // if(response.status==420){
