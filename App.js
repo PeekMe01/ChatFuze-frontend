@@ -64,6 +64,9 @@ import { UnreadMessagesProvider, useUnreadMessages } from './Components/UnreadMe
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import AppLifecycleMonitor from './AppLifecycleMonitor';
+import Home from './Components/Home/Home';
+import MatchMakingScreen from './Components/Home/MatchMakingScreen';
+import RequestProvider from './Components/Home/RequestProvider';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -73,9 +76,25 @@ export default function App() {
   const [loginPage, setLoginPage] = useState(true);
   const [signupPage, setSignupPage] = useState(false);
   const [welcomePage, setWelcomePage] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
   // const [userOnline, setUserOnline] = useState(false);
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
+
+  useEffect(()=>{
+    checkUserLogin();
+  }, [])
+
+  const checkUserLogin = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      const userId = await AsyncStorage.getItem('id');
+      if(userId){
+        setLoggedIn(true)
+      }
+    } catch (error) {
+      setLoggedIn(false)
+    }
+  }
 
   const [fontsLoaded] = useFonts({
     'ArialRoundedMTBold': require('./assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
@@ -216,6 +235,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
     return (
       <NavigationContainer>
         <AppLifecycleMonitor />
+        <StatusBar translucent backgroundColor="transparent"/>
         <Tab.Navigator screenOptions={{ headerShown: false }}>
           <Tab.Screen 
             name="Home" 
@@ -278,19 +298,73 @@ const updateUserStatusAfterLoginSignUp = async () => {
   };
 
 
-  function HomeScreen() {
+  // function HomeScreen() {
+  //   return (
+  //     <View style={{ flex: 1}}>
+  //       <StatusBar translucent backgroundColor="transparent"/>
+  //       <ImageBackground
+  //           source={require('./assets/img/HomePage1.png')}
+  //           style={{ flex:1 ,resizeMode: 'cover', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
+  //         >
+  //         <Text>Home!</Text>
+  //       </ImageBackground>
+  //     </View>
+  //   );
+  // }
+
+  function HomeScreen({ navigation }) {
+    React.useLayoutEffect(() => {
+      const unsubscribe = navigation.addListener('state', (e) => {
+          const currentRoute = e.data.state.routes[e.data.state.index];
+          const leafRouteName = getCurrentRouteName(currentRoute);
+
+        
+          if (leafRouteName==="MatchMakingScreen") {
+              navigation.setOptions({
+                  tabBarStyle: { display: 'none' }
+              });
+          } else {
+             
+              navigation.setOptions({
+                tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' }, 
+            
+              });
+          }
+      });
+
+      
+      return unsubscribe;
+  }, [navigation]);
+
+  // Function to get the leaf route name
+  const getCurrentRouteName = (route) => {
+      if (route.state) {
+          // Dive into nested navigators
+          return getCurrentRouteName(route.state.routes[route.state.index]);
+      }
+      return route.name;
+  };
+  const [requestID, setRequestID] = useState(null);
+  // requestID={requestID} setRequestID={setRequestID}
+
+  // <Stack.Screen name="HomeScreen">
+  //   { ({ navigation }) => <HomeScreen navigation={navigation} requestID={requestID} setRequestID={setRequestID}/>}
+  // </Stack.Screen>
+  // <Stack.Screen name="MatchMakingScreen">
+  //   {({ navigation }) => <MatchMakingScreen navigation={navigation} requestID={requestID} setRequestID={setRequestID}/>}
+  // </Stack.Screen>
+
     return (
-      <View style={{ flex: 1}}>
-        <StatusBar translucent backgroundColor="transparent"/>
-        <ImageBackground
-            source={require('./assets/img/HomePage1.png')}
-            style={{ flex:1 ,resizeMode: 'cover', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
-          >
-          <Text>Home!</Text>
-        </ImageBackground>
-      </View>
+      <RequestProvider>
+        <View style={{ flex: 1 }}>
+            <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
+                <Stack.Screen name="HomeScreen" component={Home}/>
+                <Stack.Screen name="MatchMakingScreen" component={MatchMakingScreen}/>
+            </Stack.Navigator>
+        </View>
+      </RequestProvider>
     );
-  }
+}
   
   function MessagesScreen({ navigation }) {
     React.useLayoutEffect(() => {
