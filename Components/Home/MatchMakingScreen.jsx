@@ -30,7 +30,8 @@ export default function MatchMakingScreen({navigation}) {
              setTimeout(() => {
                 navigation.push("ChatRoom", {
                     receiverID: data.userdid1==userId?data.userdid2:data.userdid1,
-                    roomID: data.idmessages
+                    roomID: data.idmessages,
+                    startingTime: data.createdAt
                 });
              }, 2000); 
         }

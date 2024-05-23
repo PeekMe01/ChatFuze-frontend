@@ -21,6 +21,7 @@ export default function ChatRoom({navigation,route}) {
     const [receiverTyping,setReceiverTyping]=useState(false);
     const { receiverID } = route.params;
     const { roomID } = route.params;
+    const { startingTime } = route.params;
 
     const timeoutRef = useRef(null);
     const clearTypingTimeout = () => {
@@ -113,13 +114,49 @@ export default function ChatRoom({navigation,route}) {
     const headerHeight = useHeaderHeight();
 
     useEffect(()=>{
-        getLoggedInUserId()
+        getLoggedInUserId();
     }, [])
 
     getLoggedInUserId = async () => {
         const userId = await AsyncStorage.getItem('id');
         setLoggedInUserID(userId)
     }
+
+    const CountdownTimer = ({ startTime }) => {
+        const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+      
+        useEffect(() => {
+            const interval = setInterval(() => {
+              setTimeLeft(calculateTimeLeft());
+            }, 1000);
+        
+            return () => clearInterval(interval);
+          }, []);
+        
+          function calculateTimeLeft() {
+            const startTimeDate = new Date(startTime);
+            const timezoneOffset = startTimeDate.getTimezoneOffset() * 60000; // Timezone offset in milliseconds
+            const targetTime = startTimeDate.getTime() + timezoneOffset + 5 * 60 * 1000;
+            const currentTime = new Date().getTime();
+            const difference = targetTime - currentTime;
+        
+            if (difference > 0) {
+              const minutes = Math.floor(difference / 1000 / 60);
+              const seconds = Math.floor((difference / 1000) % 60);
+              return { minutes, seconds };
+            } else {
+              return { minutes: 0, seconds: 0 };
+            }
+          }
+      
+        return (
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Text size='xl' color='white' fontFamily='Roboto_300Light'>
+              {timeLeft.minutes}:{timeLeft.seconds < 10 ? `0${timeLeft.seconds}` : timeLeft.seconds}
+            </Text>
+          </View>
+        );
+      };
 
     useLayoutEffect(() => {
         navigation.setOptions({ headerShown: true })
@@ -137,7 +174,9 @@ export default function ChatRoom({navigation,route}) {
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
                   <Text size='xl' color='white' fontFamily='Roboto_300Light'>Time: </Text>
-                  <Text size='xl' color='white' fontFamily='Roboto_300Light'>5:00 </Text>
+                  {/* <Text size='xl' color='white' fontFamily='Roboto_300Light'>{startingTime} </Text> */}
+                  {/* {console.log(startingTime)} */}
+                  <CountdownTimer startTime={startingTime} />
                   </View>
                 </View>
               ),
