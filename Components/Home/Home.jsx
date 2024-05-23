@@ -212,25 +212,7 @@ const Home = ({navigation}) => {
     <View margin={30} marginTop={40} justifyContent='center' alignItems='center'>
       <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false} >
         <View gap={2} display='flex' flexDirection='row' >
-          {user.imageurl ? (
-            <Image
-              alt='profilePic'
-              border
-              zIndex={-1}
-              borderRadius="$full"
-              style={{ width: 60, height: 60 }}
-              source={{ uri: user.imageurl }}
-            />
-          ) : (
-            <Image
-              alt='profilePic'
-              border
-              zIndex={-1}
-              borderRadius="$full"
-              style={{ width: 60, height: 60 }}
-              source={userimg}
-            />
-          )}
+          
           <Text size='4xl' color='white' fontFamily='Roboto_500Medium' paddingTop={10}>
             Welcome Back!
           </Text>
@@ -358,7 +340,22 @@ const Home = ({navigation}) => {
             </View>
           </View>
         </View>
-        
+         <Button
+          isDisabled={attemptingJoinRoom}
+          size="lg"
+          mb="$4"
+          borderRadius={40}
+          hardShadow='1'
+          bgColor="#512095"
+          $active={{
+              bg: "#51209595",
+          }}
+          onPress={joinRoom}
+          >
+          <ButtonText fontSize="$xl" fontWeight="$medium" >
+            Jump In
+          </ButtonText>
+        </Button>
         <View gap={10}>
           <Text size='xl' color='white' fontFamily='Roboto_300Light'>
             Pick a gender
@@ -383,22 +380,7 @@ const Home = ({navigation}) => {
             </View>
           </View>
         </View>
-        <Button
-          isDisabled={attemptingJoinRoom}
-          size="lg"
-          mb="$4"
-          borderRadius={40}
-          hardShadow='1'
-          bgColor="#512095"
-          $active={{
-              bg: "#51209595",
-          }}
-          onPress={joinRoom}
-          >
-          <ButtonText fontSize="$xl" fontWeight="$medium" >
-            Jump In
-          </ButtonText>
-        </Button>
+       
        
       </Box>
     </View>
