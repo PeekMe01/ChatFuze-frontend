@@ -19,11 +19,20 @@ export default function MatchMakingScreen({navigation}) {
     const [dots, setDots] = useState('');
     const { requestID, setRequestID } = useContext(RequestContext);
     const { userId, setUserID } = useContext(RequestContext);
+    const [foundMatch, setFoundMatch ] = useState(false);
+    const [foundNoMatch, setFoundNoMatch ] = useState(false);
     useEffect(() => {
         const handleRoomCreated = (data) => {
         if(data.userdid1==userId || data.userdid2==userId){
              socket.emit('roomCreated',data);
-             navigation.push("HomeScreen");
+             console.log(data.userdid1==userId?data.userdid2:data.userdid1)
+             setFoundMatch(true);
+             setTimeout(() => {
+                navigation.push("ChatRoom", {
+                    receiverID: data.userdid1==userId?data.userdid2:data.userdid1,
+                    roomID: data.idmessages
+                });
+             }, 2000); 
         }
         };
 
@@ -48,18 +57,24 @@ export default function MatchMakingScreen({navigation}) {
     }, [])
 
     const startMatchMaking = async () => {
-        try {
+        
             // console.log(requestID.id)
-            const response = await api.get(`/home/matching/${requestID.id}`)
-            if(response){
-                // if(response.status==420){
-                //     console.log("No matching user found")
-                // }
-            }
-        } catch (error) {
-            navigation.goBack();
-            console.log("No matching user found")
-        }
+            setTimeout(async () => {
+                try {
+                    const response = await api.get(`/home/matching/${requestID.id}`)
+                    if(response){
+                        // if(response.status==420){
+                        //     console.log("No matching user found")
+                        // }
+                    }
+                } catch (error) {
+                    setFoundNoMatch(true)
+                    setTimeout(() => {
+                        navigation.goBack();
+                        console.log("No matching user found")
+                    }, 2000);
+                }
+            }, 1000); 
     }
 
 
@@ -86,7 +101,15 @@ export default function MatchMakingScreen({navigation}) {
         'Tip: Have fun and enjoy the conversation!'
       ];
 
-      const [currentTipIndex, setCurrentTipIndex] = useState(0);
+      const getRandomTipIndex = (currentIndex) => {
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * tips.length);
+        } while (randomIndex === currentIndex);
+        return randomIndex;
+    };
+
+      const [currentTipIndex, setCurrentTipIndex] = useState(() => getRandomTipIndex(-1));
         const scaleAnim = useRef(new Animated.Value(1)).current;
 
         const switchTip = () => {
@@ -105,7 +128,9 @@ export default function MatchMakingScreen({navigation}) {
             }),
             ]).start(() => {
             // Update tip after animation completes
-            setCurrentTipIndex((prevIndex) => (prevIndex + 1) % tips.length);
+            // setCurrentTipIndex((prevIndex) => (prevIndex + 1) % tips.length);
+            const newTipIndex = getRandomTipIndex(currentTipIndex);
+            setCurrentTipIndex(newTipIndex);
             });
         };
 
@@ -147,13 +172,14 @@ export default function MatchMakingScreen({navigation}) {
         >
             <Center h={'$full'} marginBottom={-100}>
 
-                <Text fontFamily='Roboto_400Regular' color='white' size='xl'>Looking for a user{dots}</Text>
-
-                <View flexDirection='row' padding={50} gap={30}>
-                    <FontAwesome6 name='user-large' size={70} color='#512095'/>
-                    <FontAwesome6 name='user-large' size={70} color='#ccc'/>
+                <View flexDirection='row' padding={20} gap={30}>
+                    <FontAwesome6 name='user-large' size={70} color={foundNoMatch?'#ccc':'#512095'}/>
+                    <FontAwesome6 name='user-large' size={70} color={foundMatch?'#512095':'#ccc'}/>
                 </View>
-                <View display='flex' flexDirection='column' gap={50} justifyContent='center'>
+
+                <Text fontFamily='Roboto_400Regular' color='white' size='xl'>{foundMatch?"User found!":foundNoMatch?"No match found.":`Looking for a user${dots}`}</Text>
+
+                <View display='flex' flexDirection='column' gap={50} justifyContent='center' marginTop={40}>
                 <Button
                     isDisabled={attemptingCancel}
                     size="lg"

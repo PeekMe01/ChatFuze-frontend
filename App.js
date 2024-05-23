@@ -67,6 +67,7 @@ import AppLifecycleMonitor from './AppLifecycleMonitor';
 import Home from './Components/Home/Home';
 import MatchMakingScreen from './Components/Home/MatchMakingScreen';
 import RequestProvider from './Components/Home/RequestProvider';
+import ChatRoom from './Components/Home/ChatRoom';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -319,7 +320,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
           const leafRouteName = getCurrentRouteName(currentRoute);
 
         
-          if (leafRouteName==="MatchMakingScreen") {
+          if (leafRouteName==="MatchMakingScreen" || leafRouteName==="ChatRoom") {
               navigation.setOptions({
                   tabBarStyle: { display: 'none' }
               });
@@ -360,6 +361,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
             <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
                 <Stack.Screen name="HomeScreen" component={Home}/>
                 <Stack.Screen name="MatchMakingScreen" component={MatchMakingScreen}/>
+                <Stack.Screen name="ChatRoom" component={ChatRoom}/>
             </Stack.Navigator>
         </View>
       </RequestProvider>
