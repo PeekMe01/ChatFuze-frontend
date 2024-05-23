@@ -24,9 +24,9 @@ export default function MatchMakingScreen({navigation}) {
     useEffect(() => {
         const handleRoomCreated = (data) => {
         if(data.userdid1==userId || data.userdid2==userId){
-             socket.emit('roomCreated',data);
              console.log(data.userdid1==userId?data.userdid2:data.userdid1)
              setFoundMatch(true);
+             socket.emit('roomCreated',data);
              setTimeout(() => {
                 navigation.push("ChatRoom", {
                     receiverID: data.userdid1==userId?data.userdid2:data.userdid1,

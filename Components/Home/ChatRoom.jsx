@@ -11,18 +11,51 @@ import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { collection, addDoc, orderBy, query, onSnapshot, where , doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
 import { database } from "../../config/firebase";
-
+import { API_URL } from '../Config'
+import io from 'socket.io-client';
 const error = console.error; console.error = (...args) => { if (/defaultProps/.test(args[0])) return; error(...args); };
-
+const socket = io.connect(`${API_URL}`);
 export default function ChatRoom({navigation,route}) {
     
     const[loggedInUserID, setLoggedInUserID] = useState();
     const [typing,setTyping]=useState(false)
     const [receiverTyping,setReceiverTyping]=useState(false);
-    const { receiverID } = route.params;
-    const { roomID } = route.params;
-    const { startingTime } = route.params;
+    const { receiverID,roomID ,startingTime} = route.params;
+   // const [timeLeft,setTimeLeft]=useState({})
+    const [remainderTime,setRemainderTime]=useState({})
 
+    useEffect(() => {
+        const handleRoomCreated = ({data,newtime}) => {
+        
+            //note why undifined console.log("🚀 ~ handleRoomCreated ~ loggedInUserID:", loggedInUserID)
+
+        if(data.userdid1==receiverID || data.userdid2==receiverID){
+
+            setRemainderTime(newtime)
+            if(newtime.minutes==0 && newtime.seconds==0 )
+                navigation.push("HomeScreen")
+        }
+        };
+        socket.on('updateTime',handleRoomCreated); 
+        // socket.on('roomCreated', handleRoomCreated); 
+    }, [socket]);
+
+
+
+
+
+
+    // useEffect(() => {
+    //     let st = new Date(startingTime);
+    //     let t = new Date(st.getTime() + 5 * 60000);
+
+    //     const interval = setInterval(() => {
+    //         setTimeLeft(calculateTimeDifference(st, t));
+    //         st = new Date(new Date(st).getTime() + 1000).toISOString();
+    //     }, 1000);
+
+    //     return () => clearInterval(interval);
+    // }, []);
     const timeoutRef = useRef(null);
     const clearTypingTimeout = () => {
         if (timeoutRef.current) {
@@ -93,7 +126,8 @@ export default function ChatRoom({navigation,route}) {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === 'added' || change.type === 'modified') {
                     const data = change.doc.data();
-                    console.log("hello world")
+                   
+
                     console.log(data.typing)
                  
                     setReceiverTyping(data.typing);
@@ -122,42 +156,23 @@ export default function ChatRoom({navigation,route}) {
         setLoggedInUserID(userId)
     }
 
-    const CountdownTimer = ({ startTime }) => {
-        const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-      
-        useEffect(() => {
-            const interval = setInterval(() => {
-              setTimeLeft(calculateTimeLeft());
-            }, 1000);
+    
+        //   function calculateTimeDifference(st, t) {
+        //     const startDate = new Date(st);
+        //     const endDate = new Date(t);
         
-            return () => clearInterval(interval);
-          }, []);
+        //     const difference = Math.abs(endDate - startDate);
+        //     const minutesDifference = Math.floor(difference / 60000);
+        //     const secondsDifference = Math.floor((difference % 60000) / 1000);
         
-          function calculateTimeLeft() {
-            const startTimeDate = new Date(startTime);
-            const timezoneOffset = startTimeDate.getTimezoneOffset() * 60000; // Timezone offset in milliseconds
-            const targetTime = startTimeDate.getTime() + timezoneOffset + 5 * 60 * 1000;
-            const currentTime = new Date().getTime();
-            const difference = targetTime - currentTime;
-        
-            if (difference > 0) {
-              const minutes = Math.floor(difference / 1000 / 60);
-              const seconds = Math.floor((difference / 1000) % 60);
-              return { minutes, seconds };
-            } else {
-              return { minutes: 0, seconds: 0 };
-            }
-          }
-      
-        return (
-          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <Text size='xl' color='white' fontFamily='Roboto_300Light'>
-              {timeLeft.minutes}:{timeLeft.seconds < 10 ? `0${timeLeft.seconds}` : timeLeft.seconds}
-            </Text>
-          </View>
-        );
-      };
+        //     return { minutes: minutesDifference, seconds: secondsDifference };
+        // }
 
+
+
+       
+      
+        
     useLayoutEffect(() => {
         navigation.setOptions({ headerShown: true })
         navigation.setOptions({
@@ -176,7 +191,12 @@ export default function ChatRoom({navigation,route}) {
                   <Text size='xl' color='white' fontFamily='Roboto_300Light'>Time: </Text>
                   {/* <Text size='xl' color='white' fontFamily='Roboto_300Light'>{startingTime} </Text> */}
                   {/* {console.log(startingTime)} */}
-                  <CountdownTimer startTime={startingTime} />
+                  <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Text size='xl' color='white' fontFamily='Roboto_300Light'>
+            {remainderTime.minutes}:{remainderTime.seconds < 10 ? `0${remainderTime.seconds}` : remainderTime.seconds}
+
+            </Text>
+          </View>
                   </View>
                 </View>
               ),
