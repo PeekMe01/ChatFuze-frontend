@@ -29,6 +29,7 @@ import Feedback from './Components/Profile/EditSettings/Feedback';
 import Verification from './Components/Profile/EditSettings/Verification';
 import ChangeUsername from './Components/Profile/EditProfile/ChangeUsername';
 import ChangeCountry from './Components/Profile/EditProfile/ChangeCountry';
+import ChangeDOB from './Components/Profile/EditProfile/ChangeDOB'
 import EditBio from './Components/Profile/EditProfile/EditBio';
 import EditSocials from './Components/Profile/EditProfile/EditSocials';
 import EditProfile from './Components/Profile/EditProfile';
@@ -469,6 +470,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
               <Stack.Screen name="Verification" component={Verification}/>
               <Stack.Screen name="ChangeUsername" component={ChangeUsername}/>
               <Stack.Screen name="ChangeCountry" component={ChangeCountry}/>
+              <Stack.Screen name="ChangeDOB" component={ChangeDOB}/>
               <Stack.Screen name="EditBio" component={EditBio}/>
               <Stack.Screen name="EditSocials" component={EditSocials}/>
               <Stack.Screen name="ChangeProfilePicture">

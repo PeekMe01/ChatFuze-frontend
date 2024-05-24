@@ -70,6 +70,14 @@ export default function EditProfile({navigation, route }) {
         }, 1000);
     }
 
+    const handleChangeDOBPage = () => {
+        navigation.push('ChangeDOB');
+        setClickedButton(true);
+        setTimeout(() => {
+            setClickedButton(false);
+        }, 1000);
+    }
+
     const handleGoBackPressed = () => {
         setClickedButton(true);
         navigation.goBack();
@@ -117,6 +125,15 @@ export default function EditProfile({navigation, route }) {
                         <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                             <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
                                 Change Country
+                            </Text>
+                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
+                        </View>
+                    </TouchableHighlight>
+                    <Divider/>
+                    <TouchableHighlight onPress={()=>{handleChangeDOBPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
+                                Change Date of Birth
                             </Text>
                             <Icon name="keyboard-arrow-right" size={30} color="white"/>
                         </View>

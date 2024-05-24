@@ -26,14 +26,12 @@ export default function ChatRoom({navigation,route}) {
 
     useEffect(() => {
         const handleRoomCreated = ({data,newtime}) => {
-        
-            //note why undifined console.log("🚀 ~ handleRoomCreated ~ loggedInUserID:", loggedInUserID)
-
-        if(data.userdid1==receiverID || data.userdid2==receiverID){
-
+			
+        if(data.idmessages==roomID || data.idmessages==roomID){
+			
             setRemainderTime(newtime)
             if(newtime.minutes==0 && newtime.seconds==0 )
-                navigation.push("HomeScreen")
+                navigation.navigate("HomeScreen")
         }
         };
         socket.on('updateTime',handleRoomCreated); 
