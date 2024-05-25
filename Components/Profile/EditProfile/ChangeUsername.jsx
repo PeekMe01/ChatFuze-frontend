@@ -54,33 +54,43 @@ export default function ChangeUsername({navigation, route}) {
     const [currentUsername, setCurrentUsername] = useState();
     const [invalidCurrentUsername, setInvalidCurrentUsername] = useState(false);
     const [invalidCurrentUsernameErrorMessage, setInvalidCurrentUsernameErrorMessage] = useState("Error Message Current Password");
+
+    const [saveDisabled, setSaveDisabled] = useState(true)
+
     console.log(oldUsername)
     const validate = async () => {
         let goodUsername = false;
         setAttemptingChangeUsername(true);
+        setSaveDisabled(true)
         if(currentUsername===oldUsername){
             goodUsername = false;
             setInvalidCurrentUsername(true);
             setInvalidCurrentUsernameErrorMessage('Username is still the same!')
+            setSaveDisabled(true)
         }else{
             setInvalidCurrentUsername(false);
+            setSaveDisabled(false)
             goodUsername=true;
             if(currentUsername.length<3){
                 goodUsername = false;
                 setInvalidCurrentUsername(true);
                 setInvalidCurrentUsernameErrorMessage('Username is too short!')
+                setSaveDisabled(true)
             } else if(currentUsername.length>16){
                 goodUsername = false;
                 setInvalidCurrentUsername(true);
                 setInvalidCurrentUsernameErrorMessage('Username is too long!')
+                setSaveDisabled(true)
             }
             else{
                 setInvalidCurrentUsername(false);
+                setSaveDisabled(false)
                 goodUsername=true;
             }
         }
 
         if(goodUsername){
+            setSaveDisabled(true)
             console.log('here')
             const data = {
                 userid: await AsyncStorage.getItem('id'),
@@ -141,12 +151,14 @@ export default function ChangeUsername({navigation, route}) {
                 },
                 })
                 setAttemptingChangeUsername(false);
+                setSaveDisabled(false)
             }
             
             
         }else{
             setTimeout(() => {
                 setAttemptingChangeUsername(false);
+                // setSaveDisabled(false)
         }, 1000);
         }
     }
@@ -205,6 +217,7 @@ export default function ChangeUsername({navigation, route}) {
                                 p={5} 
                                 backgroundColor='rgba(255,255,255,0.2)'
                                 borderWidth={2}
+                                borderColor={invalidCurrentUsername?'#512095':'white'}
                                 $focus-borderColor={invalidCurrentUsername?'#512095':'white'}
                                 $invalid-borderColor='#512095'
                                 >
@@ -219,6 +232,7 @@ export default function ChangeUsername({navigation, route}) {
                                 onChange={(newValue)=>{
                                     setCurrentUsername(newValue.nativeEvent.text);
                                     setInvalidCurrentUsername(false);
+                                    setSaveDisabled(false)
                                 }}
                                 />
                             </Input>
@@ -238,20 +252,16 @@ export default function ChangeUsername({navigation, route}) {
                         {/* Save */}
                         <FormControl>
                         <Button
-                            isDisabled={attemptingChangeUsername}
+                            // isDisabled={attemptingChangeUsername}
+                            disabled={saveDisabled}
+                            opacity={saveDisabled?0.4:1}
                             size="lg"
                             mb="$4"
                             borderRadius={40}
                             hardShadow='1'
-                            bgColor="#bcbcbc"
-                            $hover={{
-                                bg: "$green600",
-                                _text: {
-                                color: "$white",
-                                },
-                            }}
+                            bgColor="#512095"
                             $active={{
-                                bg: "#727386",
+                                bg: "#51209595",
                             }}
                             onPress={validate}
                             >

@@ -12,10 +12,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { collection, addDoc, orderBy, query, onSnapshot, where , doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
 import { database } from "../../config/firebase";
 import { API_URL } from '../Config'
+import { BackHandler, ToastAndroid } from 'react-native';
+
 import io from 'socket.io-client';
 const error = console.error; console.error = (...args) => { if (/defaultProps/.test(args[0])) return; error(...args); };
 const socket = io.connect(`${API_URL}`);
+
+
 export default function ChatRoom({navigation,route}) {
+
+    const lastBackPressed = useRef(0);
     
     const[loggedInUserID, setLoggedInUserID] = useState();
     const [typing,setTyping]=useState(false)
@@ -38,9 +44,35 @@ export default function ChatRoom({navigation,route}) {
         // socket.on('roomCreated', handleRoomCreated); 
     }, [socket]);
 
+    // useEffect( () => {
+    //     const backHandler = BackHandler.addEventListener(
+    //         "hardwareBackPress",
+    //         () => { return true}
+    //       );
+    
+    //       return () => backHandler.remove();
+    // }, [])
 
-
-
+    useEffect(() => {
+        const onBackPress = () => {
+          const now = Date.now();
+          if (lastBackPressed.current && now - lastBackPressed.current < 2000) {
+            // If back button is pressed within 2 seconds, exit the app
+            BackHandler.exitApp();
+            return false;
+          }
+    
+          lastBackPressed.current = now;
+          ToastAndroid.show('Press again to exit', ToastAndroid.SHORT);
+          return true;
+        };
+    
+        BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    
+        return () => {
+          BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        };
+      }, []);
 
 
     // useEffect(() => {

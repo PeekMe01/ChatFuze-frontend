@@ -321,7 +321,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
           const leafRouteName = getCurrentRouteName(currentRoute);
 
         
-          if (leafRouteName==="MatchMakingScreen" || leafRouteName==="ChatRoom") {
+          if (leafRouteName==="MatchMakingScreen" || leafRouteName==="ChatRoom" || leafRouteName==="HomeVerification") {
               navigation.setOptions({
                   tabBarStyle: { display: 'none' }
               });
@@ -363,6 +363,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
                 <Stack.Screen name="HomeScreen" component={Home}/>
                 <Stack.Screen name="MatchMakingScreen" component={MatchMakingScreen}/>
                 <Stack.Screen name="ChatRoom" component={ChatRoom}/>
+                <Stack.Screen name="HomeVerification" component={Verification}/>
             </Stack.Navigator>
         </View>
       </RequestProvider>

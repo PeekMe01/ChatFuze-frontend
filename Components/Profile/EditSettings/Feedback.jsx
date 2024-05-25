@@ -24,6 +24,9 @@ export default function Feedback({navigation}) {
     const [feedback, setFeedback] = useState('');
     const [invalidFeedback, setInvalidFeedback] = useState(false);
     const [attemptingSendFeedback, setAttemptingSendFeedback] = useState(false);
+
+    const [saveDisabled, setSaveDisabled] = useState(true)
+
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
     });
@@ -31,14 +34,17 @@ export default function Feedback({navigation}) {
     const handleSendFeedback = async () => {
         let goodFeedback = false;
         setAttemptingSendFeedback(true);
+        setSaveDisabled(true)
         if(!feedback||feedback.length<20){
             setInvalidFeedback(true);
+            setSaveDisabled(true)
             goodFeedback = false;
         }else{
             goodFeedback = true
             setInvalidFeedback(false);
+            setSaveDisabled(false)
         }
-
+        setSaveDisabled(true)
         if(goodFeedback){
             const data = {
                 userid: await AsyncStorage.getItem('id'),
@@ -150,6 +156,7 @@ export default function Feedback({navigation}) {
                 <FormControl isDisabled={attemptingSendFeedback} isInvalid={invalidFeedback} isReadOnly={false} isRequired={true} w={'$full'} >
                     <Animatable.View animation={invalidFeedback?"shake":null}>
                     <Textarea
+                        borderColor={invalidFeedback?'#512095':'white'}
                         $focus-borderColor={invalidFeedback?'#512095':'white'}
                         $invalid-borderColor='#512095'
                         size="md"
@@ -163,6 +170,7 @@ export default function Feedback({navigation}) {
                             onChange={(value)=>{
                                 setFeedback(value.nativeEvent.text);
                                 setInvalidFeedback(false);
+                                setSaveDisabled(false)
                             }}
                             
                             maxLength={300}
@@ -187,21 +195,17 @@ export default function Feedback({navigation}) {
 
                 <FormControl isDisabled={attemptingSendFeedback} isInvalid={invalidFeedback} isReadOnly={false} isRequired={true} w={'$full'} >
                 <Button
-                    isDisabled={attemptingSendFeedback}
+                    // isDisabled={attemptingSendFeedback}
+                    disabled={saveDisabled}
+                    opacity={saveDisabled?0.4:1}
                     size="lg"
                     margin={30}
                     borderRadius={40}
                     w={'$56'}
                     hardShadow='1'
-                    bgColor="#bcbcbc"
-                    $hover={{
-                        bg: "$green600",
-                        _text: {
-                        color: "$white",
-                        },
-                    }}
+                    bgColor="#512095"
                     $active={{
-                        bg: "#727386",
+                        bg: "#51209595",
                     }}
                     onPress={()=>{handleSendFeedback()}}
                     >

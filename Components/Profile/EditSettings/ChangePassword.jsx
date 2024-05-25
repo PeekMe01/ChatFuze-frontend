@@ -40,10 +40,13 @@ export default function ChangePassword({navigation}) {
     const [invalidConfirmNewPassword, setInvalidConfirmNewPassword] = useState(false);
     const [invalidConfirmNewPasswordErrorMessage, setInvalidConfirmNewPasswordErrorMessage] = useState("Error Message Confirm New Password");
 
+    const [saveDisabled, setSaveDisabled] = useState(true)
+
     const validate = async () => {
         let goodCurrentPassword, goodNewPassword, goodConfirmNewPassword;
 
         setAttemptingChangePassword(true);
+        setSaveDisabled(true)
 
         if(!currentPassword||currentPassword.length<8){
             setInvalidCurrentPassword(true);
@@ -205,6 +208,7 @@ export default function ChangePassword({navigation}) {
                                 p={5} 
                                 backgroundColor='rgba(255,255,255,0.2)'
                                 borderWidth={2}
+                                borderColor={invalidCurrentPassword?'#512095':'white'}
                                 $focus-borderColor={invalidCurrentPassword?'#512095':'white'}
                                 $invalid-borderColor='#512095'
                                 >
@@ -220,6 +224,7 @@ export default function ChangePassword({navigation}) {
                                 onChange={(newValue)=>{
                                     setCurrentPassword(newValue.nativeEvent.text);
                                     setInvalidCurrentPassword(false);
+                                    setSaveDisabled(false)
                                 }}
                                 />
                             </Input>
@@ -245,6 +250,7 @@ export default function ChangePassword({navigation}) {
                                 p={5} 
                                 backgroundColor='rgba(255,255,255,0.2)'
                                 borderWidth={2}
+                                borderColor={invalidNewPassword?'#512095':'white'}
                                 $focus-borderColor={invalidNewPassword?'#512095':'white'}
                                 $invalid-borderColor='#512095'
                                 >
@@ -260,6 +266,7 @@ export default function ChangePassword({navigation}) {
                                 onChange={(newValue)=>{
                                     setNewPassword(newValue.nativeEvent.text);
                                     setInvalidNewPassword(false);
+                                    setSaveDisabled(false)
                                 }}
                                 />
                             </Input>
@@ -285,6 +292,7 @@ export default function ChangePassword({navigation}) {
                                 p={5} 
                                 backgroundColor='rgba(255,255,255,0.2)'
                                 borderWidth={2}
+                                borderColor={invalidConfirmNewPassword?'#512095':'white'}
                                 $focus-borderColor={invalidConfirmNewPassword?'#512095':'white'}
                                 $invalid-borderColor='#512095'
                                 >
@@ -300,6 +308,7 @@ export default function ChangePassword({navigation}) {
                                 onChange={(newValue)=>{
                                     setConfirmNewPassword(newValue.nativeEvent.text);
                                     setInvalidConfirmNewPassword(false);
+                                    setSaveDisabled(false)
                                 }}
                                 />
                             </Input>
@@ -319,21 +328,15 @@ export default function ChangePassword({navigation}) {
                         {/* Save */}
                         <FormControl>
                         <Button
-                            isDisabled={attemptingChangePassword}
+                            isDisabled={attemptingChangePassword||invalidConfirmNewPassword||invalidCurrentPassword||invalidNewPassword||saveDisabled}
                             size="lg"
                             mb="$4"
                             borderRadius={40}
                             hardShadow='1'
-                            bgColor="#bcbcbc"
-                            $hover={{
-                                bg: "$green600",
-                                _text: {
-                                color: "$white",
-                                },
-                            }}
-                            $active={{
-                                bg: "#727386",
-                            }}
+                            bgColor="#512095"
+                                $active={{
+                                    bg: "#51209595",
+                                }}
                             onPress={validate}
                             >
                             <ButtonText fontSize="$xl" fontFamily='Roboto_400Regular'>

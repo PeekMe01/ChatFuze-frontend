@@ -267,11 +267,11 @@ const ChangeDOB = ({navigation}) => {
                         <FormControl>
                             <Button
                                 disabled={saveDisabled}
+                                opacity={saveDisabled?0.4:1}
                                 onPress={(event) => {
                                     submitUpdateDateOfBirth()
                                 }}
                                 size="lg"
-                                opacity={saveDisabled?0.4:1}
                                 borderRadius={40}
                                 hardShadow='1'
                                 bgColor="#512095"

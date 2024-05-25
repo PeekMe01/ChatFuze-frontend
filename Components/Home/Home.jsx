@@ -41,7 +41,7 @@ const Home = ({navigation}) => {
     const [rankName, setRankName] = useState();
     const [leaderboardnumber, setLeaderboardnumber] = useState();
     const [roomCount, setRoomCount] = useState();
-    const [ageRange, setAgeRange] = useState([18,40])
+    const [ageRange, setAgeRange] = useState([18,60])
 
     const data = ['Apple', 'Banana', 'Orange', 'Grapes', 'Pineapple', 'James', 'Tech'];
     
@@ -187,7 +187,7 @@ const Home = ({navigation}) => {
     }
 
     const joinRoom = async () =>{
-      setAttemptingJoinRoom(true);
+      setAttemptingJoinRoom(true);       
       try {
         const data = {
           userid: await AsyncStorage.getItem('id'),
@@ -254,9 +254,9 @@ const Home = ({navigation}) => {
     >
     <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }  >
       <Animatable.View animation={changingPage ? "fadeOut" : "fadeIn"} duration={500} >
-        <View margin={30} marginTop={40} justifyContent='center' alignItems='center'>
+        <View margin={'5%'} marginTop={'7%'} justifyContent='center' alignItems='center'>
           <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false} >
-            <View gap={10} display='flex' flexDirection='row' >
+            <View gap={5} display='flex' flexDirection='row' >
             {user.imageurl ? (
                 <Image
                   alt='profilePic'
@@ -282,17 +282,17 @@ const Home = ({navigation}) => {
             </View>
           </ScrollView>
           <Divider backgroundColor='white' marginVertical={10} />
-          {userAlreadyVerified&&<Box style={{ display: 'flex', gap: 20, marginVertical: 20 }} h={'$96'}>
-            <Text alignSelf='center' size='xl' color='white' fontFamily='Roboto_300Light'>
+          {userAlreadyVerified&&<Box style={{ display: 'flex', gap: 20, marginVertical: '2%' }} >
+            <Text alignSelf='center' size='xl' color='white' fontFamily='Roboto_300Light' >
               Ready to join a room?
             </Text>
-            <Text alignSelf='flex-start' marginBottom={-20} size='xl' color='white' fontFamily='Roboto_300Light'>
+            <Text alignSelf='flex-start' marginBottom={'1%'} size='xl' color='white' fontFamily='Roboto_300Light'>
                 Pick some interests
               </Text>
             <View width={'100%'}>
               <Input
                 w={'$full'}
-                marginVertical={20}
+                marginBottom={'4%'}
                 borderColor='white'
               >
                 <InputField
@@ -342,7 +342,7 @@ const Home = ({navigation}) => {
                 keyboardShouldPersistTaps='handled'
                 fadingEdgeLength={100}
             />:
-            <View marginTop={-10} opacity={0}>
+            <View  opacity={0}>
               <View backgroundColor='#51209585' flexDirection='row' alignItems='center' justifyContent='center' padding={5} paddingHorizontal={7} margin={5} borderWidth={1} borderColor='white' borderRadius={50}>
                   <Text paddingHorizontal={5} size='md' color='white'>
                       ni
@@ -355,7 +355,7 @@ const Home = ({navigation}) => {
             }
             </View>
 
-            <View alignItems='center' gap={10}>
+            <View alignItems='center' gap={10} style={{marginTop:'-5%',marginBottom:'-2%'}}>
               <Text alignSelf='flex-start' size='xl' color='white' fontFamily='Roboto_300Light'>
                 Pick an age range
               </Text>
@@ -366,7 +366,7 @@ const Home = ({navigation}) => {
               values={ageRange}
                 isMarkersSeparated={true}
                 min={18}
-                max={40}
+                max={60}
                 onValuesChangeFinish={setAgeRange}
                 showSteps={true}
                 showStepMarkers={true}
@@ -466,7 +466,7 @@ const Home = ({navigation}) => {
                 $active={{
                     bg: "#51209595",
                 }}
-                onPress={null}
+                 onPress={() => navigation.navigate('HomeVerification')}
                 >
                 <ButtonText fontSize="$xl" fontWeight="$medium" >
                   Get Verified

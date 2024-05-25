@@ -31,6 +31,8 @@ export default function ChangeCountry({navigation, route}) {
 
     const [countriesWithEmojis, setCountriesWithEmojis] = useState([]);
 
+    const [saveDisabled, setSaveDisabled] = useState(true)
+
     useEffect(() => {
         // Get all country codes
         const countryCodes = Object.keys(emojiFlags.data);
@@ -133,25 +135,31 @@ export default function ChangeCountry({navigation, route}) {
     const validate = async () => {
         let goodCountry = false;
         setAttemptingChangeCountry(true);
+        setSaveDisabled(true)
         if(!currentCountry){
             goodCountry = false;
             setInvalidCurrentCountry(true);
             setInvalidCurrentCountryErrorMessage('Please select a country')
+            setSaveDisabled(true)
         }else{
             setInvalidCurrentCountry(false);
+            setSaveDisabled(false)
             goodCountry=true;
         }
 
         if(currentCountry===oldCountry){
             goodCountry = false;
             setInvalidCurrentCountry(true);
+            setSaveDisabled(true)
             setInvalidCurrentCountryErrorMessage('Country did not change!')
         }else{
             setInvalidCurrentCountry(false);
+            setSaveDisabled(false)
             goodCountry=true;
         }
 
         if(goodCountry){
+            setSaveDisabled(true)
             console.log('here')
             console.log(currentCountry)
             const data = {
@@ -213,6 +221,7 @@ export default function ChangeCountry({navigation, route}) {
                 },
                 })
                 setAttemptingChangeCountry(false);
+                setSaveDisabled(false)
             }
             
             
@@ -330,6 +339,7 @@ export default function ChangeCountry({navigation, route}) {
                                         onSelect={(selectedItem, index) => {
                                             setCurrentCountry(selectedItem.country);
                                             setInvalidCurrentCountry(false);
+                                            setSaveDisabled(false)
                                             console.log(selectedItem, index);
                                         }}
                                         disableAutoScroll
@@ -376,20 +386,16 @@ export default function ChangeCountry({navigation, route}) {
                                 {/* Save */}
                                 <FormControl>
                                 <Button
-                                    isDisabled={attemptingChangeCountry}
+                                    // isDisabled={attemptingChangeCountry}
+                                    disabled={saveDisabled}
+                                    opacity={saveDisabled?0.4:1}
                                     size="lg"
                                     mb="$4"
                                     borderRadius={40}
                                     hardShadow='1'
-                                    bgColor="#bcbcbc"
-                                    $hover={{
-                                        bg: "$green600",
-                                        _text: {
-                                        color: "$white",
-                                        },
-                                    }}
+                                    bgColor="#512095"
                                     $active={{
-                                        bg: "#727386",
+                                        bg: "#51209595",
                                     }}
                                     onPress={validate}
                                     >

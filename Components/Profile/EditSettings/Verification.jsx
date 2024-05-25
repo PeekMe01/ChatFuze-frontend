@@ -289,15 +289,9 @@ export default function Verification({navigation}) {
                             mb="$4"
                             // borderRadius={40}
                             hardShadow='1'
-                            bgColor="#2cb5d6"
-                            $hover={{
-                                bg: "$green600",
-                                _text: {
-                                color: "$white",
-                                },
-                            }}
+                            bgColor="#512095"
                             $active={{
-                                bg: "#2c94d6",
+                                bg: "#51209595",
                             }}
                             onPress={()=>{setOpenCamera(true);setImage(null); setInvalidImage(false); if(permission&&!permission.granted){requestPermission()}}}
                             >
@@ -312,7 +306,7 @@ export default function Verification({navigation}) {
                         <View width={'$72'} height={'$48'}>
                             <Image
                             borderWidth={3}
-                            borderColor='#bcbcbc'
+                            borderColor='#fff'
                             borderRadius={30}
                             flex={1}
                             w={'$full'}
@@ -329,15 +323,9 @@ export default function Verification({navigation}) {
                             mb="$4"
                             // borderRadius={40}
                             hardShadow='1'
-                            bgColor="#2cb5d6"
-                            $hover={{
-                                bg: "$green600",
-                                _text: {
-                                color: "$white",
-                                },
-                            }}
+                            bgColor="#512095"
                             $active={{
-                                bg: "#2c94d6",
+                                bg: "#51209595",
                             }}
                             onPress={()=>{setClickedButton(true);submitID(image.uri)}}
                             >
