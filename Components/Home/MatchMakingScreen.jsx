@@ -23,18 +23,18 @@ export default function MatchMakingScreen({navigation}) {
     const [foundNoMatch, setFoundNoMatch ] = useState(false);
     useEffect(() => {
         const handleRoomCreated = (data) => {
-        if(data.userdid1==userId || data.userdid2==userId){
-             console.log(data.userdid1==userId?data.userdid2:data.userdid1)
-             setFoundMatch(true);
-             socket.emit('roomCreated',data);
-             setTimeout(() => {
-                navigation.push("ChatRoom", {
-                    receiverID: data.userdid1==userId?data.userdid2:data.userdid1,
-                    roomID: data.idmessages,
-                    startingTime: data.createdAt
-                });
-             }, 2000); 
-        }
+            if(data.userdid1==userId || data.userdid2==userId){
+                console.log(data.userdid1==userId?data.userdid2:data.userdid1)
+                setFoundMatch(true);
+                socket.emit('roomCreated',data);
+                setTimeout(() => {
+                    navigation.push("ChatRoom", {
+                        receiverID: data.userdid1==userId?data.userdid2:data.userdid1,
+                        roomID: data.idmessages,
+                        startingTime: data.createdAt
+                    });
+                }, 2000); 
+            }
         };
 
         // const handleRoomClosed = (data) => {
@@ -43,6 +43,10 @@ export default function MatchMakingScreen({navigation}) {
         // };
         socket.on('roomCreated', handleRoomCreated);
         // socket.on('roomClosed', handleRoomClosed);
+
+        return () => {
+            socket.off('roomCreated', handleRoomCreated);
+        };
         
     }, [socket]);
 

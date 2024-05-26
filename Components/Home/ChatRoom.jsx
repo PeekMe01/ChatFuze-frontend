@@ -1,13 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Image, ImageBackground, Text, View, Input, HStack, Spinner, Center } from "@gluestack-ui/themed";
+import { Image, ImageBackground, Text, View, Input, HStack, Spinner, Center, AlertDialogCloseButton, CloseIcon, AlertDialogBody, AlertDialogFooter, Button } from "@gluestack-ui/themed";
 import React, { useRef } from "react";
 import { GiftedChat } from "react-native-gifted-chat";
 import { useState, useCallback, useEffect, useLayoutEffect } from 'react'
-import { AntDesign, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { AntDesign, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import userimg from '../../assets/img/user.png'
 import { useHeaderHeight } from '@react-navigation/elements';
-import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { collection, addDoc, orderBy, query, onSnapshot, where , doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
 import { database } from "../../config/firebase";
@@ -15,6 +15,13 @@ import { API_URL } from '../Config'
 import { BackHandler, ToastAndroid } from 'react-native';
 
 import io from 'socket.io-client';
+import { AlertDialog } from '@gluestack-ui/themed';
+import { AlertDialogBackdrop } from '@gluestack-ui/themed';
+import { AlertDialogContent } from '@gluestack-ui/themed';
+import { AlertDialogHeader } from '@gluestack-ui/themed';
+import { Heading } from '@gluestack-ui/themed';
+import { ButtonGroup } from '@gluestack-ui/themed';
+import { ButtonText } from '@gluestack-ui/themed';
 const error = console.error; console.error = (...args) => { if (/defaultProps/.test(args[0])) return; error(...args); };
 const socket = io.connect(`${API_URL}`);
 
@@ -30,19 +37,53 @@ export default function ChatRoom({navigation,route}) {
    // const [timeLeft,setTimeLeft]=useState({})
     const [remainderTime,setRemainderTime]=useState({})
 
+    const [showAlertDialog, setShowAlertDialog] = useState(false)
+    const [countdown, setCountdown] = useState(5); // Countdown timer starting from 5 seconds
+
     useEffect(() => {
-        const handleRoomCreated = ({data,newtime}) => {
-			
-        if(data.idmessages==roomID || data.idmessages==roomID){
-			
-            setRemainderTime(newtime)
-            if(newtime.minutes==0 && newtime.seconds==0 )
-                navigation.navigate("HomeScreen")
+        let timer;
+        if (showAlertDialog) {
+            timer = setInterval(() => {
+                setCountdown(prevCountdown => {
+                    if (prevCountdown <= 1) {
+                        clearInterval(timer);
+                        navigation.navigate("Results", {
+                            receiverID: receiverID,
+                            senderID: loggedInUserID,
+                            roomID: roomID
+                        });
+                        setShowAlertDialog(false)
+                    }
+                    return prevCountdown - 1;
+                });
+            }, 1000);
         }
+        return () => clearInterval(timer);
+    }, [showAlertDialog]);
+
+    useEffect(() => {
+        const handleRoomCreated = ({data, newtime}) => {
+            if (data.idmessages === roomID || data.idmessages === roomID) {
+                setRemainderTime(newtime);
+                if (newtime.minutes === 0 && newtime.seconds === 0) {
+                    console.log("Room Done");
+                    // alert("Times up!")
+                    setShowAlertDialog(true)
+                    // setTimeout(() => {
+                    //     navigation.navigate("Results")
+                    // }, 5000);
+                    
+                }
+            }
         };
-        socket.on('updateTime',handleRoomCreated); 
-        // socket.on('roomCreated', handleRoomCreated); 
-    }, [socket]);
+    
+        socket.on('updateTime', handleRoomCreated);
+    
+        // Cleanup function to remove the event listener when the component unmounts
+        return () => {
+            socket.off('updateTime', handleRoomCreated);
+        };
+    }, [socket, roomID]);
 
     // useEffect( () => {
     //     const backHandler = BackHandler.addEventListener(
@@ -324,6 +365,53 @@ export default function ChatRoom({navigation,route}) {
                 style={{ flex:1 ,resizeMode: 'cover'}}
             >
                 <View style={{ flex: 1 }}>
+                    <AlertDialog
+                        isOpen={showAlertDialog}
+                        // onClose={() => {
+                        // setShowAlertDialog(false)
+                        // }}
+                    >
+                        <AlertDialogBackdrop />
+                            <AlertDialogContent>
+                                <AlertDialogHeader justifyContent='center' alignItems='center'>
+                                    <Heading textAlign='center' paddingTop={80} flex={1} color='#512095'>
+                                        <MaterialCommunityIcons name='timer' size={100}/>
+                                    </Heading>
+                                </AlertDialogHeader>
+                            <AlertDialogBody>
+                                <Text size="xl" textAlign='center'>
+                                    Time's Up!
+                                </Text>
+                                <Text size="md" textAlign='center' marginVertical={10}>
+                                    Going to results page in {countdown} second{countdown !== 1 ? 's' : ''}...
+                                </Text>
+                            </AlertDialogBody>
+                            {/* <AlertDialogFooter>
+                                <ButtonGroup space="lg">
+                                    <Button
+                                        variant="outline"
+                                        action="secondary"
+                                        borderWidth={2}
+                                        onPress={() => {
+                                        setShowAlertDialog(false)
+                                        }}
+                                    >
+                                        <ButtonText>Cancel</ButtonText>
+                                    </Button>
+                                    <Button
+                                        bg="#512095"
+                                        action="negative"
+                                        onPress={() => {
+                                            null
+                                        }}
+                                        disabled={disabledeletebutton}
+                                    >
+                                        <ButtonText>Remove</ButtonText>
+                                    </Button>
+                                </ButtonGroup>
+                            </AlertDialogFooter> */}
+                        </AlertDialogContent>
+                    </AlertDialog>
                     <GiftedChat
                         messages={messages.sort((a, b) => b.createdAt - a.createdAt)}
                         onSend={messages => onSend(messages)}

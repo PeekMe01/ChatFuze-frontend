@@ -69,6 +69,7 @@ import Home from './Components/Home/Home';
 import MatchMakingScreen from './Components/Home/MatchMakingScreen';
 import RequestProvider from './Components/Home/RequestProvider';
 import ChatRoom from './Components/Home/ChatRoom';
+import Results from './Components/Home/Results';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -321,7 +322,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
           const leafRouteName = getCurrentRouteName(currentRoute);
 
         
-          if (leafRouteName==="MatchMakingScreen" || leafRouteName==="ChatRoom" || leafRouteName==="HomeVerification") {
+          if (leafRouteName==="MatchMakingScreen" || leafRouteName==="ChatRoom" || leafRouteName==="HomeVerification" || leafRouteName==="Results") {
               navigation.setOptions({
                   tabBarStyle: { display: 'none' }
               });
@@ -360,6 +361,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
       <RequestProvider>
         <View style={{ flex: 1 }}>
             <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
+                <Stack.Screen name="Results" component={Results}/>
                 <Stack.Screen name="HomeScreen" component={Home}/>
                 <Stack.Screen name="MatchMakingScreen" component={MatchMakingScreen}/>
                 <Stack.Screen name="ChatRoom" component={ChatRoom}/>
