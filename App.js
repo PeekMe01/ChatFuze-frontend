@@ -323,7 +323,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
   // }
 
   function HomeScreen({ navigation }) {
-    const [showAlertDialog, setShowAlertDialog] = useState(false)
+    const [showRejoinAlertDialog, setShowRejoinAlertDialog] = useState(false)
     const [countdown, setCountdown] = useState(100);
     React.useLayoutEffect(() => {
       const unsubscribe = navigation.addListener('state', (e) => {
@@ -368,7 +368,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
 
   useEffect(() => {
     let timer;
-    if (showAlertDialog) {
+    if (showRejoinAlertDialog) {
         timer = setInterval(() => {
             setCountdown(prevCountdown => {
                 if (prevCountdown <= 1) {
@@ -379,14 +379,14 @@ const updateUserStatusAfterLoginSignUp = async () => {
                         //     roomID: roomID
                         // });
                         console.log("timer done")
-                        setShowAlertDialog(false)
+                        setShowRejoinAlertDialog(false)
                 }
                 return prevCountdown - 1;
             });
         }, 1000);
     }
     return () => clearInterval(timer);
-}, [showAlertDialog]);
+}, [showRejoinAlertDialog]);
 
 useEffect(()=>{
   checkForAnyValidRejoins()
@@ -415,7 +415,7 @@ useEffect(()=>{
                 console.log("30 seconds have passed");
             } else {
                 setCountdown(remainingSeconds-1)
-                setShowAlertDialog(true)
+                setShowRejoinAlertDialog(true)
                 console.log(`Remaining seconds: ${remainingSeconds}`);
             }
         });
@@ -458,6 +458,7 @@ useEffect(()=>{
   }
 
   const acceptRejoinInvite = async () => {
+    setShowRejoinAlertDialog(false)
     try {
         const userId = await AsyncStorage.getItem('id');
         // Create a query to find documents with the specified criteria
@@ -484,12 +485,12 @@ useEffect(()=>{
                 await updateDoc(doc.ref, updatedData);
 
                 console.log(doc.data())
-                // setTimeout(() => {
-                //   navigation.push("ChatRoom", {
-                //       receiverID: doc.data().inviteSender,
-                //       roomID: doc.data().roomID,
-                //   });
-                // }, 1000); 
+                setTimeout(() => {
+                  navigation.navigate("ChatRoom", {
+                      receiverID: doc.data().inviteSender,
+                      roomID: doc.data().roomID,
+                  });
+                }, 1000); 
                 console.log(`Document with ID ${doc.id} updated successfully`);
             }
         }
@@ -510,10 +511,10 @@ useEffect(()=>{
                     <Stack.Screen name="Results" component={Results} />
                 </Stack.Navigator>
 
-                {showAlertDialog && (
+                {showRejoinAlertDialog && (
                     <AlertDialog
-                        isOpen={showAlertDialog}
-                        onClose={() => setShowAlertDialog(false)}
+                        isOpen={showRejoinAlertDialog}
+                        onClose={() => setShowRejoinAlertDialog(false)}
                     >
                         <AlertDialogBackdrop />
                         <AlertDialogContent>
@@ -537,7 +538,7 @@ useEffect(()=>{
                                         action="secondary"
                                         borderWidth={2}
                                         onPress={() => {
-                                            setShowAlertDialog(false)
+                                            setShowRejoinAlertDialog(false)
                                             rejectRejoinInvite();
                                         }}
                                     >
@@ -547,7 +548,6 @@ useEffect(()=>{
                                         bg="#512095"
                                         action="negative"
                                         onPress={() => {
-                                            setShowAlertDialog(false)
                                             acceptRejoinInvite();
                                         }}
                                     >

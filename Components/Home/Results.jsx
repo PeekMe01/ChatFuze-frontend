@@ -57,6 +57,7 @@ export default function Results({navigation, route}) {
                 ratingcount: (selectedIndex+1),
             };
             const response = await api.post(`/home/rating`, data);
+            console.log(response)
 
             if(response){
                 const data1 = {
@@ -115,6 +116,7 @@ export default function Results({navigation, route}) {
                 const response = await api.post(`/home/rating`, data);
 
                 if(response){
+                    console.log(response)
                     console.log("done")
                     setTimeout(() => {
                         navigation.navigate('HomeScreen')
@@ -260,10 +262,23 @@ export default function Results({navigation, route}) {
                             variant="outline"
                             action="secondary"
                             borderWidth={2}
-                            onPress={() => {
-                                setShowAlertDialog(false)
+                            onPress={async () => {
+                                try {
+                                    const data = {
+                                        idusers: receiverID,
+                                        ratingcount: (selectedIndex+1),
+                                    };
+                                    const response = await api.post(`/home/rating`, data);
+
+                                    if(response){
+                                        setShowAlertDialog(false)
                                 setBackToHomePressed(false)
                                 navigation.navigate('HomeScreen')
+                                    }
+                                } catch (error) {
+                                    console.log(error)
+                                }
+                                
                             }}
                         >
                             <ButtonText>No</ButtonText>
