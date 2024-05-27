@@ -113,32 +113,39 @@ export default function Chat({navigation,route}) {
             updateTyping(false);
           }, 3000);
         };
-      useEffect(()=>{
-        let senderid=loggedInUserID
-        let receiverid=receivingUser.idusers
-        const docId = `${receiverid}_${senderid}`;
-        const typingStatusQuery = query(
-            collection(database, 'typing'),
-            where('receiverid', '==',parseInt(senderid)) ,
-            where('senderid', '==',parseInt(receiverid)) 
-        );
-
-        // Set up a real-time listener for each query
-        const unsubscribe = onSnapshot(typingStatusQuery, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                if (change.type === 'added' || change.type === 'modified') {
-                    const data = change.doc.data();
-                    console.log("hello world")
-                    console.log(data.typing)
-                 
-                    setReceiverTyping(data.typing);
-                    // console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
-                    // updateFriendStatus(friendData.userId, friendData.active,friendData.datetime)
-                    // Update UI or perform actions based on friend's status change
-                }
+        useEffect(() => {
+            if (!loggedInUserID || !receivingUser?.idusers) {
+                return;
+            }
+        
+            const senderid = loggedInUserID;
+            const receiverid = receivingUser.idusers;
+            const docId = `${receiverid}_${senderid}`;
+            
+            const typingStatusQuery = query(
+                collection(database, 'typing'),
+                where('receiverid', '==', senderid),
+                where('senderid', '==', receiverid)
+            );
+        
+            // Set up a real-time listener for the query
+            const unsubscribe = onSnapshot(typingStatusQuery, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added' || change.type === 'modified') {
+                        const data = change.doc.data();
+                        console.log("hello world");
+                        console.log(data.typing);
+                        setReceiverTyping(data.typing);
+                    }
+                });
             });
-        });
-    })
+        
+            // Cleanup function to unsubscribe from the listener
+            return () => {
+                unsubscribe();
+            };
+        }, [loggedInUserID, receivingUser]);
+        
     
     function getFormattedTimeDifference(datetime) {
         // Parse the given datetime string
@@ -311,27 +318,31 @@ export default function Chat({navigation,route}) {
         receivingUser.datetime=datetime
     };
 
-    // Set up the listener
-    useEffect(()=>{
-        // Create a query for each friend's status document
+    useEffect(() => {
+        if (!receivingUser?.idusers) return;
+
+        // Create a query for the friend's status document
         const friendStatusQuery = query(
             collection(database, 'status'),
             where('userId', '==', receivingUser.idusers) // Assuming 'userId' is the field storing the user ID in the 'status' documents
         );
 
-        // Set up a real-time listener for each query
+        // Set up a real-time listener for the query
         const unsubscribe = onSnapshot(friendStatusQuery, (snapshot) => {
             console.log(`Snapshot received for friend ${receivingUser.idusers}`);
             snapshot.docChanges().forEach((change) => {
                 if (change.type === 'added' || change.type === 'modified') {
                     const friendData = change.doc.data();
                     console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
-                    updateFriendStatus(friendData.userId, friendData.active,friendData.datetime)
+                    updateFriendStatus(friendData.userId, friendData.active, friendData.datetime);
                     // Update UI or perform actions based on friend's status change
                 }
             });
         });
-    })
+
+        // Cleanup subscription on unmount or when receivingUser.idusers changes
+        return () => unsubscribe();
+    }, [receivingUser?.idusers, updateFriendStatus]);
 
 
       const onSend = useCallback(async (messages = []) => {

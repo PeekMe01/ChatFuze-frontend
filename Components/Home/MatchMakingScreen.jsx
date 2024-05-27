@@ -11,6 +11,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import api from '../Config'
 import { API_URL } from '../Config'
 import io from 'socket.io-client';
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { database } from "../../config/firebase";
 
 const socket = io.connect(`${API_URL}`);
 
@@ -22,11 +24,33 @@ export default function MatchMakingScreen({navigation}) {
     const [foundMatch, setFoundMatch ] = useState(false);
     const [foundNoMatch, setFoundNoMatch ] = useState(false);
     useEffect(() => {
-        const handleRoomCreated = (data) => {
+        const handleRoomCreated = async (data) => {
             if(data.userdid1==userId || data.userdid2==userId){
                 console.log(data.userdid1==userId?data.userdid2:data.userdid1)
                 setFoundMatch(true);
                 socket.emit('roomCreated',data);
+                try {
+                    // Check if a room with the same roomID already exists
+                    const roomQuery = query(
+                        collection(database, 'rooms'),
+                        where('roomID', '==', data.idmessages)
+                    );
+                    const roomQuerySnapshot = await getDocs(roomQuery);
+                    if (roomQuerySnapshot.empty) {
+                        // If room doesn't exist, create a new document
+                        await addDoc(collection(database, 'rooms'), {
+                            user1ID: data.userdid1,
+                            user2ID: data.userdid2,
+                            roomID: data.idmessages,
+                            roomStatus: true
+                        });
+                        console.log('Room created in Firestore');
+                    } else {
+                        console.log('Room already exists in Firestore');
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
                 setTimeout(() => {
                     navigation.push("ChatRoom", {
                         receiverID: data.userdid1==userId?data.userdid2:data.userdid1,

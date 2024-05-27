@@ -1,9 +1,10 @@
 import { AppState } from 'react-native';
 import 'react-native-gesture-handler';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { GluestackUIProvider, View, Text, KeyboardAvoidingView, HStack, Spinner, Center } from '@gluestack-ui/themed';
+import { GluestackUIProvider, View, Text, KeyboardAvoidingView, HStack, Spinner, Center, AlertDialogBody } from '@gluestack-ui/themed';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import BubbleScene from './Components/Background/BubbleScene';
 import Login from './Components/Login/Login';
 import { config } from "@gluestack-ui/config"
@@ -11,7 +12,7 @@ import {ImageBackground, Platform } from 'react-native'
 import SignUp from './Components/SignUp/SignUp';
 import { StatusBar } from 'react-native';
 import { useScroll } from '@react-three/drei';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import Profile from './Components/Profile/Profile'
@@ -70,6 +71,12 @@ import MatchMakingScreen from './Components/Home/MatchMakingScreen';
 import RequestProvider from './Components/Home/RequestProvider';
 import ChatRoom from './Components/Home/ChatRoom';
 import Results from './Components/Home/Results';
+
+import { AlertDialog, AlertDialogFooter, ButtonGroup, Button, ButtonText } from '@gluestack-ui/themed';
+import { AlertDialogBackdrop } from '@gluestack-ui/themed';
+import { AlertDialogContent } from '@gluestack-ui/themed';
+import { AlertDialogHeader } from '@gluestack-ui/themed';
+import { Heading } from '@gluestack-ui/themed';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -316,6 +323,8 @@ const updateUserStatusAfterLoginSignUp = async () => {
   // }
 
   function HomeScreen({ navigation }) {
+    const [showAlertDialog, setShowAlertDialog] = useState(false)
+    const [countdown, setCountdown] = useState(100);
     React.useLayoutEffect(() => {
       const unsubscribe = navigation.addListener('state', (e) => {
           const currentRoute = e.data.state.routes[e.data.state.index];
@@ -357,18 +366,200 @@ const updateUserStatusAfterLoginSignUp = async () => {
   //   {({ navigation }) => <MatchMakingScreen navigation={navigation} requestID={requestID} setRequestID={setRequestID}/>}
   // </Stack.Screen>
 
+  useEffect(() => {
+    let timer;
+    if (showAlertDialog) {
+        timer = setInterval(() => {
+            setCountdown(prevCountdown => {
+                if (prevCountdown <= 1) {
+                        clearInterval(timer);
+                        // navigation.navigate("Results", {
+                        //     receiverID: receiverID,
+                        //     senderID: loggedInUserID,
+                        //     roomID: roomID
+                        // });
+                        console.log("timer done")
+                        setShowAlertDialog(false)
+                }
+                return prevCountdown - 1;
+            });
+        }, 1000);
+    }
+    return () => clearInterval(timer);
+}, [showAlertDialog]);
+
+useEffect(()=>{
+  checkForAnyValidRejoins()
+})
+
+
+  const checkForAnyValidRejoins = async () => {
+    try {
+        const userId = await AsyncStorage.getItem('id');
+        const validRejoinsQuery = query(
+            collection(database, 'validRejoins'),
+            where('inviteReceiver', '==', parseInt(userId)),
+            where('status', '==', 'pending')
+        );
+
+        const querySnapshot = await getDocs(validRejoinsQuery);
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const createdAtTimestamp = data.createdAt.toDate(); // Convert Firestore Timestamp to JavaScript Date object
+            const currentTime = new Date();
+            const elapsedTimeInSeconds = Math.floor((currentTime - createdAtTimestamp) / 1000); // Convert milliseconds to seconds
+
+            // Calculate remaining seconds until 30 seconds have passed
+            const remainingSeconds = 30 - elapsedTimeInSeconds;
+            if (remainingSeconds <= 0) {
+                console.log("30 seconds have passed");
+            } else {
+                setCountdown(remainingSeconds-1)
+                setShowAlertDialog(true)
+                console.log(`Remaining seconds: ${remainingSeconds}`);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  const rejectRejoinInvite = async () => {
+    try {
+        const userId = await AsyncStorage.getItem('id');
+        // Create a query to find documents with the specified criteria
+        const q = query(
+          collection(database, 'validRejoins'),
+          where('inviteReceiver', '==', parseInt(userId)),
+          where('status', '==', 'pending')
+        );
+
+        // Execute the query
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            console.log("No matching documents found to update");
+        } else {
+            // Iterate over each document and update it
+            for (const doc of querySnapshot.docs) {
+                // Define the updated fields
+                const updatedData = {
+                    status: 'rejected'
+                };
+
+                // Update the document
+                await updateDoc(doc.ref, updatedData);
+                console.log(`Document with ID ${doc.id} updated successfully`);
+            }
+        }
+    } catch (error) {
+        console.log("Error updating document(s): ", error);
+    }
+  }
+
+  const acceptRejoinInvite = async () => {
+    try {
+        const userId = await AsyncStorage.getItem('id');
+        // Create a query to find documents with the specified criteria
+        const q = query(
+          collection(database, 'validRejoins'),
+          where('inviteReceiver', '==', parseInt(userId)),
+          where('status', '==', 'pending')
+        );
+
+        // Execute the query
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            console.log("No matching documents found to update");
+        } else {
+            // Iterate over each document and update it
+            for (const doc of querySnapshot.docs) {
+                // Define the updated fields
+                const updatedData = {
+                    status: 'accepted'
+                };
+
+                // Update the document
+                await updateDoc(doc.ref, updatedData);
+
+                console.log(doc.data())
+                // setTimeout(() => {
+                //   navigation.push("ChatRoom", {
+                //       receiverID: doc.data().inviteSender,
+                //       roomID: doc.data().roomID,
+                //   });
+                // }, 1000); 
+                console.log(`Document with ID ${doc.id} updated successfully`);
+            }
+        }
+    } catch (error) {
+        console.log("Error updating document(s): ", error);
+    }
+  }
+
+
     return (
       <RequestProvider>
-        <View style={{ flex: 1 }}>
-            <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
-                <Stack.Screen name="Results" component={Results}/>
-                <Stack.Screen name="HomeScreen" component={Home}/>
-                <Stack.Screen name="MatchMakingScreen" component={MatchMakingScreen}/>
-                <Stack.Screen name="ChatRoom" component={ChatRoom}/>
-                <Stack.Screen name="HomeVerification" component={Verification}/>
-            </Stack.Navigator>
-        </View>
-      </RequestProvider>
+            <View style={{ flex: 1 }}>
+                <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
+                    <Stack.Screen name="HomeScreen" component={Home} />
+                    <Stack.Screen name="MatchMakingScreen" component={MatchMakingScreen} />
+                    <Stack.Screen name="ChatRoom" component={ChatRoom} />
+                    <Stack.Screen name="HomeVerification" component={Verification} />
+                    <Stack.Screen name="Results" component={Results} />
+                </Stack.Navigator>
+
+                {showAlertDialog && (
+                    <AlertDialog
+                        isOpen={showAlertDialog}
+                        onClose={() => setShowAlertDialog(false)}
+                    >
+                        <AlertDialogBackdrop />
+                        <AlertDialogContent>
+                            <AlertDialogHeader justifyContent='center' alignItems='center'>
+                                <Heading textAlign='center' paddingTop={80} flex={1} color='#512095'>
+                                    <AntDesign name='disconnect' size={100} />
+                                </Heading>
+                            </AlertDialogHeader>
+                            <AlertDialogBody>
+                                <Text size="xl" textAlign='center'>
+                                    Disconnected!
+                                </Text>
+                                <Text size="md" textAlign='center' marginVertical={10}>
+                                    {countdown} second{countdown !== 1 ? 's' : ''} before abandoning room.
+                                </Text>
+                            </AlertDialogBody>
+                            <AlertDialogFooter>
+                                <ButtonGroup space="lg">
+                                    <Button
+                                        variant="outline"
+                                        action="secondary"
+                                        borderWidth={2}
+                                        onPress={() => {
+                                            setShowAlertDialog(false)
+                                            rejectRejoinInvite();
+                                        }}
+                                    >
+                                        <ButtonText>Abandon</ButtonText>
+                                    </Button>
+                                    <Button
+                                        bg="#512095"
+                                        action="negative"
+                                        onPress={() => {
+                                            setShowAlertDialog(false)
+                                            acceptRejoinInvite();
+                                        }}
+                                    >
+                                        <ButtonText>Rejoin</ButtonText>
+                                    </Button>
+                                </ButtonGroup>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
+            </View>
+        </RequestProvider>
     );
 }
   

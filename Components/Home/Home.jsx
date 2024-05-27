@@ -17,7 +17,7 @@ import {
     Roboto_900Black,
     Roboto_900Black_Italic,
   } from '@expo-google-fonts/roboto';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../Config';
 import { Keyboard, StyleSheet, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
@@ -31,8 +31,59 @@ import { Pressable } from '@gluestack-ui/themed';
 import { Icon } from '@gluestack-ui/themed';
 import { RequestContext } from './RequestProvider';
 import userimg from '../../assets/img/user.png'
+import { database } from "../../config/firebase";
+import { query, collection, getDocs, where } from 'firebase/firestore';
 
 const Home = ({navigation}) => {
+    // Get the route object
+    const route = useRoute();
+  
+    // Extract parameters from the route
+    const { disconnetedDueToMatchLeaving } = route.params || {};
+    const { disconnetedDueToMeLeaving } = route.params || {};
+
+    useEffect(() => {
+      console.log(disconnetedDueToMatchLeaving)
+      console.log(disconnetedDueToMeLeaving)
+      if(disconnetedDueToMatchLeaving){
+        alert("Your match has disconnected from the room.")
+      }
+  
+      if(disconnetedDueToMeLeaving){
+        alert("You have disconnected from the room. your rank has descreased by 2%.")
+      }
+
+    }, [disconnetedDueToMatchLeaving,disconnetedDueToMeLeaving])
+
+    // useEffect(() => {
+    //   checkForRejoins();
+    // }, [userId]); // Dependency array including userId and database
+
+    // const checkForRejoins = async () => {
+    //   console.log('hello'); // Log when the effect runs
+    //   console.log(database)
+    //   if (userId) {
+    //     try {
+    //       // Define the query to find documents with the specified criteria
+    //       console.log('inside');
+    //       const q = query(
+    //         collection(database, 'validRejoins'),
+    //         where('inviteReceiver', '==', parseInt(userId, 10)), // Ensure userId is parsed to a number
+    //         where('status', '==', 'pending')
+    //       );
+    
+    //       // Execute the query
+    //       const querySnapshot = await getDocs(q);
+    
+    //       // Now you can do something with the querySnapshot, like iterating through documents.
+    //       querySnapshot.forEach((doc) => {
+    //         console.log(doc.data()); // Log each document's data
+    //       });
+    //     } catch (error) {
+    //       console.error('Error creating query: ', error); // Handle query creation errors
+    //     }
+    //   }
+    // }
 
     const toast = useToast()
 
@@ -254,7 +305,7 @@ const Home = ({navigation}) => {
     >
     <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }  >
       <Animatable.View animation={changingPage ? "fadeOut" : "fadeIn"} duration={500} >
-        <View margin={'5%'} marginTop={'7%'} justifyContent='center' alignItems='center'>
+        <View margin={'5%'} marginTop={'10%'} justifyContent='center' alignItems='center'>
           <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false} >
             <View gap={5} display='flex' flexDirection='row' >
             {user.imageurl ? (

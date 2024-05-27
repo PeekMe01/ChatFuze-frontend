@@ -1,4 +1,4 @@
-import { ButtonText, Center, Divider, HStack, Spinner, View } from '@gluestack-ui/themed'
+import { ButtonText, Center, CloseIcon, Divider, HStack, Icon, Pressable, Spinner, Toast, ToastDescription, ToastTitle, VStack, View, useToast } from '@gluestack-ui/themed'
 import { Text } from '@gluestack-ui/themed'
 import { ScrollView } from '@gluestack-ui/themed';
 import { ImageBackground } from '@gluestack-ui/themed'
@@ -32,9 +32,13 @@ import {
     Roboto_900Black,
     Roboto_900Black_Italic,
   } from '@expo-google-fonts/roboto';
+import api from '../Config';
 
 export default function Results({navigation, route}) {
-    // const { receiverID, senderID, roomID} = route.params;
+
+    const toast = useToast()
+
+    const { receiverID, senderID, roomID} = route.params;
 
     const [receiverMessages, setReceiverMessages] = useState({count: 0, totalCharacters: 0});
     const [senderMessages, setSenderMessages] = useState({count: 0, totalCharacters: 0});
@@ -45,22 +49,101 @@ export default function Results({navigation, route}) {
 
     const [showAlertDialog, setShowAlertDialog] = useState(false)
 
-    const handleAddFriend = () => {
-        console.log('Pressed add friend')
-        setShowAlertDialog(false)
-        setBackToHomePressed(false)
-        navigation.navigate('HomeScreen')
+    const handleAddFriend = async () => {
+        // console.log('Pressed add friend')
+        try {
+            const data = {
+                idusers: receiverID,
+                ratingcount: (selectedIndex+1),
+            };
+            const response = await api.post(`/home/rating`, data);
+
+            if(response){
+                const data1 = {
+                    friendid1: senderID,
+                    friendid2: receiverID
+                }
+                const response1 = await api.post(`/home/addFriendRequest`, data1);
+
+                if(response1){
+                    setTimeout(() => {
+                        setShowAlertDialog(false)
+                        setBackToHomePressed(false)
+                        navigation.navigate('HomeScreen')
+                    }, 1000);
+                }
+            }
+        } catch (error) {
+            setBackToHomePressed(false)
+            console.log(error)
+            toast.show({
+                duration: 5000,
+                placement: "top",
+                render: ({ id }) => {
+                    const toastId = "toast-" + id
+                    return (
+                    <Toast nativeID={toastId} action="error" variant="solid" marginTop={40}>
+                        <VStack space="xs">
+                        <ToastTitle>Error</ToastTitle>
+                        <ToastDescription>
+                            There was an error rating your match.
+                        </ToastDescription>
+                        </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
+                    </Toast>
+                    )
+                },
+            })
+        }
+        // setShowAlertDialog(false)
+        // setBackToHomePressed(false)
+        // navigation.navigate('HomeScreen')
     }
 
-    const handleBackToHome = () => {
+    const handleBackToHome = async () => {
         setBackToHomePressed(true)
         if(selectedIndex>=6){
             setShowAlertDialog(true)
         }else{
-            setTimeout(() => {
-                navigation.navigate('HomeScreen')
+            try{
+                const data = {
+                    idusers: receiverID,
+                    ratingcount: (selectedIndex+1),
+                };
+                const response = await api.post(`/home/rating`, data);
+
+                if(response){
+                    console.log("done")
+                    setTimeout(() => {
+                        navigation.navigate('HomeScreen')
+                        setBackToHomePressed(false)
+                    }, 1000);
+                }
+            }catch(error){
                 setBackToHomePressed(false)
-            }, 1000); 
+                toast.show({
+                    duration: 5000,
+                    placement: "top",
+                    render: ({ id }) => {
+                        const toastId = "toast-" + id
+                        return (
+                        <Toast nativeID={toastId} action="error" variant="solid" marginTop={40}>
+                            <VStack space="xs">
+                            <ToastTitle>Error</ToastTitle>
+                            <ToastDescription>
+                                There was an error rating your match.
+                            </ToastDescription>
+                            </VStack>
+                            <Pressable mt="$1" onPress={() => toast.close(id)}>
+                                <Icon as={CloseIcon} color="$black" />
+                            </Pressable>
+                        </Toast>
+                        )
+                    },
+                })
+            }  
         }
     }
 
