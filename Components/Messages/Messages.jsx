@@ -129,7 +129,7 @@ const Messages = ({navigation }) => {
         });}}
              >
                 <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                <View justifyContent='center' alignItems='center' flexDirection='row' gap= {10}>
+                <View justifyContent='center' alignItems='center' flexDirection='row' gap= {5}>
             {item.imageurl? <Image
                             alt='profilePic'
                             // borderColor='white'
@@ -144,7 +144,7 @@ const Messages = ({navigation }) => {
                                 uri: item.imageurl,
                             }}
                         />:<Image source={userimg} alt='' borderRadius="$full" style={{ width:60, height:60 }} />}
-                        <View>
+                        <View style={{width:'60%'}}>
                             <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                                 {item.username.length<=10?item.username:item.username.substring(0, 10)+'...'}
                                 {/* {item.username} */}
@@ -159,7 +159,7 @@ const Messages = ({navigation }) => {
                         </View>
                 </View>
                 <View flex={1}>
-                    {friendUnreadCounts[item.idusers]!=0?<Text width={friendUnreadCounts[item.idusers]>9?40:30} textAlign='center' alignSelf='flex-end' size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={10} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
+                    {friendUnreadCounts[item.idusers]!=0?<Text width={friendUnreadCounts[item.idusers]>9?40:30} textAlign='center' alignSelf='flex-end' size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={2} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
                         {friendUnreadCounts[item.idusers]>9?'9+':friendUnreadCounts[item.idusers]}
                     </Text>:null}
                 </View>

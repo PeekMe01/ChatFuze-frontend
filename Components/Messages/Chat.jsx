@@ -7,7 +7,7 @@ import { AntDesign, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import userimg from '../../assets/img/user.png'
 import { useHeaderHeight } from '@react-navigation/elements';
-import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
+import { KeyboardAvoidingView, Platform, TextInput ,Button,StyleSheet } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { collection, addDoc, orderBy, query, onSnapshot, where , doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
 import { database } from "../../config/firebase";
@@ -15,7 +15,7 @@ import { database } from "../../config/firebase";
 const error = console.error; console.error = (...args) => { if (/defaultProps/.test(args[0])) return; error(...args); };
 
 export default function Chat({navigation,route}) {
-    
+    const [text, setText] = useState('');
     const[loggedInUserID, setLoggedInUserID] = useState();
     const [typing,setTyping]=useState(false)
     const [receiverTyping,setReceiverTyping]=useState(false);
@@ -235,7 +235,7 @@ export default function Chat({navigation,route}) {
             headerTintColor: 'white',
             headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',borderBottomColor:'white', paddingTop: 30, width: '100%',borderBottomWidth:.5,paddingBottom:10 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center',width:'100%'}}>
                     <AntDesign name="arrowleft" size={25} color="white" onPress={() => navigation.goBack()} padding={10}/>
                     {receivingUser.imageurl ? <Image
                             alt='profilePic'
@@ -269,10 +269,10 @@ export default function Chat({navigation,route}) {
                                 </Text>
                     </TouchableOpacity>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
+                  {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
                     <Ionicons name="call" size={24} color="white" style={{ marginRight: 20 }} />
                     <FontAwesome name="video-camera" size={24} color="white" />
-                  </View>
+                  </View> */}
                 </View>
               ),
           });
@@ -387,6 +387,33 @@ export default function Chat({navigation,route}) {
             fadingEdgeLength: 100
         });
     };
+    const customtInputToolbar = (props) => {
+      
+      
+        const handleSend = () => {
+          if (text.trim().length > 0) {
+            props.onSend([{ text: text.trim(), user: props.user, createdAt: new Date() }], true);
+            setText('');
+          }
+        };
+      
+        return (
+            <View style={styles.container}>
+            <TextInput
+            style={styles.input}
+              placeholder="Type a message..."
+               multiline={true}
+              value={text}
+              onChangeText={setText}
+            />
+            {text.trim().length > 0 && ( // Show icon only when text is not empty
+              <TouchableOpacity onPress={handleSend} style={styles.iconContainer}>
+                <Ionicons name="send" size={24} color="#512095" />
+              </TouchableOpacity>
+            )}
+          </View>
+        );
+      };
     if(!loggedInUserID){
         return (
                 <ImageBackground
@@ -406,7 +433,7 @@ export default function Chat({navigation,route}) {
                 source={require('../../assets/img/HomePage1.png')}
                 style={{ flex:1 ,resizeMode: 'cover'}}
             >
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1 ,marginBottom:10}}>
                     <GiftedChat
                         messages={messages.sort((a, b) => b.createdAt - a.createdAt)}
                         onSend={messages => onSend(messages)}
@@ -415,6 +442,7 @@ export default function Chat({navigation,route}) {
                         }}
                         messageContainerRef={messageContainerRef}
                         // renderAvatarOnTop={true}
+                        renderInputToolbar={props => customtInputToolbar(props)}
                         renderAvatar = {null}
                         onInputTextChanged={onInputTextChanged}
                        isTyping ={receiverTyping}
@@ -428,3 +456,35 @@ export default function Chat({navigation,route}) {
         )
     }
 }
+
+
+const styles = StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+        position:'absolute',
+        bottom:'0%',
+    },
+    input: {
+        flex: 1,
+        borderRadius: 10,
+        fontSize: 16,
+        paddingLeft:10,
+        paddingRight: 40,
+        paddingVertical: 10,
+        backgroundColor: 'white',
+      },
+      iconContainer: {
+        position: 'absolute',
+        right: 10,
+        bottom: '0%',
+        transform: [{ translateY: -12 }],
+      },
+    //   iconContainer: {
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+        
+    //     paddingHorizontal: 10,
+    //     backgroundColor: 'white',
+    //     borderRadius: 10,
+    //   },
+  });

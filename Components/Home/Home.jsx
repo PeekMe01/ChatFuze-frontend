@@ -94,7 +94,9 @@ const Home = ({navigation}) => {
     const [roomCount, setRoomCount] = useState();
     const [ageRange, setAgeRange] = useState([18,60])
 
-    const data = ['Apple', 'Banana', 'Orange', 'Grapes', 'Pineapple', 'James', 'Tech'];
+    const data = ['Education and Learning', 'Sports and Physical Activities', 'Entertainment and Media', 'Music and Performing Arts',
+               'Technology and Gaming', 'Cooking and Foods', 'Art and Creativity',
+              'Health and Wellness','Business and Finance'];
     
     const [query, setQuery] = useState('');
     const [selectedItems, setSelectedItems] = useState([]);
