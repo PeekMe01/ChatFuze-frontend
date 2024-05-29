@@ -1,9 +1,10 @@
 import { AppState } from 'react-native';
 import 'react-native-gesture-handler';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { GluestackUIProvider, View, Text, KeyboardAvoidingView, HStack, Spinner, Center } from '@gluestack-ui/themed';
+import { GluestackUIProvider, View, Text, KeyboardAvoidingView, HStack, Spinner, Center, AlertDialogBody } from '@gluestack-ui/themed';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import BubbleScene from './Components/Background/BubbleScene';
 import Login from './Components/Login/Login';
 import { config } from "@gluestack-ui/config"
@@ -11,7 +12,7 @@ import {ImageBackground, Platform } from 'react-native'
 import SignUp from './Components/SignUp/SignUp';
 import { StatusBar } from 'react-native';
 import { useScroll } from '@react-three/drei';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import Profile from './Components/Profile/Profile'
@@ -29,6 +30,7 @@ import Feedback from './Components/Profile/EditSettings/Feedback';
 import Verification from './Components/Profile/EditSettings/Verification';
 import ChangeUsername from './Components/Profile/EditProfile/ChangeUsername';
 import ChangeCountry from './Components/Profile/EditProfile/ChangeCountry';
+import ChangeDOB from './Components/Profile/EditProfile/ChangeDOB'
 import EditBio from './Components/Profile/EditProfile/EditBio';
 import EditSocials from './Components/Profile/EditProfile/EditSocials';
 import EditProfile from './Components/Profile/EditProfile';
@@ -40,7 +42,7 @@ import Messages from './Components/Messages/Messages';
 import Chat from './Components/Messages/Chat';
 import ProfileMessages from './Components/Messages/ProfileMessages';
 import api from './Components/Config'
-import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc, getDocs, deleteDoc } from 'firebase/firestore';
 import { database } from "./config/firebase";
 import ChangeProfilePicture from './Components/Profile/EditProfile/ChangeProfilePicture';
 import { TotpMultiFactorGenerator } from 'firebase/auth';
@@ -64,6 +66,18 @@ import { UnreadMessagesProvider, useUnreadMessages } from './Components/UnreadMe
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import AppLifecycleMonitor from './AppLifecycleMonitor';
+import Home from './Components/Home/Home';
+import MatchMakingScreen from './Components/Home/MatchMakingScreen';
+import RequestProvider from './Components/Home/RequestProvider';
+import ChatRoom from './Components/Home/ChatRoom';
+import Results from './Components/Home/Results';
+
+import { AlertDialog, AlertDialogFooter, ButtonGroup, Button, ButtonText } from '@gluestack-ui/themed';
+import { AlertDialogBackdrop } from '@gluestack-ui/themed';
+import { AlertDialogContent } from '@gluestack-ui/themed';
+import { AlertDialogHeader } from '@gluestack-ui/themed';
+import { Heading } from '@gluestack-ui/themed';
+import CustomBadge from './Components/Messages/CustomBadge';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -73,9 +87,25 @@ export default function App() {
   const [loginPage, setLoginPage] = useState(true);
   const [signupPage, setSignupPage] = useState(false);
   const [welcomePage, setWelcomePage] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
   // const [userOnline, setUserOnline] = useState(false);
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
+
+  useEffect(()=>{
+    checkUserLogin();
+  }, [])
+
+  const checkUserLogin = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      const userId = await AsyncStorage.getItem('id');
+      if(userId){
+        setLoggedIn(true)
+      }
+    } catch (error) {
+      setLoggedIn(false)
+    }
+  }
 
   const [fontsLoaded] = useFonts({
     'ArialRoundedMTBold': require('./assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
@@ -216,6 +246,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
     return (
       <NavigationContainer>
         <AppLifecycleMonitor />
+        <StatusBar translucent backgroundColor="transparent"/>
         <Tab.Navigator screenOptions={{ headerShown: false }}>
           <Tab.Screen 
             name="Home" 
@@ -230,14 +261,24 @@ const updateUserStatusAfterLoginSignUp = async () => {
           <Tab.Screen 
             name="Messages" 
             component={MessagesScreen} 
-            options={{
-              tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-              tabBarIcon: () => <MaterialCommunityIcons name="message" size={30} color="white" />,
+            options={({ route }) => ({
+              tabBarStyle: { 
+                backgroundColor: 'transparent', 
+                position: 'absolute', 
+                left: 0, 
+                right: 0, 
+                bottom: 0, 
+                elevation: 0, 
+                marginTop: 10, 
+                marginBottom: 20, 
+                borderTopColor: 'transparent' 
+              },
+              tabBarIcon: ({ focused }) => (
+                <CustomBadge focused={focused} totalUnreadMessages={totalUnreadMessages} />
+              ),
               tabBarActiveTintColor: "white",
-              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>,
-              tabBarBadge: totalUnreadMessages,
-              tabBarBadgeStyle: { backgroundColor: '#512095', display: totalUnreadMessages > 0 ? 'flex' : 'none' }
-            }} 
+              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : null,
+            })}
           />
           <Tab.Screen 
             name="Leaderboard" 
@@ -278,19 +319,277 @@ const updateUserStatusAfterLoginSignUp = async () => {
   };
 
 
-  function HomeScreen() {
-    return (
-      <View style={{ flex: 1}}>
-        <StatusBar translucent backgroundColor="transparent"/>
-        <ImageBackground
-            source={require('./assets/img/HomePage1.png')}
-            style={{ flex:1 ,resizeMode: 'cover', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
-          >
-          <Text>Home!</Text>
-        </ImageBackground>
-      </View>
-    );
+  // function HomeScreen() {
+  //   return (
+  //     <View style={{ flex: 1}}>
+  //       <StatusBar translucent backgroundColor="transparent"/>
+  //       <ImageBackground
+  //           source={require('./assets/img/HomePage1.png')}
+  //           style={{ flex:1 ,resizeMode: 'cover', justifyContent: 'center', display: 'flex', alignItems: 'center' }}
+  //         >
+  //         <Text>Home!</Text>
+  //       </ImageBackground>
+  //     </View>
+  //   );
+  // }
+
+  function HomeScreen({ navigation }) {
+    const [showRejoinAlertDialog, setShowRejoinAlertDialog] = useState(false)
+    const [alertDismissed, setAlertDismissed] = useState(false);
+    const [countdown, setCountdown] = useState(0);
+    React.useLayoutEffect(() => {
+      const unsubscribe = navigation.addListener('state', (e) => {
+          const currentRoute = e.data.state.routes[e.data.state.index];
+          const leafRouteName = getCurrentRouteName(currentRoute);
+
+        
+          if (leafRouteName==="MatchMakingScreen" || leafRouteName==="ChatRoom" || leafRouteName==="HomeVerification" || leafRouteName==="Results") {
+              navigation.setOptions({
+                  tabBarStyle: { display: 'none' }
+              });
+          } else {
+             
+              navigation.setOptions({
+                tabBarStyle: { backgroundColor: 'transparent',position: 'absolute',left: 0,right: 0,bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' }, 
+            
+              });
+          }
+      });
+
+      
+      return unsubscribe;
+  }, [navigation]);
+
+  // Function to get the leaf route name
+  const getCurrentRouteName = (route) => {
+      if (route.state) {
+          // Dive into nested navigators
+          return getCurrentRouteName(route.state.routes[route.state.index]);
+      }
+      return route.name;
+  };
+  const [requestID, setRequestID] = useState(null);
+  // requestID={requestID} setRequestID={setRequestID}
+
+  // <Stack.Screen name="HomeScreen">
+  //   { ({ navigation }) => <HomeScreen navigation={navigation} requestID={requestID} setRequestID={setRequestID}/>}
+  // </Stack.Screen>
+  // <Stack.Screen name="MatchMakingScreen">
+  //   {({ navigation }) => <MatchMakingScreen navigation={navigation} requestID={requestID} setRequestID={setRequestID}/>}
+  // </Stack.Screen>
+
+  useEffect(() => {
+    let timer;
+    if (showRejoinAlertDialog) {
+        timer = setInterval(() => {
+            setCountdown(prevCountdown => {
+                if (prevCountdown <= 1) {
+                        clearInterval(timer);
+                        // navigation.navigate("Results", {
+                        //     receiverID: receiverID,
+                        //     senderID: loggedInUserID,
+                        //     roomID: roomID
+                        // });
+                        console.log("timer done")
+                        setShowRejoinAlertDialog(false)
+                }
+                return prevCountdown - 1;
+            });
+        }, 1000);
+    }
+    return () => clearInterval(timer);
+}, [showRejoinAlertDialog]);
+
+useEffect(()=>{
+  checkForAnyValidRejoins()
+}, [])
+
+
+  const checkForAnyValidRejoins = async () => {
+    try {
+        const userId = await AsyncStorage.getItem('id');
+        const validRejoinsQuery = query(
+            collection(database, 'validRejoins'),
+            where('inviteReceiver', '==', parseInt(userId)),
+            where('status', '==', 'pending')
+        );
+
+        const querySnapshot = await getDocs(validRejoinsQuery);
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const createdAtTimestamp = data.createdAt.toDate(); // Convert Firestore Timestamp to JavaScript Date object
+            const currentTime = new Date();
+            const elapsedTimeInSeconds = Math.floor((currentTime - createdAtTimestamp) / 1000); // Convert milliseconds to seconds
+
+            // Calculate remaining seconds until 30 seconds have passed
+            const remainingSeconds = 60 - elapsedTimeInSeconds;
+            if (remainingSeconds <= 0) {
+                console.log("60 seconds have passed");
+            } else {
+                setCountdown(remainingSeconds-1)
+                if (!alertDismissed) { // Only show if the alert hasn't been dismissed
+                  setShowRejoinAlertDialog(true);
+                }
+                console.log(`Remaining seconds: ${remainingSeconds}`);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+    }
   }
+
+  const rejectRejoinInvite = async () => {
+    setCountdown(0)
+    setShowRejoinAlertDialog(false)
+    setAlertDismissed(true); // Dismiss the alert permanently
+
+    try {
+        const userId = await AsyncStorage.getItem('id');
+        // Create a query to find documents with the specified criteria
+        const q = query(
+          collection(database, 'validRejoins'),
+          where('inviteReceiver', '==', parseInt(userId)),
+          where('status', '==', 'pending')
+        );
+
+        // Execute the query
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            console.log("No matching documents found to update");
+        } else {
+            // Iterate over each document and update it
+            for (const doc of querySnapshot.docs) {
+                // Define the updated fields
+                const updatedData = {
+                    status: 'rejected'
+                };
+
+                // Update the document
+                await updateDoc(doc.ref, updatedData);
+                console.log(`Document with ID ${doc.id} updated successfully`);
+
+                // Delete the document
+                await deleteDoc(doc.ref);
+                console.log(`Document with ID ${doc.id} deleted successfully`);
+            }
+        }
+    } catch (error) {
+        console.log("Error updating document(s): ", error);
+    }
+  }
+
+  const acceptRejoinInvite = async () => {
+    setCountdown(0)
+    setShowRejoinAlertDialog(false)
+    setAlertDismissed(true); // Dismiss the alert permanently
+
+    try {
+        const userId = await AsyncStorage.getItem('id');
+        // Create a query to find documents with the specified criteria
+        const q = query(
+          collection(database, 'validRejoins'),
+          where('inviteReceiver', '==', parseInt(userId)),
+          where('status', '==', 'pending')
+        );
+
+        // Execute the query
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            console.log("No matching documents found to update");
+        } else {
+            // Iterate over each document and update it
+            for (const doc of querySnapshot.docs) {
+                // Define the updated fields
+                const updatedData = {
+                    status: 'accepted'
+                };
+
+                // Update the document
+                await updateDoc(doc.ref, updatedData);
+
+                // Delete the document
+                await deleteDoc(doc.ref);
+                console.log(`Document with ID ${doc.id} deleted successfully`);
+
+                console.log(doc.data())
+                setTimeout(() => {
+                  navigation.navigate("ChatRoom", {
+                      receiverID: doc.data().inviteSender,
+                      roomID: doc.data().roomID,
+                  });
+                }, 1000); 
+                console.log(`Document with ID ${doc.id} updated successfully`);
+            }
+        }
+    } catch (error) {
+        console.log("Error updating document(s): ", error);
+    }
+  }
+
+    return (
+      <RequestProvider>
+            <View style={{ flex: 1 }}>
+                <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
+                    <Stack.Screen name="HomeScreen" component={Home} />
+                    <Stack.Screen name="MatchMakingScreen" component={MatchMakingScreen} />
+                    <Stack.Screen name="ChatRoom" component={ChatRoom} />
+                    <Stack.Screen name="HomeVerification" component={Verification} />
+                    <Stack.Screen name="Results" component={Results} />
+                </Stack.Navigator>
+
+                {showRejoinAlertDialog && (
+                    <AlertDialog
+                        isOpen={showRejoinAlertDialog}
+                        // onClose={() => setShowRejoinAlertDialog(false)}
+                    >
+                      {console.log('hi')}
+                        <AlertDialogBackdrop />
+                        <AlertDialogContent>
+                            <AlertDialogHeader justifyContent='center' alignItems='center'>
+                                <Heading textAlign='center' paddingTop={80} flex={1} color='#512095'>
+                                    <AntDesign name='disconnect' size={100} />
+                                </Heading>
+                            </AlertDialogHeader>
+                            <AlertDialogBody>
+                                <Text size="xl" textAlign='center'>
+                                    Disconnected!
+                                </Text>
+                                <Text size="md" textAlign='center' marginVertical={10}>
+                                    {countdown} second{countdown !== 1 ? 's' : ''} before abandoning room.
+                                </Text>
+                            </AlertDialogBody>
+                            <AlertDialogFooter>
+                                <ButtonGroup space="lg">
+                                    <Button
+                                        variant="outline"
+                                        action="secondary"
+                                        borderWidth={2}
+                                        onPress={() => {
+                                            rejectRejoinInvite();
+                                        }}
+                                    >
+                                        <ButtonText>Abandon</ButtonText>
+                                    </Button>
+                                    <Button
+                                        bg="#512095"
+                                        action="negative"
+                                        onPress={() => {
+                                            acceptRejoinInvite();
+                                        }}
+                                    >
+                                        <ButtonText>Rejoin</ButtonText>
+                                    </Button>
+                                </ButtonGroup>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
+            </View>
+        </RequestProvider>
+    );
+}
   
   function MessagesScreen({ navigation }) {
     React.useLayoutEffect(() => {
@@ -393,6 +692,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
               <Stack.Screen name="Verification" component={Verification}/>
               <Stack.Screen name="ChangeUsername" component={ChangeUsername}/>
               <Stack.Screen name="ChangeCountry" component={ChangeCountry}/>
+              <Stack.Screen name="ChangeDOB" component={ChangeDOB}/>
               <Stack.Screen name="EditBio" component={EditBio}/>
               <Stack.Screen name="EditSocials" component={EditSocials}/>
               <Stack.Screen name="ChangeProfilePicture">

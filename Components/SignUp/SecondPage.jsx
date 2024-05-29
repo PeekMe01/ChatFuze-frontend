@@ -7,7 +7,9 @@ import { SelectIcon } from '@gluestack-ui/themed';
 import { Icon } from '@gluestack-ui/themed';
 import { SelectItem } from '@gluestack-ui/themed';
 import { SelectDragIndicator } from '@gluestack-ui/themed';
-import DateTimePicker from '@react-native-community/datetimepicker'
+// import DateTimePicker from '@react-native-community/datetimepicker'
+import DateTimePicker from 'react-native-ui-datepicker';
+import dayjs from 'dayjs';
 import { Platform, StyleSheet } from 'react-native';
 import { Radio } from '@gluestack-ui/themed';
 import { CircleIcon } from '@gluestack-ui/themed';
@@ -45,26 +47,61 @@ export default function SecondPage(props) {
   
   // const [text, setText] = useState('Empty')
 
+  // const showMode = (currentMode) => {
+  //   setShow(!show);
+  // }
+
+  // const onChange = (event, selectedDate) => {
+  //   const currentDate = selectedDate || Date;
+  //   const minimumAgeDate = new Date();
+  //   minimumAgeDate.setFullYear(minimumAgeDate.getFullYear() - 18);
+  //   setShow(Platform.OS==='ios');
+  //   if (currentDate < minimumAgeDate) {
+  //     setInvalidAge(false)
+  //     setDateOfBirth(currentDate)
+  //     selectedDate(currentDate);
+  //     console.log(dateOfBirth)
+  //     let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() +1) + '/' + tempDate.getFullYear();
+  //   } else {
+  //     setInvalidAge(true)
+  //     console.log("im too young")
+  //   }
+  // }
+
   const showMode = (currentMode) => {
     setShow(!show);
   }
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || Date;
-    const minimumAgeDate = new Date();
-    minimumAgeDate.setFullYear(minimumAgeDate.getFullYear() - 18);
-    setShow(Platform.OS==='ios');
-    if (currentDate < minimumAgeDate) {
-      setInvalidAge(false)
-      setDateOfBirth(currentDate)
-      selectedDate(currentDate);
-      console.log(dateOfBirth)
-      let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() +1) + '/' + tempDate.getFullYear();
-    } else {
-      setInvalidAge(true)
-      console.log("im too young")
+const onChange = (date) => {
+    // Ensure the provided date is a valid dayjs object
+    let currentDate = dayjs(date).hour(12); // Setting the time to noon to avoid timezone issues
+    
+    // If date is still invalid, use the current date
+    if (!currentDate.isValid()) {
+      currentDate = dayjs();
     }
-  }
+    
+    // Calculate the date 18 years ago from today
+    const minimumAgeDate = dayjs().subtract(18, 'year');
+    
+    // Check if the selected date makes the user at least 18 years old
+    if (currentDate.isBefore(minimumAgeDate)) {
+      setInvalidAge(false);
+      setDateOfBirth(currentDate.toDate());
+      console.log(currentDate.toDate()); // This will log the current selected date
+      
+      // Format the date for logging
+      let fDate = currentDate.format('D/M/YYYY');
+      console.log(fDate);
+      // setSaveDisabled(false)
+    } else {
+      setInvalidAge(true);
+      console.log("I'm too young");
+    }
+    
+    // Show the date picker if the platform is iOS
+    setShow(Platform.OS === 'ios');
+  };
 
   const { 
     invalidAge,
@@ -175,14 +212,30 @@ export default function SecondPage(props) {
                     Enter Birthday
                   </ButtonText>
               </Button>
-              {show && (
+              {/* {show && (
                 <DateTimePicker
                 testID='dateTimePicker'
                 value = {dateOfBirth}
                 mode='date'
                 display='default'
                 onChange={onChange}
-              />)}
+              />)} */}
+              {show && (
+                <View flex={1}>
+                  <View backgroundColor='white' padding={10} borderRadius={20} borderColor='#512095' borderWidth={1} position='absolute' alignSelf='center'>
+                    <DateTimePicker
+                      mode="single"
+                      date={dateOfBirth}
+                      onChange={({ date }) => { onChange(date) }}
+                      dayContainerStyle={{
+                        borderWidth: 1,
+                        borderColor: '#cccccc50'
+                      }}
+                      selectedItemColor='#512095'
+                    />
+                  </View>
+                </View>
+              )}
               
             </Animatable.View>
             <FormControlError mb={-24}>
@@ -240,7 +293,7 @@ export default function SecondPage(props) {
           </FormControl> */}
 
           
-          <FormControl isDisabled={false} isInvalid={invalidCountry} isReadOnly={false} isRequired={true}>
+          <FormControl zIndex={-100} isDisabled={false} isInvalid={invalidCountry} isReadOnly={false} isRequired={true}>
           <Animatable.View animation={invalidCountry?"shake":null}>
               <SelectDropdown
                 disabled={false}
@@ -287,7 +340,7 @@ export default function SecondPage(props) {
             </FormControlError>
           </FormControl>
 
-          <FormControl isDisabled={false} isInvalid={false} isReadOnly={false} isRequired={true} >
+          <FormControl zIndex={-100} isDisabled={false} isInvalid={false} isReadOnly={false} isRequired={true} >
             {/* <FormControlLabel mb='$1'>
               <FormControlLabelText>Password</FormControlLabelText>
             </FormControlLabel> */}

@@ -39,7 +39,11 @@ const Messages = ({navigation }) => {
       let formattedTimeDifference = '';
       if (days > 0) formattedTimeDifference += `${days} day${days > 1 ? 's' : ''} `;
       if (hours > 0) formattedTimeDifference += `${hours}h `;
-      if (minutes > 0) formattedTimeDifference += `${minutes}min `;
+      if(days==0){
+        if(minutes > 0){
+            formattedTimeDifference += `${minutes}min`
+        }
+    }
       
       // Append a message if formattedTimeDifference is empty
       if (formattedTimeDifference === '') {
@@ -154,15 +158,16 @@ const Messages = ({navigation }) => {
                                 ? 'Active'
                                 : getFormattedTimeDifference(item.datetime) === "just now"
                                 ? 'last seen just now'
-                                : 'last seen from: ' + getFormattedTimeDifference(item.datetime)}
+                                : 'last seen ' + getFormattedTimeDifference(item.datetime) + ' ago'}
                             </Text>
                         </View>
                 </View>
+                {friendUnreadCounts[item.idusers]!=undefined&&
                 <View flex={1}>
-                    {friendUnreadCounts[item.idusers]!=0?<Text width={friendUnreadCounts[item.idusers]>9?40:30} textAlign='center' alignSelf='flex-end' size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={10} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
+                    {friendUnreadCounts[item.idusers]!=0?<Text width={friendUnreadCounts[item.idusers]>9?40:30} textAlign='center' alignSelf='flex-end' size='lg' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold' margin={2} paddingHorizontal={8} backgroundColor='#2cd6d3' borderRadius={300}>
                         {friendUnreadCounts[item.idusers]>9?'9+':friendUnreadCounts[item.idusers]}
                     </Text>:null}
-                </View>
+                </View>}
               <AntDesign style={{alignSelf:'center'}} name="arrowright" size={24} color="white" />
               </View>
             </TouchableOpacity>

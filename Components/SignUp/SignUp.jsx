@@ -634,7 +634,7 @@ export default function Login(props) {
               </Animatable.View>
               :<></>}
   
-                <FormControl m={10} pt={50}>
+                <FormControl m={10} pt={50} zIndex={-100}>
                   <Button
                     isDisabled={attemptingSignup}
                     size="lg"

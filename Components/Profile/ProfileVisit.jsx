@@ -1,5 +1,5 @@
 // This page is for visiting a friend's profile.
-import { View, Select, Button, Heading, CloseIcon,ChevronDownIcon, ButtonText, AddIcon, AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, ButtonGroup, Center, Divider, HStack, Image, ImageBackground, Spinner, Text, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem, useToast, Toast, ToastTitle, ToastDescription, Icon } from '@gluestack-ui/themed';
+import { View, Select, Button, Heading, CloseIcon,ChevronDownIcon, ButtonText, AddIcon, AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogCloseButton, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, ButtonGroup, Center, Divider, HStack, Image, ImageBackground, Spinner, Text, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem, useToast, Toast, ToastTitle, ToastDescription, Icon, Input } from '@gluestack-ui/themed';
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
@@ -20,6 +20,7 @@ import { VStack } from '@gluestack-ui/themed';
 import { Pressable } from '@gluestack-ui/themed';
 import userimg from '../../assets/img/user.png'
 import { AntDesign } from '@expo/vector-icons';
+import { InputField } from '@gluestack-ui/themed';
 
 export default function ProfileVisit({navigation, route}) {
     const toast = useToast()
@@ -332,28 +333,22 @@ export default function ProfileVisit({navigation, route}) {
                                     </SelectContent>
                                 </SelectPortal>
                             </Select>
-                            <TextInput
+                            <Input
+                                marginTop={10}
+                                borderColor={invalidtext?'red':'#ccc'}
+                                borderWidth={2}
+                                borderRadius={5}
+                            >
+                                <InputField
+                                type="text"
                                 placeholder="Type your message..."
-                                multiline
-                                numberOfLines={4}
-                                style={{
-                                    marginVertical:10,
-                                    borderWidth: 1,
-                                    borderColor: invalidtext?'red':'#ccc',
-                                    borderRadius: 10,
-                                    paddingHorizontal: 10,
-                                    paddingVertical: 8,
-                                    fontSize: 16,
-                                    minHeight: 100,
-                                    textAlignVertical: 'top',
-                                }}
-                                blurOnSubmit = {true}
                                 value={message}
-                                onChangeText={(text) => {
+                                onChange={(text) => {
                                     setmessage(text);
                                     setinvalidtext(false);
-                                    }}
-                            />
+                                }}
+                                />
+                            </Input>
                         </AlertDialogBody>
                         <AlertDialogFooter>
                             <ButtonGroup space="lg">
@@ -364,7 +359,6 @@ export default function ProfileVisit({navigation, route}) {
                                     onPress={() => {
                                     setshowAlertReport(false)
                                     }}
-                                
                                 >
                                     <ButtonText>Cancel</ButtonText>
                                 </Button>

@@ -31,6 +31,8 @@ export default function ChangeCountry({navigation, route}) {
 
     const [countriesWithEmojis, setCountriesWithEmojis] = useState([]);
 
+    const [saveDisabled, setSaveDisabled] = useState(true)
+
     useEffect(() => {
         // Get all country codes
         const countryCodes = Object.keys(emojiFlags.data);
@@ -78,6 +80,46 @@ export default function ChangeCountry({navigation, route}) {
         fetchData();
     }, [!user||isFocused]);
 
+    const [userAlreadyVerified, setUserAlreadyVerified] = useState(false);
+
+    const checkIfUserHasAnIdVerificationRequest = async () =>{
+        const data = {
+            userid: await AsyncStorage.getItem('id'),
+        }
+        try {
+            const response = await api.post(`/Accounts/checkIdVerification`, data);
+            if(response){
+                setUserAlreadyVerified(response.data.userAlreadyVerified)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.show({
+                duration: 5000,
+                placement: "top",
+                render: ({ id }) => {
+                    const toastId = "toast-" + id
+                    return (
+                    <Toast nativeID={toastId} action="error" variant="solid" marginTop={40}>
+                        <VStack space="xs">
+                        <ToastTitle>Error</ToastTitle>
+                        <ToastDescription>
+                            There was an error checking for your verification status
+                        </ToastDescription>
+                        </VStack>
+                        <Pressable mt="$1" onPress={() => toast.close(id)}>
+                            <Icon as={CloseIcon} color="$black" />
+                        </Pressable>
+                    </Toast>
+                    )
+                },
+            })
+        }
+    }
+
+    useEffect(() =>{
+        checkIfUserHasAnIdVerificationRequest();
+    }, [])
+
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false);
     const [clickedButton, setClickedButton] = useState(false);
@@ -93,25 +135,31 @@ export default function ChangeCountry({navigation, route}) {
     const validate = async () => {
         let goodCountry = false;
         setAttemptingChangeCountry(true);
+        setSaveDisabled(true)
         if(!currentCountry){
             goodCountry = false;
             setInvalidCurrentCountry(true);
             setInvalidCurrentCountryErrorMessage('Please select a country')
+            setSaveDisabled(true)
         }else{
             setInvalidCurrentCountry(false);
+            setSaveDisabled(false)
             goodCountry=true;
         }
 
         if(currentCountry===oldCountry){
             goodCountry = false;
             setInvalidCurrentCountry(true);
+            setSaveDisabled(true)
             setInvalidCurrentCountryErrorMessage('Country did not change!')
         }else{
             setInvalidCurrentCountry(false);
+            setSaveDisabled(false)
             goodCountry=true;
         }
 
         if(goodCountry){
+            setSaveDisabled(true)
             console.log('here')
             console.log(currentCountry)
             const data = {
@@ -173,6 +221,7 @@ export default function ChangeCountry({navigation, route}) {
                 },
                 })
                 setAttemptingChangeCountry(false);
+                setSaveDisabled(false)
             }
             
             
@@ -260,110 +309,139 @@ export default function ChangeCountry({navigation, route}) {
         },
       });
 
-  return (
-    <ImageBackground
-        source={require('../../../assets/img/HomePage1.png')}
-        style={{ flex:1 ,resizeMode: 'cover'}}
-    >
-        <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
-        <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
-            <View margin={30} marginBottom={100}>
-            {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
-                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
-                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <MaterialIcons name="arrow-back" size={25} color="white"/>
-                    </TouchableHighlight>
-                    <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
-                        Change Country
-                    </Text>
-                </View>
-                <View gap={20}>
-
-                <Center>
-                <Box h="$96" w="$64" style={{ display: 'flex', gap: 40, justifyContent: 'center'}}>
-                        <FormControl isInvalid={invalidCurrentCountry} isReadOnly={false} isRequired={true}>
-                            <Animatable.View animation={invalidCurrentCountry?"shake":null}>
-                            <SelectDropdown
-                                disabled={attemptingChangeCountry}
-                                data={dropdownData}
-                                onSelect={(selectedItem, index) => {
-                                    setCurrentCountry(selectedItem.country);
-                                    setInvalidCurrentCountry(false);
-                                    console.log(selectedItem, index);
-                                }}
-                                disableAutoScroll
-                                defaultValue={currentCountry ? dropdownData.find(item => item.country === currentCountry) : null}
-                                renderButton={(selectedItem, isOpened) => {
-                                    return (
-                                    <View style={styles.dropdownButtonStyle}>
-                                        {selectedItem && (
-                                        <Text style={{ paddingRight: 10 }}>{selectedItem.emoji}</Text>
-                                        )}
-                                        <Text style={styles.dropdownButtonTxtStyle}>
-                                        {(selectedItem && selectedItem.country) || 'Select your country'}
-                                        </Text>
-                                        <MaterialCommunityIcons color={'white'} name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
-                                    </View>
-                                    );
-                                }}
-                                renderItem={(item, index, isSelected) => {
-                                    return (
-                                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                                        <Text>{item.emoji}</Text>
-                                        <Text style={styles.dropdownItemTxtStyle}>{item.country}</Text>
-                                    </View>
-                                    );
-                                }}
-                                showsVerticalScrollIndicator={false}
-                                dropdownStyle={styles.dropdownMenuStyle}
-                                />
-                            </Animatable.View>
-
-                            <FormControlError mb={-24}>
-                                <FormControlErrorIcon
-                                    color='#512095'
-                                    as={AlertCircleIcon}
-                                />
-                                <FormControlErrorText color='#512095'>
-                                    {invalidCurrentCountryErrorMessage}
-                                </FormControlErrorText>
-                            </FormControlError>
-
-                        </FormControl>
-
-
-                        {/* Save */}
-                        <FormControl>
-                        <Button
-                            isDisabled={attemptingChangeCountry}
-                            size="lg"
-                            mb="$4"
-                            borderRadius={40}
-                            hardShadow='1'
-                            bgColor="#bcbcbc"
-                            $hover={{
-                                bg: "$green600",
-                                _text: {
-                                color: "$white",
-                                },
-                            }}
-                            $active={{
-                                bg: "#727386",
-                            }}
-                            onPress={validate}
-                            >
-                            <ButtonText fontSize="$xl" fontFamily='Roboto_500Medium'>
-                            Save
-                            </ButtonText>
-                        </Button>
-                    </FormControl>
-                    </Box>
-                    </Center>
-                </View>
-            {/* </ScrollView> */}
-            </View>
-        </Animatable.View>
-        </TouchableWithoutFeedback>
-    </ImageBackground>
-  )
+      if(!userAlreadyVerified){
+        return (
+            <ImageBackground
+                source={require('../../../assets/img/HomePage1.png')}
+                style={{ flex:1 ,resizeMode: 'cover'}}
+            >
+                <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
+                <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
+                    <View margin={30} marginBottom={100}>
+                    {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
+                        <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                            <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                                <MaterialIcons name="arrow-back" size={25} color="white"/>
+                            </TouchableHighlight>
+                            <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
+                                Change Country
+                            </Text>
+                        </View>
+                        <View gap={20}>
+        
+                        <Center>
+                        <Box h="$96" w="$64" style={{ display: 'flex', gap: 40, justifyContent: 'center'}}>
+                                <FormControl isInvalid={invalidCurrentCountry} isReadOnly={false} isRequired={true}>
+                                    <Animatable.View animation={invalidCurrentCountry?"shake":null}>
+                                    <SelectDropdown
+                                        disabled={attemptingChangeCountry}
+                                        data={dropdownData}
+                                        onSelect={(selectedItem, index) => {
+                                            setCurrentCountry(selectedItem.country);
+                                            setInvalidCurrentCountry(false);
+                                            setSaveDisabled(false)
+                                            console.log(selectedItem, index);
+                                        }}
+                                        disableAutoScroll
+                                        defaultValue={currentCountry ? dropdownData.find(item => item.country === currentCountry) : null}
+                                        renderButton={(selectedItem, isOpened) => {
+                                            return (
+                                            <View style={styles.dropdownButtonStyle}>
+                                                {selectedItem && (
+                                                <Text style={{ paddingRight: 10 }}>{selectedItem.emoji}</Text>
+                                                )}
+                                                <Text style={styles.dropdownButtonTxtStyle}>
+                                                {(selectedItem && selectedItem.country) || 'Select your country'}
+                                                </Text>
+                                                <MaterialCommunityIcons color={'white'} name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                                            </View>
+                                            );
+                                        }}
+                                        renderItem={(item, index, isSelected) => {
+                                            return (
+                                            <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                                                <Text>{item.emoji}</Text>
+                                                <Text style={styles.dropdownItemTxtStyle}>{item.country}</Text>
+                                            </View>
+                                            );
+                                        }}
+                                        showsVerticalScrollIndicator={false}
+                                        dropdownStyle={styles.dropdownMenuStyle}
+                                        />
+                                    </Animatable.View>
+        
+                                    <FormControlError mb={-24}>
+                                        <FormControlErrorIcon
+                                            color='#512095'
+                                            as={AlertCircleIcon}
+                                        />
+                                        <FormControlErrorText color='#512095'>
+                                            {invalidCurrentCountryErrorMessage}
+                                        </FormControlErrorText>
+                                    </FormControlError>
+        
+                                </FormControl>
+        
+        
+                                {/* Save */}
+                                <FormControl>
+                                <Button
+                                    // isDisabled={attemptingChangeCountry}
+                                    disabled={saveDisabled}
+                                    opacity={saveDisabled?0.4:1}
+                                    size="lg"
+                                    mb="$4"
+                                    borderRadius={40}
+                                    hardShadow='1'
+                                    bgColor="#512095"
+                                    $active={{
+                                        bg: "#51209595",
+                                    }}
+                                    onPress={validate}
+                                    >
+                                    <ButtonText fontSize="$xl" fontFamily='Roboto_500Medium'>
+                                    Save
+                                    </ButtonText>
+                                </Button>
+                            </FormControl>
+                            </Box>
+                            </Center>
+                        </View>
+                    {/* </ScrollView> */}
+                    </View>
+                </Animatable.View>
+                </TouchableWithoutFeedback>
+            </ImageBackground>
+          )
+      }else{
+        return(
+            <ImageBackground
+              source={require('../../../assets/img/HomePage1.png')}
+              style={{ flex: 1, resizeMode: 'cover' }}
+            >
+                <Animatable.View animation={changingPage ? "fadeOut" : "fadeIn"} duration={500} pointerEvents="box-none">
+                  <View margin={30} marginBottom={100}>
+                    <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                        <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
+                            <MaterialIcons name="arrow-back" size={25} color="white"/>
+                        </TouchableHighlight>
+                        <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
+                            Change Country
+                        </Text>
+                    </View>
+          
+                    <View alignItems='center' justifyContent='center' margin={10} marginTop={'20%'}>
+                        <Text size='xl' color='white' fontFamily='Roboto_400Regular'>
+                            You are already verified!
+                        </Text>
+                        <Text size='xl' color='white' textAlign='center' fontFamily='Roboto_400Regular'>
+                            You can no longer change your country.
+                        </Text>
+                    </View>
+                  </View>
+                </Animatable.View>
+              {/* </TouchableWithoutFeedback> */}
+            </ImageBackground>
+        )
+      }
 }

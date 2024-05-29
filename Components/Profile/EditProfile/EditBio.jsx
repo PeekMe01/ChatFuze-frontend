@@ -55,9 +55,12 @@ export default function EditBio({navigation, route}) {
     const [invalidCurrentBio, setInvalidCurrentBio] = useState(false);
     const [invalidCurrentBioErrorMessage, setInvalidCurrentBioErrorMessage] = useState("Error Message Current Password");
 
+    const [saveDisabled, setSaveDisabled] = useState(true)
+
     const validate = async () => {
         let goodBio = false;
         setAttemptingChangeBio(true);
+        setSaveDisabled(true)
         if(!currentBio||currentBio.length>300||currentBio.length<10){
             goodBio = false;
             setInvalidCurrentBio(true);
@@ -133,6 +136,7 @@ export default function EditBio({navigation, route}) {
                 },
                 })
                 setAttemptingChangeBio(false);
+                setSaveDisabled(false)
             }
             
             
@@ -203,6 +207,7 @@ export default function EditBio({navigation, route}) {
                                 isReadOnly={false}
                                 isInvalid={invalidCurrentBio}
                                 isDisabled={false}
+                                borderColor={invalidCurrentBio?'#512095':'white'}
                                 $invalid-borderColor='#512095'
                                 $focus-borderColor={invalidCurrentBio?'#512095':'white'}
                                 h={'$48'}
@@ -212,6 +217,7 @@ export default function EditBio({navigation, route}) {
                                     onChange={(value)=>{
                                         setCurrentBio(value.nativeEvent.text);
                                         setInvalidCurrentBio(false);
+                                        setSaveDisabled(false)
                                     }}
                                     maxLength={300}
                                     color='white'
@@ -237,20 +243,16 @@ export default function EditBio({navigation, route}) {
                         {/* Save */}
                         <FormControl>
                         <Button
-                            isDisabled={attemptingChangeBio}
+                            // isDisabled={attemptingChangeBio}
+                            disabled={saveDisabled}
+                            opacity={saveDisabled?0.4:1}
                             size="lg"
                             mb="$4"
                             borderRadius={40}
                             hardShadow='1'
-                            bgColor="#bcbcbc"
-                            $hover={{
-                                bg: "$green600",
-                                _text: {
-                                color: "$white",
-                                },
-                            }}
+                            bgColor="#512095"
                             $active={{
-                                bg: "#727386",
+                                bg: "#51209595",
                             }}
                             onPress={validate}
                             >

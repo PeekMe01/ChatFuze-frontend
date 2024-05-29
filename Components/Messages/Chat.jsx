@@ -7,7 +7,7 @@ import { AntDesign, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import userimg from '../../assets/img/user.png'
 import { useHeaderHeight } from '@react-navigation/elements';
-import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
+import { KeyboardAvoidingView, Platform, TextInput ,Button,StyleSheet, Keyboard } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { collection, addDoc, orderBy, query, onSnapshot, where , doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
 import { database } from "../../config/firebase";
@@ -15,7 +15,8 @@ import { database } from "../../config/firebase";
 const error = console.error; console.error = (...args) => { if (/defaultProps/.test(args[0])) return; error(...args); };
 
 export default function Chat({navigation,route}) {
-    
+    const height = useHeaderHeight()
+    const [text, setText] = useState('');
     const[loggedInUserID, setLoggedInUserID] = useState();
     const [typing,setTyping]=useState(false)
     const [receiverTyping,setReceiverTyping]=useState(false);
@@ -113,32 +114,39 @@ export default function Chat({navigation,route}) {
             updateTyping(false);
           }, 3000);
         };
-      useEffect(()=>{
-        let senderid=loggedInUserID
-        let receiverid=receivingUser.idusers
-        const docId = `${receiverid}_${senderid}`;
-        const typingStatusQuery = query(
-            collection(database, 'typing'),
-            where('receiverid', '==',parseInt(senderid)) ,
-            where('senderid', '==',parseInt(receiverid)) 
-        );
-
-        // Set up a real-time listener for each query
-        const unsubscribe = onSnapshot(typingStatusQuery, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                if (change.type === 'added' || change.type === 'modified') {
-                    const data = change.doc.data();
-                    console.log("hello world")
-                    console.log(data.typing)
-                 
-                    setReceiverTyping(data.typing);
-                    // console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
-                    // updateFriendStatus(friendData.userId, friendData.active,friendData.datetime)
-                    // Update UI or perform actions based on friend's status change
-                }
+        useEffect(() => {
+            if (!loggedInUserID || !receivingUser?.idusers) {
+                return;
+            }
+        
+            const senderid = loggedInUserID;
+            const receiverid = receivingUser.idusers;
+            const docId = `${receiverid}_${senderid}`;
+            
+            const typingStatusQuery = query(
+                collection(database, 'typing'),
+                where('receiverid', '==', senderid),
+                where('senderid', '==', receiverid)
+            );
+        
+            // Set up a real-time listener for the query
+            const unsubscribe = onSnapshot(typingStatusQuery, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added' || change.type === 'modified') {
+                        const data = change.doc.data();
+                        console.log("hello world");
+                        console.log(data.typing);
+                        setReceiverTyping(data.typing);
+                    }
+                });
             });
-        });
-    })
+        
+            // Cleanup function to unsubscribe from the listener
+            return () => {
+                unsubscribe();
+            };
+        }, [loggedInUserID, receivingUser]);
+        
     
     function getFormattedTimeDifference(datetime) {
         // Parse the given datetime string
@@ -160,7 +168,12 @@ export default function Chat({navigation,route}) {
         let formattedTimeDifference = '';
         if (days > 0) formattedTimeDifference += `${days} day${days > 1 ? 's' : ''} `;
         if (hours > 0) formattedTimeDifference += `${hours}h `;
-        if (minutes > 0) formattedTimeDifference += `${minutes}min `;
+        // if (minutes > 0) formattedTimeDifference += `${minutes}min `;
+        if(days==0){
+            if(minutes > 0){
+                formattedTimeDifference += `${minutes}min`
+            }
+        }
         
         // Append a message if formattedTimeDifference is empty
         if (formattedTimeDifference === '') {
@@ -228,7 +241,7 @@ export default function Chat({navigation,route}) {
             headerTintColor: 'white',
             headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',borderBottomColor:'white', paddingTop: 30, width: '100%',borderBottomWidth:.5,paddingBottom:10 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center',width:'100%'}}>
                     <AntDesign name="arrowleft" size={25} color="white" onPress={() => navigation.goBack()} padding={10}/>
                     {receivingUser.imageurl ? <Image
                             alt='profilePic'
@@ -262,10 +275,10 @@ export default function Chat({navigation,route}) {
                                 </Text>
                     </TouchableOpacity>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
+                  {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
                     <Ionicons name="call" size={24} color="white" style={{ marginRight: 20 }} />
                     <FontAwesome name="video-camera" size={24} color="white" />
-                  </View>
+                  </View> */}
                 </View>
               ),
           });
@@ -311,27 +324,31 @@ export default function Chat({navigation,route}) {
         receivingUser.datetime=datetime
     };
 
-    // Set up the listener
-    useEffect(()=>{
-        // Create a query for each friend's status document
+    useEffect(() => {
+        if (!receivingUser?.idusers) return;
+
+        // Create a query for the friend's status document
         const friendStatusQuery = query(
             collection(database, 'status'),
             where('userId', '==', receivingUser.idusers) // Assuming 'userId' is the field storing the user ID in the 'status' documents
         );
 
-        // Set up a real-time listener for each query
+        // Set up a real-time listener for the query
         const unsubscribe = onSnapshot(friendStatusQuery, (snapshot) => {
             console.log(`Snapshot received for friend ${receivingUser.idusers}`);
             snapshot.docChanges().forEach((change) => {
                 if (change.type === 'added' || change.type === 'modified') {
                     const friendData = change.doc.data();
                     console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
-                    updateFriendStatus(friendData.userId, friendData.active,friendData.datetime)
+                    updateFriendStatus(friendData.userId, friendData.active, friendData.datetime);
                     // Update UI or perform actions based on friend's status change
                 }
             });
         });
-    })
+
+        // Cleanup subscription on unmount or when receivingUser.idusers changes
+        return () => unsubscribe();
+    }, [receivingUser?.idusers, updateFriendStatus]);
 
 
       const onSend = useCallback(async (messages = []) => {
@@ -376,6 +393,33 @@ export default function Chat({navigation,route}) {
             fadingEdgeLength: 100
         });
     };
+    const customtInputToolbar = (props) => {
+      
+      
+        const handleSend = () => {
+          if (text.trim().length > 0) {
+            props.onSend([{ text: text.trim(), user: props.user, createdAt: new Date() }], true);
+            setText('');
+          }
+        };
+      
+        return (
+            <View style={styles.container}>
+            <TextInput
+            style={styles.input}
+              placeholder="Type a message..."
+               multiline={true}
+              value={text}
+              onChangeText={setText}
+            />
+            {text.trim().length > 0 && ( // Show icon only when text is not empty
+              <TouchableOpacity onPress={handleSend} style={styles.iconContainer}>
+                <Ionicons name="send" size={24} color="#512095" />
+              </TouchableOpacity>
+            )}
+          </View>
+        );
+      };
     if(!loggedInUserID){
         return (
                 <ImageBackground
@@ -395,7 +439,7 @@ export default function Chat({navigation,route}) {
                 source={require('../../assets/img/HomePage1.png')}
                 style={{ flex:1 ,resizeMode: 'cover'}}
             >
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1}}>
                     <GiftedChat
                         messages={messages.sort((a, b) => b.createdAt - a.createdAt)}
                         onSend={messages => onSend(messages)}
@@ -404,16 +448,46 @@ export default function Chat({navigation,route}) {
                         }}
                         messageContainerRef={messageContainerRef}
                         // renderAvatarOnTop={true}
+                        // renderInputToolbar={props => customtInputToolbar(props)}
                         renderAvatar = {null}
                         onInputTextChanged={onInputTextChanged}
-                       isTyping ={receiverTyping}
-                      scrollToBottom ={true}
+                        isTyping ={receiverTyping}
+                        scrollToBottom ={true}
                     />
-                    {
-                        Platform.OS === 'android' && <KeyboardAvoidingView behavior="padding" />
-                    }
                 </View>
             </ImageBackground>
         )
     }
 }
+
+
+const styles = StyleSheet.create({
+    // container: {
+    //   flexDirection: 'row',
+    //     position:'absolute',
+    //     bottom:'0%',
+    // },
+    // input: {
+    //     flex: 1,
+    //     borderRadius: 10,
+    //     fontSize: 16,
+    //     paddingLeft:10,
+    //     paddingRight: 40,
+    //     paddingVertical: 10,
+    //     backgroundColor: 'white',
+    //   },
+    //   iconContainer: {
+    //     position: 'absolute',
+    //     right: 10,
+    //     bottom: '0%',
+    //     transform: [{ translateY: -12 }],
+    //   },
+    //   iconContainer: {
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+        
+    //     paddingHorizontal: 10,
+    //     backgroundColor: 'white',
+    //     borderRadius: 10,
+    //   },
+  });
