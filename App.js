@@ -42,7 +42,7 @@ import Messages from './Components/Messages/Messages';
 import Chat from './Components/Messages/Chat';
 import ProfileMessages from './Components/Messages/ProfileMessages';
 import api from './Components/Config'
-import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc, getDocs, deleteDoc } from 'firebase/firestore';
 import { database } from "./config/firebase";
 import ChangeProfilePicture from './Components/Profile/EditProfile/ChangeProfilePicture';
 import { TotpMultiFactorGenerator } from 'firebase/auth';
@@ -77,6 +77,7 @@ import { AlertDialogBackdrop } from '@gluestack-ui/themed';
 import { AlertDialogContent } from '@gluestack-ui/themed';
 import { AlertDialogHeader } from '@gluestack-ui/themed';
 import { Heading } from '@gluestack-ui/themed';
+import CustomBadge from './Components/Messages/CustomBadge';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -260,14 +261,24 @@ const updateUserStatusAfterLoginSignUp = async () => {
           <Tab.Screen 
             name="Messages" 
             component={MessagesScreen} 
-            options={{
-              tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-              tabBarIcon: () => <MaterialCommunityIcons name="message" size={30} color="white" />,
+            options={({ route }) => ({
+              tabBarStyle: { 
+                backgroundColor: 'transparent', 
+                position: 'absolute', 
+                left: 0, 
+                right: 0, 
+                bottom: 0, 
+                elevation: 0, 
+                marginTop: 10, 
+                marginBottom: 20, 
+                borderTopColor: 'transparent' 
+              },
+              tabBarIcon: ({ focused }) => (
+                <CustomBadge focused={focused} totalUnreadMessages={totalUnreadMessages} />
+              ),
               tabBarActiveTintColor: "white",
-              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>,
-              tabBarBadge: totalUnreadMessages,
-              tabBarBadgeStyle: { backgroundColor: '#512095', display: totalUnreadMessages > 0 ? 'flex' : 'none' }
-            }} 
+              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : null,
+            })}
           />
           <Tab.Screen 
             name="Leaderboard" 
@@ -324,7 +335,8 @@ const updateUserStatusAfterLoginSignUp = async () => {
 
   function HomeScreen({ navigation }) {
     const [showRejoinAlertDialog, setShowRejoinAlertDialog] = useState(false)
-    const [countdown, setCountdown] = useState(100);
+    const [alertDismissed, setAlertDismissed] = useState(false);
+    const [countdown, setCountdown] = useState(0);
     React.useLayoutEffect(() => {
       const unsubscribe = navigation.addListener('state', (e) => {
           const currentRoute = e.data.state.routes[e.data.state.index];
@@ -390,7 +402,7 @@ const updateUserStatusAfterLoginSignUp = async () => {
 
 useEffect(()=>{
   checkForAnyValidRejoins()
-})
+}, [])
 
 
   const checkForAnyValidRejoins = async () => {
@@ -410,12 +422,14 @@ useEffect(()=>{
             const elapsedTimeInSeconds = Math.floor((currentTime - createdAtTimestamp) / 1000); // Convert milliseconds to seconds
 
             // Calculate remaining seconds until 30 seconds have passed
-            const remainingSeconds = 30 - elapsedTimeInSeconds;
+            const remainingSeconds = 60 - elapsedTimeInSeconds;
             if (remainingSeconds <= 0) {
-                console.log("30 seconds have passed");
+                console.log("60 seconds have passed");
             } else {
                 setCountdown(remainingSeconds-1)
-                setShowRejoinAlertDialog(true)
+                if (!alertDismissed) { // Only show if the alert hasn't been dismissed
+                  setShowRejoinAlertDialog(true);
+                }
                 console.log(`Remaining seconds: ${remainingSeconds}`);
             }
         });
@@ -425,6 +439,10 @@ useEffect(()=>{
   }
 
   const rejectRejoinInvite = async () => {
+    setCountdown(0)
+    setShowRejoinAlertDialog(false)
+    setAlertDismissed(true); // Dismiss the alert permanently
+
     try {
         const userId = await AsyncStorage.getItem('id');
         // Create a query to find documents with the specified criteria
@@ -450,6 +468,10 @@ useEffect(()=>{
                 // Update the document
                 await updateDoc(doc.ref, updatedData);
                 console.log(`Document with ID ${doc.id} updated successfully`);
+
+                // Delete the document
+                await deleteDoc(doc.ref);
+                console.log(`Document with ID ${doc.id} deleted successfully`);
             }
         }
     } catch (error) {
@@ -458,7 +480,10 @@ useEffect(()=>{
   }
 
   const acceptRejoinInvite = async () => {
+    setCountdown(0)
     setShowRejoinAlertDialog(false)
+    setAlertDismissed(true); // Dismiss the alert permanently
+
     try {
         const userId = await AsyncStorage.getItem('id');
         // Create a query to find documents with the specified criteria
@@ -484,6 +509,10 @@ useEffect(()=>{
                 // Update the document
                 await updateDoc(doc.ref, updatedData);
 
+                // Delete the document
+                await deleteDoc(doc.ref);
+                console.log(`Document with ID ${doc.id} deleted successfully`);
+
                 console.log(doc.data())
                 setTimeout(() => {
                   navigation.navigate("ChatRoom", {
@@ -499,7 +528,6 @@ useEffect(()=>{
     }
   }
 
-
     return (
       <RequestProvider>
             <View style={{ flex: 1 }}>
@@ -514,8 +542,9 @@ useEffect(()=>{
                 {showRejoinAlertDialog && (
                     <AlertDialog
                         isOpen={showRejoinAlertDialog}
-                        onClose={() => setShowRejoinAlertDialog(false)}
+                        // onClose={() => setShowRejoinAlertDialog(false)}
                     >
+                      {console.log('hi')}
                         <AlertDialogBackdrop />
                         <AlertDialogContent>
                             <AlertDialogHeader justifyContent='center' alignItems='center'>
@@ -538,7 +567,6 @@ useEffect(()=>{
                                         action="secondary"
                                         borderWidth={2}
                                         onPress={() => {
-                                            setShowRejoinAlertDialog(false)
                                             rejectRejoinInvite();
                                         }}
                                     >

@@ -54,7 +54,11 @@ export default function FriendsList({navigation}) {
         let formattedTimeDifference = '';
         if (days > 0) formattedTimeDifference += `${days} day${days > 1 ? 's' : ''} `;
         if (hours > 0) formattedTimeDifference += `${hours}h `;
-        if (minutes > 0) formattedTimeDifference += `${minutes}min `;
+        if(days==0){
+            if(minutes > 0){
+                formattedTimeDifference += `${minutes}min`
+            }
+        }
         
         // Append a message if formattedTimeDifference is empty
         if (formattedTimeDifference === '') {
@@ -214,7 +218,7 @@ export default function FriendsList({navigation}) {
                                 ? 'Active'
                                 : getFormattedTimeDifference(user.datetime) === "just now"
                                 ? 'last seen just now'
-                                : 'last seen from: ' + getFormattedTimeDifference(user.datetime)}
+                                : 'last seen ' + getFormattedTimeDifference(user.datetime) + ' ago'}
                             </Text>
                         </View>
                             

@@ -256,7 +256,9 @@ const Home = ({navigation}) => {
 
         if(response){
           navigation.push('MatchMakingScreen');
-          setAttemptingJoinRoom(false);
+          setTimeout(() => {
+            setAttemptingJoinRoom(false);
+          }, 2000);
         }
 
       } catch (error) {

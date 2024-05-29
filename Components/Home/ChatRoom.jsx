@@ -147,6 +147,10 @@ export default function ChatRoom({ navigation, route }) {
                     // Update the document
                     await updateDoc(doc.ref, updatedData);
                     console.log(`Document with ID ${doc.id} updated successfully`);
+
+                    // Delete the document
+                    await deleteDoc(doc.ref);
+                    console.log(`Document with ID ${doc.id} deleted successfully`);
                 }
             }
         } catch (error) {
@@ -480,8 +484,8 @@ export default function ChatRoom({ navigation, route }) {
 
     }, [socket, loggedInUserID]);
 
-    const checkFor30Seconds = () => {
-        let tries = 30;
+    const checkFor60Seconds = () => {
+        let tries = 60;
         if (intervalIdRef.current) return; // Prevent starting multiple intervals
 
         intervalIdRef.current = setInterval(() => {
@@ -499,12 +503,12 @@ export default function ChatRoom({ navigation, route }) {
                     socket.emit('roomDestroyed', data);
                     updateAllRoomStatus()
                     deleteRejoinInvite()
-                    console.log(`User ${receiverID} disconnected for 30 seconds`);
+                    console.log(`User ${receiverID} disconnected for 60 seconds`);
                 }
             } else {
                 clearInterval(intervalIdRef.current);
                 intervalIdRef.current = null;
-                console.log(`User ${receiverID} reconnected within 30 seconds`);
+                console.log(`User ${receiverID} reconnected within 60 seconds`);
             }
         }, 1000);
     };
@@ -569,7 +573,7 @@ export default function ChatRoom({ navigation, route }) {
                     if (!friendData.active) {
                         setMatchDisconnected(true);
                         createRejoinInvite();
-                        checkFor30Seconds();
+                        checkFor60Seconds();
                     } else {
                         // setMatchDisconnected(false);
                         // deleteRejoinInvite();

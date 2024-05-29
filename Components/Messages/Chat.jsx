@@ -7,7 +7,7 @@ import { AntDesign, FontAwesome, Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import userimg from '../../assets/img/user.png'
 import { useHeaderHeight } from '@react-navigation/elements';
-import { KeyboardAvoidingView, Platform, TextInput ,Button,StyleSheet } from "react-native";
+import { KeyboardAvoidingView, Platform, TextInput ,Button,StyleSheet, Keyboard } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { collection, addDoc, orderBy, query, onSnapshot, where , doc, getDoc, setDoc, updateDoc} from 'firebase/firestore';
 import { database } from "../../config/firebase";
@@ -15,6 +15,7 @@ import { database } from "../../config/firebase";
 const error = console.error; console.error = (...args) => { if (/defaultProps/.test(args[0])) return; error(...args); };
 
 export default function Chat({navigation,route}) {
+    const height = useHeaderHeight()
     const [text, setText] = useState('');
     const[loggedInUserID, setLoggedInUserID] = useState();
     const [typing,setTyping]=useState(false)
@@ -167,7 +168,12 @@ export default function Chat({navigation,route}) {
         let formattedTimeDifference = '';
         if (days > 0) formattedTimeDifference += `${days} day${days > 1 ? 's' : ''} `;
         if (hours > 0) formattedTimeDifference += `${hours}h `;
-        if (minutes > 0) formattedTimeDifference += `${minutes}min `;
+        // if (minutes > 0) formattedTimeDifference += `${minutes}min `;
+        if(days==0){
+            if(minutes > 0){
+                formattedTimeDifference += `${minutes}min`
+            }
+        }
         
         // Append a message if formattedTimeDifference is empty
         if (formattedTimeDifference === '') {
@@ -433,7 +439,7 @@ export default function Chat({navigation,route}) {
                 source={require('../../assets/img/HomePage1.png')}
                 style={{ flex:1 ,resizeMode: 'cover'}}
             >
-                <View style={{ flex: 1 ,marginBottom:10}}>
+                <View style={{ flex: 1}}>
                     <GiftedChat
                         messages={messages.sort((a, b) => b.createdAt - a.createdAt)}
                         onSend={messages => onSend(messages)}
@@ -442,15 +448,12 @@ export default function Chat({navigation,route}) {
                         }}
                         messageContainerRef={messageContainerRef}
                         // renderAvatarOnTop={true}
-                        renderInputToolbar={props => customtInputToolbar(props)}
+                        // renderInputToolbar={props => customtInputToolbar(props)}
                         renderAvatar = {null}
                         onInputTextChanged={onInputTextChanged}
-                       isTyping ={receiverTyping}
-                      scrollToBottom ={true}
+                        isTyping ={receiverTyping}
+                        scrollToBottom ={true}
                     />
-                    {
-                        Platform.OS === 'android' && <KeyboardAvoidingView behavior="padding" />
-                    }
                 </View>
             </ImageBackground>
         )
@@ -459,26 +462,26 @@ export default function Chat({navigation,route}) {
 
 
 const styles = StyleSheet.create({
-    container: {
-      flexDirection: 'row',
-        position:'absolute',
-        bottom:'0%',
-    },
-    input: {
-        flex: 1,
-        borderRadius: 10,
-        fontSize: 16,
-        paddingLeft:10,
-        paddingRight: 40,
-        paddingVertical: 10,
-        backgroundColor: 'white',
-      },
-      iconContainer: {
-        position: 'absolute',
-        right: 10,
-        bottom: '0%',
-        transform: [{ translateY: -12 }],
-      },
+    // container: {
+    //   flexDirection: 'row',
+    //     position:'absolute',
+    //     bottom:'0%',
+    // },
+    // input: {
+    //     flex: 1,
+    //     borderRadius: 10,
+    //     fontSize: 16,
+    //     paddingLeft:10,
+    //     paddingRight: 40,
+    //     paddingVertical: 10,
+    //     backgroundColor: 'white',
+    //   },
+    //   iconContainer: {
+    //     position: 'absolute',
+    //     right: 10,
+    //     bottom: '0%',
+    //     transform: [{ translateY: -12 }],
+    //   },
     //   iconContainer: {
     //     justifyContent: 'center',
     //     alignItems: 'center',
