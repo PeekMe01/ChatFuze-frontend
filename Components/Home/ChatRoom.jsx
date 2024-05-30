@@ -184,6 +184,7 @@ export default function ChatRoom({ navigation, route }) {
                                     socket.emit('roomDestroyed', data);
                                     navigation.navigate('HomeScreen', {
                                         disconnetedDueToMatchLeaving: true,
+                                        roomID: roomID,
                                     }
                                     );
                                 }
@@ -224,6 +225,7 @@ export default function ChatRoom({ navigation, route }) {
                 console.log('All rooms with the given roomID have roomStatus as false, navigating to HomeScreen');
                 navigation.navigate('HomeScreen', {
                     disconnetedDueToMeLeaving: true,
+                    roomID: roomID,
                 }
                 );
             } else {
@@ -277,6 +279,7 @@ export default function ChatRoom({ navigation, route }) {
                         socket.emit('roomDestroyed', data);
                         navigation.navigate('HomeScreen', {
                             disconnetedDueToMatchLeaving: true,
+                            roomID: roomID,
                         }
                         );
                     }
@@ -297,15 +300,6 @@ export default function ChatRoom({ navigation, route }) {
 
     useEffect(() => {
         const onBackPress = () => {
-            const now = Date.now();
-            if (lastBackPressed.current && now - lastBackPressed.current < 2000) {
-                // If back button is pressed within 2 seconds, exit the app
-                BackHandler.exitApp();
-                return false;
-            }
-
-            lastBackPressed.current = now;
-            ToastAndroid.show('Press again to exit', ToastAndroid.SHORT);
             return true;
         };
 
@@ -423,6 +417,7 @@ export default function ChatRoom({ navigation, route }) {
                 updateAllRoomStatus()
                 navigation.navigate('HomeScreen', {
                     disconnetedDueToMatchLeaving: true,
+                    roomID: roomID,
                 }
                 );
             }
@@ -455,6 +450,10 @@ export default function ChatRoom({ navigation, route }) {
                     socket.emit('roomDestroyed', data);
                     updateAllRoomStatus()
                     deleteRejoinInvite()
+                    navigation.navigate('HomeScreen', {
+                        disconnetedDueToMatchLeaving: true,
+                        roomID: roomID,
+                    })
                 }
             } else {
                 clearInterval(intervalIdRef.current);
@@ -498,7 +497,7 @@ export default function ChatRoom({ navigation, route }) {
                 createdAt: new Date()
             });
         } catch (error) {
-            console.log(error)
+            console.log("valid"+error)
         }
     }
 
@@ -569,9 +568,15 @@ export default function ChatRoom({ navigation, route }) {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomColor: 'white', paddingTop: 30, width: '100%', borderBottomWidth: .5, paddingBottom: 10 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                         <Image source={userimg} alt='' style={{ borderRadius: 50, width: 50, height: 50, marginLeft: 1 }} />
-                        <Text size='xl' color='white' fontFamily='Roboto_400Regular'>
-                            Anonymous
-                        </Text>
+                        <View>
+                            <Text size='xl' color='white' fontFamily='Roboto_400Regular'>
+                                Anonymous
+                            </Text>
+                            <Text size='sm' color='white' fontFamily='Roboto_300Light'>
+                                {matchDisconnected?"Disconnected":"Connected"}
+                            </Text>
+                        </View>
+                        
                         <TouchableHighlight onPress={() => {
                             if (!sendReport) {
                                 setshowAlertReport(true);

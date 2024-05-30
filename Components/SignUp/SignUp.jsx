@@ -22,6 +22,7 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { database } from "../../config/firebase";
 import debounce from 'lodash.debounce';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import dayjs from 'dayjs';
 
 
 const Stack = createStackNavigator();
@@ -59,7 +60,7 @@ export default function Login(props) {
   const [invalidEmail, setInvalidEmail] = useState(false);
 
   //Second Page
-  const [dateOfBirth, setDateOfBirth] = useState(new Date);
+  const [dateOfBirth, setDateOfBirth] = useState(new dayjs());
   const [country, setCountry] = useState();
   const [gender, setGender] = useState('male');
   const [invalidCountry, setInvalidCountry] = useState(false)
@@ -533,7 +534,7 @@ export default function Login(props) {
                     </Animatable.View>
                     : <></>}
 
-            <FormControl m={10} pt={50} zIndex={-100}>
+            <FormControl m={10} mt={80} zIndex={-100}>
               <Button
                 isDisabled={attemptingSignup}
                 size="lg"

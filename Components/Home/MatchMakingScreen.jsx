@@ -44,7 +44,7 @@ export default function MatchMakingScreen({ navigation }) {
                         console.log('Room already exists in Firestore');
                     }
                 } catch (error) {
-                    console.log(error)
+                    console.log("handleRoomCreated "+error)
                 }
                 setTimeout(() => {
                     navigation.push("ChatRoom", {
@@ -176,7 +176,7 @@ export default function MatchMakingScreen({ navigation }) {
                 console.log(response)
             }
         } catch (error) {
-            console.log(error)
+            console.log("cancelRequest " + error)
         }
         setTimeout(() => {
             setAttemptingCancel(false);

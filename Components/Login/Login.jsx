@@ -1,7 +1,7 @@
 import { useToast, Toast, HStack, Spinner, AlertCircleIcon, Box, Button, ButtonText, Center, CloseIcon, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, Icon, ImageBackground, Input, InputField, InputIcon, InputSlot, Pressable, Text, ToastDescription, ToastTitle, VStack, View } from '@gluestack-ui/themed';
 import React, { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
-import { Image } from 'react-native';
+import { Image, TouchableHighlight } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Animatable from 'react-native-animatable';
 import API_URL from '../Config'
@@ -237,8 +237,9 @@ export default function Login(props) {
                   <Input
                     p={5}
                     borderWidth={2}
+                    borderColor={invalidEmail ? '#512095' : 'white'}
                     backgroundColor='rgba(255,255,255,0.2)'
-                    $focus-borderColor='white'
+                    $focus-borderColor={invalidEmail ? '#512095' : 'white'}
                   >
                     <InputField
                       type="email"
@@ -477,15 +478,20 @@ export default function Login(props) {
                   </FormControlErrorText>
                 </FormControlError>
 
-                <FormControlHelper style={{ alignItems: 'center', paddingTop: 20 }}>
-                  <FormControlHelperText color='#2cb5d6' size='l' textAlign='left' onPress={() => handleForgotPasswordPageChange()}>
+                {/* <FormControlHelper style={{ alignItems: 'center' }} paddingTop={10}>
+                  <FormControlHelperText paddingVertical={10} color='#2cb5d6' size='l' textAlign='left' onPress={() => handleForgotPasswordPageChange()}>
                     Forgot Password?
                   </FormControlHelperText>
-                </FormControlHelper>
+                </FormControlHelper> */}
               </FormControl>
+              <TouchableHighlight underlayColor='transparent' onPress={() => handleForgotPasswordPageChange()}>
+                <Text paddingVertical={10} marginTop={-10} color='#2cb5d6'>
+                  Forgot Password?
+                </Text>
+              </TouchableHighlight>
             </Box>
 
-            <FormControl m={10} pt={30}>
+            <FormControl m={10} mt={40}>
               <Button
                 isDisabled={attemptingLogin}
                 size="lg"

@@ -381,7 +381,7 @@ export default function App() {
           }
         });
       } catch (error) {
-        console.log(error);
+        console.log("checkForAnyValidRejoins" + error);
       }
     }
 

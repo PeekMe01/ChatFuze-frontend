@@ -4,10 +4,11 @@ import * as Progress from 'react-native-progress';
 import * as Animatable from 'react-native-animatable';
 import DateTimePicker from 'react-native-ui-datepicker';
 import dayjs from 'dayjs';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, TouchableHighlight } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import emojiFlags from 'emoji-flags';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 export default function SecondPage(props) {
 
@@ -35,7 +36,12 @@ export default function SecondPage(props) {
     return countriesWithEmojis.map(({ country, emoji }) => ({ country, emoji }));
   }, [countriesWithEmojis]);
 
-
+  const formatDate = (date) => {
+    if (!dayjs(date).isValid()) {
+      return '';
+    }
+    return dayjs(date).format('DD/MM/YY');
+  };
 
   const showMode = (currentMode) => {
     setShow(!show);
@@ -142,11 +148,34 @@ export default function SecondPage(props) {
     <Box h="$32" w="$72" mb={50} style={{ display: 'flex', gap: 40 }}>
       <FormControl isDisabled={false} isInvalid={invalidAge} isReadOnly={false} isRequired={true}>
         <Animatable.View animation={invalidAge ? "shake" : null}>
-          <Button onPress={() => showMode('date')} backgroundColor='#2cb5d6'>
-            <ButtonText fontSize="$xl" fontWeight="$medium">
-              Enter Birthday
-            </ButtonText>
-          </Button>
+          <View display='flex' flexDirection='row'>
+            <FormControl isDisabled={true} width={'80%'}>
+              <Input
+                p={5}
+                borderWidth={2}
+                $disabled-backgroundColor='rgba(255,255,255,0.2)'
+                $disabled-opacity={1}
+                $focus-borderColor={invalidAge ? '#512095' : 'white'}
+                borderColor={invalidAge ? '#512095' : 'white'}
+                borderTopRightRadius={0}
+                borderTopLeftRadius={5}
+                borderBottomRightRadius={0}
+                borderBottomLeftRadius={5}
+              >
+                <InputField
+                  color='white'
+                  value={formatDate(dateOfBirth)}
+                >
+                </InputField>
+              </Input>
+            </FormControl>
+            <TouchableHighlight onPress={() => {showMode()}} underlayColor={'#cccccc80'} style={{ width: '20%', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: 'white', borderTopRightRadius: 5,borderBottomRightRadius: 5, backgroundColor: 'white' }}>
+              <View>
+                <AntDesign name="calendar" color='#2cb5d6' size={30}/>
+              </View>
+            </TouchableHighlight>
+          </View>
+          
           {show && (
             <View flex={1}>
               <View backgroundColor='white' padding={10} borderRadius={20} borderColor='#512095' borderWidth={1} position='absolute' alignSelf='center'>
@@ -165,7 +194,7 @@ export default function SecondPage(props) {
           )}
 
         </Animatable.View>
-        <FormControlError mb={-24}>
+        <FormControlError mb={-24} zIndex={-100}>
           <FormControlErrorIcon
             as={AlertCircleIcon}
             color="#512095"

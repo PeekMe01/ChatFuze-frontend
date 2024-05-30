@@ -33,8 +33,7 @@ const Home = ({ navigation }) => {
   // Get the route object
   const route = useRoute();
   // Extract parameters from the route
-  const { disconnetedDueToMatchLeaving } = route.params || {};
-  const { disconnetedDueToMeLeaving } = route.params || {};
+  const { disconnetedDueToMatchLeaving, disconnetedDueToMeLeaving ,roomID } = route.params || {};
 
   useEffect(() => {
     if (disconnetedDueToMatchLeaving) {
@@ -45,7 +44,7 @@ const Home = ({ navigation }) => {
       alert("You have disconnected from the room. your rank has descreased by 2%.")
     }
 
-  }, [disconnetedDueToMatchLeaving, disconnetedDueToMeLeaving])
+  }, [roomID])
 
 
   const toast = useToast()
@@ -64,6 +63,7 @@ const Home = ({ navigation }) => {
   const [query, setQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState([]);
   const [filteredData, setFilteredData] = useState(data);
+  const [focused, setFocused] = useState(false);
 
   const [location, setLocation] = useState('local');
   const [backgroundColoroption, setBackgroundColorOption] = useState('local')
@@ -90,7 +90,7 @@ const Home = ({ navigation }) => {
         setUserHasAnIdVerificationRequest(response.data.hasIDVerificationRequest)
       }
     } catch (error) {
-      console.log(error)
+      console.log("checkIfUserHasAnIdVerificationRequest" + error)
       toast.show({
         duration: 5000,
         placement: "top",
@@ -303,13 +303,15 @@ const Home = ({ navigation }) => {
                   w={'$full'}
                   marginBottom={'4%'}
                   borderColor='white'
+                  onFocus={() => setFocused(true)}
+                  onBlur={() => setFocused(false)}
                 >
                   <InputField
                     value={query}
                     placeholder="Enter interests here"
                     color='white'
                     placeholderTextColor={"#ffffff50"}
-                    onChangeText={(text) => setQuery(text)}
+                    onChangeText={(text) => {setQuery(text); setFocused(text==""?true:false)}}
                   />
                   <InputSlot onPress={() => setQuery('')}>
                     <InputIcon
@@ -325,7 +327,28 @@ const Home = ({ navigation }) => {
                     keyboardShouldPersistTaps='handled'
                     style={{
                       position: 'absolute',
-                      top: 80,
+                      top: 60,
+                      width: '100%',
+                      zIndex: 100,
+                      height: 'auto',
+                      maxHeight: '150%',
+                      marginTop: -20,
+                      borderBottomLeftRadius: 20,
+                      borderBottomRightRadius: 20,
+                      borderColor: 'white',
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    }}
+                    showsVerticalScrollIndicator={false}
+                    data={filteredData.filter((item) =>  item.toLowerCase().includes(query.toLowerCase()))}
+                    renderItem={(props) => renderItem({ ...props, length: filteredData.filter((item) => item.toLowerCase().includes(query.toLowerCase())).length })}
+                  />
+                )}
+                {focused && (
+                  <FlatList
+                    keyboardShouldPersistTaps='handled'
+                    style={{
+                      position: 'absolute',
+                      top: 60,
                       width: '100%',
                       zIndex: 100,
                       height: 'auto',

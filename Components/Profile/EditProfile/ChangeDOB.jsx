@@ -1,4 +1,4 @@
-import { Center, Text, HStack, useToast, View, ButtonText, FormControlErrorIcon, VStack, Icon, CloseIcon, AlertCircleIcon, Box, Button, FormControl, FormControlError, FormControlErrorText, ImageBackground, Spinner, Toast, ToastDescription, ToastTitle } from '@gluestack-ui/themed';
+import { Center, Text, HStack, useToast, View, ButtonText, FormControlErrorIcon, VStack, Icon, CloseIcon, AlertCircleIcon, Box, Button, FormControl, FormControlError, FormControlErrorText, ImageBackground, Spinner, Toast, ToastDescription, ToastTitle, Input, InputField } from '@gluestack-ui/themed';
 import { useIsFocused } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import React, { useEffect, useState } from 'react'
@@ -10,7 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from 'react-native-ui-datepicker';
 import dayjs from 'dayjs';
 import { Platform, Pressable, StyleSheet } from 'react-native';
-
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const ChangeDOB = ({ navigation }) => {
 
@@ -72,6 +72,7 @@ const ChangeDOB = ({ navigation }) => {
             const response = await api.get(`/settings/getinsight/${data}`);
             setUser(response.data.user);
             setDateOfBirth(response.data.user.dateOfBirth)
+            console.log(response.data.user.dateOfBirth)
         } catch (error) {
             console.log(error)
         }
@@ -89,6 +90,13 @@ const ChangeDOB = ({ navigation }) => {
             setClickedButton(false);
         }, 1000);
     }
+
+    const formatDate = (date) => {
+        if (!dayjs(date).isValid()) {
+          return '';
+        }
+        return dayjs(date).format('DD/MM/YY');
+    };
 
     const showMode = (currentMode) => {
         setShow(!show);
@@ -216,27 +224,37 @@ const ChangeDOB = ({ navigation }) => {
                             </Text>
                         </View>
 
-                        <Box paddingVertical={50} gap={30}>
+                        <Box paddingVertical={50} gap={30} style={{ display: 'flex' }}>
                             <FormControl isDisabled={false} isInvalid={invalidAge} isReadOnly={false} isRequired={true}>
                                 <View>
                                     <Animatable.View animation={invalidAge ? "shake" : null}>
-                                        <Button
-                                            onPress={(event) => {
-                                                event.stopPropagation();
-                                                showMode('date');
-                                            }}
-                                            size="lg"
-                                            borderRadius={40}
-                                            hardShadow='1'
-                                            bgColor="#512095"
-                                            $active={{
-                                                bg: "#51209595",
-                                            }}
-                                        >
-                                            <ButtonText fontSize="$xl" fontWeight="$medium">
-                                                Enter Birthday
-                                            </ButtonText>
-                                        </Button>
+                                        <View display='flex' flexDirection='row'>
+                                            <FormControl isDisabled={true} width={'90%'}>
+                                                <Input
+                                                    p={5}
+                                                    borderWidth={2}
+                                                    $disabled-backgroundColor='rgba(255,255,255,0.2)'
+                                                    $disabled-opacity={1}
+                                                    $focus-borderColor={invalidAge ? '#512095' : 'white'}
+                                                    borderColor={invalidAge ? '#512095' : 'white'}
+                                                    borderTopRightRadius={0}
+                                                    borderTopLeftRadius={5}
+                                                    borderBottomRightRadius={0}
+                                                    borderBottomLeftRadius={5}
+                                                >
+                                                    <InputField
+                                                    color='white'
+                                                    value={formatDate(dateOfBirth)}
+                                                    >
+                                                    </InputField>
+                                                </Input>
+                                            </FormControl>
+                                            <TouchableHighlight onPress={() => {showMode()}} underlayColor={'#cccccc80'} style={{ justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: 'white', borderTopRightRadius: 5,borderBottomRightRadius: 5, backgroundColor: 'white'}}>
+                                            <View>
+                                                <AntDesign name="calendar" color='#512095' size={35}/>
+                                            </View>
+                                            </TouchableHighlight>
+                                        </View>
                                     </Animatable.View>
                                     <FormControlError mb={'-$6'}>
                                         <FormControlErrorIcon
