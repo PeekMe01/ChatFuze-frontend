@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 const UnreadMessagesContext = createContext();
 
 export const UnreadMessagesProvider = ({ children }) => {
-    const [friendUnreadCounts, setFriendUnreadCounts] = useState({});
+  const [friendUnreadCounts, setFriendUnreadCounts] = useState({});
   const [totalUnreadMessages, setTotalUnreadMessages] = useState(0);
 
   const updateUnreadCounts = (friendId, count) => {

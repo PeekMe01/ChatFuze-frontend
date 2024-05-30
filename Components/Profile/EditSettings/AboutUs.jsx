@@ -1,17 +1,13 @@
-import { AddIcon, Divider, HStack, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
-import { View } from '@gluestack-ui/themed';
-import React from 'react'
-import { useState } from 'react';
+import { View,AddIcon, Divider, HStack, Image, ImageBackground, Spinner, Text,Box } from '@gluestack-ui/themed';
+import React ,{ useState }  from 'react'
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, ScrollView, TouchableHighlight } from 'react-native';
 import logo from '../../../assets/img/Logo/Logo_WithoutBackground.png';
-import { Box } from '@gluestack-ui/themed';
 
 export default function AboutUs({navigation}) {
 
-    const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
     const [clickedButton, setClickedButton] = useState(false);
 
@@ -24,7 +20,7 @@ export default function AboutUs({navigation}) {
     }
 
     const [fontsLoaded] = useFonts({
-        'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
+        'ArialRoundedMTBold': require('../../../assets/fonts/ARLRDBD.ttf'), 
     });
     if (!fontsLoaded) {
         return (
@@ -57,7 +53,6 @@ export default function AboutUs({navigation}) {
                 </View>
                 <View alignItems='center' justifyContent='center' margin={10} marginTop={40}>
                     <Image source={logo}
-                    // style={{width: '100%', height: '100%'}}
                     alt='company_logo'
                     backgroundColor='white'
                     w={'$72'}

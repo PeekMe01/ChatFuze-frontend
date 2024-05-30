@@ -4,7 +4,7 @@ import * as Progress from 'react-native-progress';
 import * as Animatable from 'react-native-animatable';
 
 export default function FirstPage(props) {
-  
+
   const [showPassword, setShowPassword] = useState(false)
   const handleShowPassword = () => {
     setShowPassword((showState) => {
@@ -12,25 +12,25 @@ export default function FirstPage(props) {
     })
   }
 
-  const { 
+  const {
     emailErrorText,
     setEmailErrorText,
     usernameErrorText,
     setUsernameErrorText,
     validateUsername,
     validateEmail,
-    username, 
-    setUsername, 
-    email, 
-    setEmail, 
-    password, 
-    setPassword, 
-    invalidUsername, 
-    setInvalidUsername, 
-    invalidEmail, 
-    setInvalidEmail, 
-    invalidPassword, 
-    setInvalidPassword ,
+    username,
+    setUsername,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    invalidUsername,
+    setInvalidUsername,
+    invalidEmail,
+    setInvalidEmail,
+    invalidPassword,
+    setInvalidPassword,
     signUpProgress,
     setSignUpProgress,
     changePage,
@@ -38,177 +38,118 @@ export default function FirstPage(props) {
   } = props;
 
   return (
-    // <Animatable.View animation={changingPage?"fadeOut":null} duration={500}>
-    // <View>
-    //     <Center>
-    //         {/* <FormControl m={10} pt={30}>
-    //             <Progress.Bar progress={signUpProgress} width={300} color='#2cb5d6' height={8}/>
-    //         </FormControl> */}
-    //         <Animatable.Text animation="bounceIn" easing="ease-out">
-    //           <Text size='5xl' color='white' fontWeight='$light' fontFamily='ArialRoundedMTBold'>
-    //             SIGN UP
-    //           </Text>
-    //         </Animatable.Text>
-    //         <Divider my="$10"/>                 
-      
-        <Box h="$32" w="$72" mb={50} style={{ display: 'flex', gap: 40 }}>
-        <FormControl isDisabled={false} isInvalid={invalidUsername} isReadOnly={false} isRequired={true}>
-            {/* <FormControlLabel mb='$1'>
-              <FormControlLabelText>Email</FormControlLabelText>
-            </FormControlLabel> */}
-            <Animatable.View animation={invalidUsername?"shake":null}>
-              <Input 
-                p={5}
-                borderWidth={2}
-                backgroundColor='rgba(255,255,255,0.2)'
-                $focus-borderColor={invalidUsername?'#512095':'white'}
-                borderColor={invalidUsername?'#512095':'white'}
-                >
-                <InputField
-                  type="text"
-                  placeholder="Username"
-                  fontSize={'$xl'}
-                  autoCapitalize='none'
-                  color='white'
-                  placeholderTextColor={'rgba(255,255,255,0.5)'}
-                  value={username}
-                  onChange={(newValue)=>{
-                      setUsername(newValue.nativeEvent.text);
-                      setInvalidUsername(false);
-                      // validateUsername(newValue.nativeEvent.text);
-                  }}
-                />
-              </Input>
-            </Animatable.View>
-            <FormControlError mb={-24}>
-              <FormControlErrorIcon
-                color='#512095'
-                as={AlertCircleIcon}
+    <Box h="$32" w="$72" mb={50} style={{ display: 'flex', gap: 40 }}>
+      <FormControl isDisabled={false} isInvalid={invalidUsername} isReadOnly={false} isRequired={true}>
+        <Animatable.View animation={invalidUsername ? "shake" : null}>
+          <Input
+            p={5}
+            borderWidth={2}
+            backgroundColor='rgba(255,255,255,0.2)'
+            $focus-borderColor={invalidUsername ? '#512095' : 'white'}
+            borderColor={invalidUsername ? '#512095' : 'white'}
+          >
+            <InputField
+              type="text"
+              placeholder="Username"
+              fontSize={'$xl'}
+              autoCapitalize='none'
+              color='white'
+              placeholderTextColor={'rgba(255,255,255,0.5)'}
+              value={username}
+              onChange={(newValue) => {
+                setUsername(newValue.nativeEvent.text);
+                setInvalidUsername(false);
+              }}
+            />
+          </Input>
+        </Animatable.View>
+        <FormControlError mb={-24}>
+          <FormControlErrorIcon
+            color='#512095'
+            as={AlertCircleIcon}
+          />
+          <FormControlErrorText color='#512095'>
+            {usernameErrorText}
+          </FormControlErrorText>
+        </FormControlError>
+      </FormControl>
+
+      <FormControl isDisabled={false} isInvalid={invalidEmail} isReadOnly={false} isRequired={true}>
+        <Animatable.View animation={invalidEmail ? "shake" : null}>
+          <Input
+            p={5}
+            borderWidth={2}
+            borderColor={invalidEmail ? '#512095' : 'white'}
+            backgroundColor='rgba(255,255,255,0.2)'
+            $focus-borderColor={invalidEmail ? '#512095' : 'white'}
+          >
+            <InputField
+              type="email"
+              placeholder="Email"
+              fontSize={'$xl'}
+              autoCapitalize='none'
+              color='white'
+              placeholderTextColor={'rgba(255,255,255,0.5)'}
+              value={email}
+              onChange={(newValue) => {
+                setEmail(newValue.nativeEvent.text);
+                setInvalidEmail(false);
+              }}
+            />
+          </Input>
+        </Animatable.View>
+        <FormControlError mb={-24}>
+          <FormControlErrorIcon
+            color='#512095'
+            as={AlertCircleIcon}
+          />
+          <FormControlErrorText color='#512095'>
+            {emailErrorText}
+          </FormControlErrorText>
+        </FormControlError>
+      </FormControl>
+
+      <FormControl isDisabled={false} isInvalid={invalidPassword} isReadOnly={false} isRequired={true} >
+        <Animatable.View animation={invalidPassword ? "shake" : null}>
+          <Input
+            p={5}
+            backgroundColor='rgba(255,255,255,0.2)'
+            borderWidth={2}
+            borderColor={invalidPassword ? '#512095' : 'white'}
+            $focus-borderColor={invalidPassword ? '#512095' : 'white'}
+          >
+            <InputField
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              fontSize={'$xl'}
+              autoCapitalize='none'
+              color='white'
+              placeholderTextColor={'rgba(255,255,255,0.5)'}
+              value={password}
+              onChange={(newValue) => {
+                setPassword(newValue.nativeEvent.text);
+                setInvalidPassword(false);
+              }}
+            />
+            <InputSlot pr="$3" onPress={handleShowPassword}>
+              <InputIcon
+                as={showPassword ? EyeIcon : EyeOffIcon}
+                color="white"
               />
-              <FormControlErrorText color='#512095'>
-                {usernameErrorText}
-              </FormControlErrorText>
-            </FormControlError>
-          </FormControl>
+            </InputSlot>
+          </Input>
+        </Animatable.View>
+        <FormControlError mb={-24}>
+          <FormControlErrorIcon
+            color='#512095'
+            as={AlertCircleIcon}
+          />
+          <FormControlErrorText color='#512095'>
+            At least 8 characters are required.
+          </FormControlErrorText>
+        </FormControlError>
+      </FormControl>
+    </Box>
 
-          <FormControl isDisabled={false} isInvalid={invalidEmail} isReadOnly={false} isRequired={true}>
-            {/* <FormControlLabel mb='$1'>
-              <FormControlLabelText>Email</FormControlLabelText>
-            </FormControlLabel> */}
-            <Animatable.View animation={invalidEmail?"shake":null}>
-              <Input 
-                p={5}
-                borderWidth={2}
-                borderColor={invalidEmail?'#512095':'white'}
-                backgroundColor='rgba(255,255,255,0.2)'
-                $focus-borderColor={invalidEmail?'#512095':'white'}
-                >
-                <InputField
-                  type="email"
-                  placeholder="Email"
-                  fontSize={'$xl'}
-                  autoCapitalize='none'
-                  color='white'
-                  placeholderTextColor={'rgba(255,255,255,0.5)'}
-                  value={email}
-                  onChange={(newValue)=>{
-                      setEmail(newValue.nativeEvent.text);
-                      setInvalidEmail(false);
-                      // validateEmail(newValue.nativeEvent.text);
-                  }}
-                />
-              </Input>
-            </Animatable.View>
-            <FormControlError mb={-24}>
-              <FormControlErrorIcon
-                color='#512095'
-                as={AlertCircleIcon}
-              />
-              <FormControlErrorText color='#512095'>
-                {emailErrorText}
-              </FormControlErrorText>
-            </FormControlError>
-          </FormControl>
-
-          <FormControl isDisabled={false} isInvalid={invalidPassword} isReadOnly={false} isRequired={true} >
-            {/* <FormControlLabel mb='$1'>
-              <FormControlLabelText>Password</FormControlLabelText>
-            </FormControlLabel> */}
-            <Animatable.View animation={invalidPassword?"shake":null}>
-              <Input 
-                p={5} 
-                backgroundColor='rgba(255,255,255,0.2)'
-                borderWidth={2}
-                borderColor={invalidPassword?'#512095':'white'}
-                $focus-borderColor={invalidPassword?'#512095':'white'}
-                >
-                <InputField
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  fontSize={'$xl'}
-                  autoCapitalize='none'
-                  color='white'
-                  placeholderTextColor={'rgba(255,255,255,0.5)'}
-                  value={password}
-                  onChange={(newValue)=>{
-                      setPassword(newValue.nativeEvent.text);
-                      setInvalidPassword(false);
-                  }}
-                />
-                <InputSlot pr="$3" onPress={handleShowPassword}>
-                  {/* EyeIcon, EyeOffIcon are both imported from 'lucide-react-native' */}
-                  <InputIcon
-                    as={showPassword ? EyeIcon : EyeOffIcon}
-                    color="white"
-                  />
-                </InputSlot>
-              </Input>
-            </Animatable.View>
-            <FormControlError mb={-24}>
-              <FormControlErrorIcon
-                color='#512095'
-                as={AlertCircleIcon}
-              />
-              <FormControlErrorText color='#512095'>
-                At least 8 characters are required.
-              </FormControlErrorText>
-            </FormControlError>
-          </FormControl>
-        </Box>
-
-    //     <FormControl m={10} pt={50}>
-    //       <Button
-    //         size="lg"
-    //         mb="$4"
-    //         borderRadius={40}
-    //         hardShadow='1'
-    //         bgColor="#2cb5d6"
-    //         $hover={{
-    //             bg: "$green600",
-    //             _text: {
-    //             color: "$white",
-    //             },
-    //         }}
-    //         $active={{
-    //             bg: "#2c94d6",
-    //         }}
-    //         onPress={validate}
-    //         >
-    //           <ButtonText fontSize="$xl" fontWeight="$medium">
-    //             Next
-    //           </ButtonText>
-    //         </Button>
-
-    //         <FormControlHelper style={{ alignItems: 'center', justifyContent: 'center'}}>
-    //         <FormControlHelperText  color='rgba(255,255,255,0.7)' >
-    //             Already have an account? <FormControlHelperText color='#2cb5d6' fontWeight='$semibold' onPress={()=>console.log('Pressed login')}>Login</FormControlHelperText>
-    //         </FormControlHelperText>
-    //         </FormControlHelper>
-    //       </FormControl>
-
-
-    //     </Center>
-    // </View>
-    // </Animatable.View>
   )
 }

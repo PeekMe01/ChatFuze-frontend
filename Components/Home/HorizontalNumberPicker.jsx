@@ -4,7 +4,7 @@ import { View, FlatList, Text, StyleSheet, Dimensions } from 'react-native';
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = 100;
 
-const HorizontalNumberPicker = ({selectedIndex, setSelectedIndex}) => {
+const HorizontalNumberPicker = ({ selectedIndex, setSelectedIndex }) => {
   const flatListRef = useRef(null);
 
   const numbers = Array.from({ length: 10 }, (_, i) => i + 1);

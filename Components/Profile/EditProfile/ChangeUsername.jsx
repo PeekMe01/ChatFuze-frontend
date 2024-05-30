@@ -1,21 +1,11 @@
-import { AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Pressable, CloseIcon } from '@gluestack-ui/themed';
-import { View } from '@gluestack-ui/themed';
-import React, { useEffect, useLayoutEffect } from 'react'
-import { useState } from 'react';
+import {Box,Input, InputField,View,AlertCircleIcon,Toast,VStack,Icon,AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Pressable, CloseIcon } from '@gluestack-ui/themed';
+import React, { useEffect, useLayoutEffect ,useState} from 'react'
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { ScrollView, TouchableHighlight, TouchableWithoutFeedback } from 'react-native';
-import { Box } from '@gluestack-ui/themed';
-import { Input } from '@gluestack-ui/themed';
-import { InputField } from '@gluestack-ui/themed';
-import { AlertCircleIcon } from '@gluestack-ui/themed';
-import { Toast } from '@gluestack-ui/themed';
-import { VStack } from '@gluestack-ui/themed';
+import { ScrollView, TouchableHighlight, TouchableWithoutFeedback ,Keyboard} from 'react-native';
 import api from '../../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Keyboard } from 'react-native';
-import { Icon } from '@gluestack-ui/themed';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function ChangeUsername({navigation, route}) {
@@ -28,11 +18,9 @@ export default function ChangeUsername({navigation, route}) {
         try {
              const data = await AsyncStorage.getItem('id')
              const response = await api.get(`/settings/getinsight/${data}`);
-             // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
              setUser(response.data.user);
              setOldUsername(response.data.user.username);
              setCurrentUsername(response.data.user.username);
-             console.log(response.data.user)
          } catch (error) {
              console.log(error)
          }
@@ -57,7 +45,6 @@ export default function ChangeUsername({navigation, route}) {
 
     const [saveDisabled, setSaveDisabled] = useState(true)
 
-    console.log(oldUsername)
     const validate = async () => {
         let goodUsername = false;
         setAttemptingChangeUsername(true);
@@ -91,15 +78,12 @@ export default function ChangeUsername({navigation, route}) {
 
         if(goodUsername){
             setSaveDisabled(true)
-            console.log('here')
             const data = {
                 userid: await AsyncStorage.getItem('id'),
-                // oldusername: user.username,
                 username: currentUsername
             }
 
             try {
-                // const response = await axios.post(`${API_URL}/settings/changeusername`, data);
                 const response = await api.post(`/settings/updateusername`, data);
                 if(response){
                     setOldUsername(currentUsername);
@@ -127,7 +111,6 @@ export default function ChangeUsername({navigation, route}) {
                 }
                 setAttemptingChangeUsername(false);
             } catch (error) {
-                // console.log(error.response.data.error)
                 const errorMsg = await error.response.data.error;
                 console.log(error)
                 toast.show({
@@ -158,7 +141,6 @@ export default function ChangeUsername({navigation, route}) {
         }else{
             setTimeout(() => {
                 setAttemptingChangeUsername(false);
-                // setSaveDisabled(false)
         }, 1000);
         }
     }
@@ -198,7 +180,6 @@ export default function ChangeUsername({navigation, route}) {
         <TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss() } }>
         <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
             <View margin={30} marginBottom={100}>
-            {/* <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}> */}
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
                         <MaterialIcons name="arrow-back" size={25} color="white"/>
@@ -248,11 +229,8 @@ export default function ChangeUsername({navigation, route}) {
                             </FormControlError>
                         </FormControl>
 
-
-                        {/* Save */}
                         <FormControl>
                         <Button
-                            // isDisabled={attemptingChangeUsername}
                             disabled={saveDisabled}
                             opacity={saveDisabled?0.4:1}
                             size="lg"
@@ -273,7 +251,6 @@ export default function ChangeUsername({navigation, route}) {
                     </Box>
                     </Center>
                 </View>
-            {/* </ScrollView> */}
             </View>
         </Animatable.View>
         </TouchableWithoutFeedback>

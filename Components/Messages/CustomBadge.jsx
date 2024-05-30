@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Octicons } from '@expo/vector-icons';
 
 const CustomBadge = ({ focused, totalUnreadMessages }) => {
   return (
@@ -32,7 +31,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#512095',
   },
   focusedBadge: {
-    marginBottom: 15, // Change this to the color you want when focused
+    marginBottom: 15,
     backgroundColor: '#512095',
   },
   badgeText: {

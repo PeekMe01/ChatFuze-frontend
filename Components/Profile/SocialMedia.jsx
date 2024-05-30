@@ -38,10 +38,4 @@ export default function SocialMedia({instagram,facebook}) {
   )
 }
 
-{/* <Link href={user.facebooklink}>
-    <TouchableHighlight onPress={()=>{Linking.openURL(user.facebooklink)}} style={{ borderRadius: 10}} underlayColor={'#51209550'}>
-        <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'>
-            <LinkText textDecorationLine='none' color='white' fontWeight='$light'>Visit Profile </LinkText><Feather name="link" size={20} color="white"/>
-        </View>
-    </TouchableHighlight>
-</Link> */}
+

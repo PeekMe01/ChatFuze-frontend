@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import { AlertDialogContent,AlertDialogHeader ,AlertDialogCloseButton,RefreshControl,Toast,Select,ChevronDownIcon,SelectTrigger,SelectItem,SelectDragIndicator,SelectIcon,SelectInput,SelectContent,SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, VStack, View, AddIcon, Center, Divider, HStack, Image, ImageBackground, Spinner, Text ,useToast,ToastTitle,ToastDescription,AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogFooter,Heading,CloseIcon,ButtonGroup,ButtonText,Button, Pressable} from '@gluestack-ui/themed';
+import {Icon, AlertDialogContent,AlertDialogHeader ,AlertDialogCloseButton,RefreshControl,Toast,Select,ChevronDownIcon,SelectTrigger,SelectItem,SelectDragIndicator,SelectIcon,SelectInput,SelectContent,SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, VStack, View, AddIcon, Center, Divider, HStack, Image, ImageBackground, Spinner, Text ,useToast,ToastTitle,ToastDescription,AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogFooter,Heading,CloseIcon,ButtonGroup,ButtonText,Button, Pressable} from '@gluestack-ui/themed';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -12,7 +12,6 @@ import masterRank from '../../assets/img/RankFrames/Master.png'
 import champRank from '../../assets/img/RankFrames/Champ.png'
 import superstarRank from '../../assets/img/RankFrames/Superstar.png'
 import SocialMedia from '../Profile/SocialMedia';
-import { Icon } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import userimg from '../../assets/img/user.png'
 import { AntDesign } from '@expo/vector-icons';
@@ -44,12 +43,10 @@ export default function ProfileMessages({navigation, route}) {
         try {
              const data = user.idusers;
              const response = await api.get(`/settings/getinsight/${data}`);
-             // const {roomCount, friendsCount, leaderboardnumber,rankname} = response;
              setFriend(response.data.user);
              setRankName(response.data.rankname);
              setLeaderboardnumber(response.data.leaderboardnumber);
              setRoomCount(response.data.roomCount)
-             console.log(response.data.user)
          } catch (error) {
              console.log(error)
          }
@@ -164,7 +161,7 @@ export default function ProfileMessages({navigation, route}) {
             }
     }
     const [fontsLoaded] = useFonts({
-        'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
+        'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'),
     });
 
     function calculateAge(dateOfBirth) {
@@ -213,7 +210,6 @@ export default function ProfileMessages({navigation, route}) {
             source={require('../../assets/img/HomePage1.png')}
             style={{ flex:1 ,resizeMode: 'cover'}}
         >
-            {/* <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}> */}
             <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
                 <AlertDialog
                     isOpen={showAlertDialog}
@@ -367,12 +363,6 @@ export default function ProfileMessages({navigation, route}) {
                     <ScrollView fadingEdgeLength={100} style={{ marginBottom: 150 }} showsVerticalScrollIndicator = {false} refreshControl={<RefreshControl  colors={["#321bb9"]} refreshing={refreshing} onRefresh={onRefresh}/>}>
                     
                     <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '15%'}}>
-                        {/* <ImageBackground
-                            source={{uri: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'}}
-                            height={200}
-                            alignSelf='center'
-                            
-                        > */}
                         {friend.imageurl?
                             <Image
                                 alt='profilePic'
@@ -403,15 +393,8 @@ export default function ProfileMessages({navigation, route}) {
                             marginTop={-160}
                             alt='profilePic'
                             borderColor='white'
-                            // borderWidth={2}
                             w={180}
                             h={180}
-                            // borderRadius="$full"
-                            // source={{
-                            //     uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-                            //     // uri: "assets/img/RankFrames/Beginner.png"
-                            //     // uri : 
-                            // }}
                             source={
                                 rankName=="Beginner"?beginnerRank:
                                 rankName=="Amateur"?amateurRank:
@@ -421,7 +404,6 @@ export default function ProfileMessages({navigation, route}) {
                                 superstarRank
                             }
                         />
-                        {/* </ImageBackground> */}
                         <View style={{ backgroundColor: '#512095', paddingHorizontal: '10%', paddingVertical: '1%', borderRadius: 30, marginTop: -20 }}>
                             <Text color='white'>{rankName} ({friend.rankpoints})</Text>
                         </View>
@@ -441,14 +423,6 @@ export default function ProfileMessages({navigation, route}) {
                                 </View>
                             </TouchableHighlight>
                         </View>
-                        {/* <View display='flex' flexDirection='row' justifyContent='center' alignItems='center'  gap={20}>
-                        <TouchableOpacity  style={{backgroundColor:'#512095',padding:10}} onPress={()=>setShowAlertDialog(true)} >
-                            <Text style={{color:'white'}}>Remove Friend</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity  style={{backgroundColor:'#512095',paddingHorizontal:20, paddingVertical:10}} onPress={()=>setshowAlertReport(true)}>
-                            <Text style={{color:'white'}} >Reports</Text>
-                        </TouchableOpacity>
-                        </View> */}
                     </View>
     
                     <Divider marginVertical={10} marginTop={20}/>
