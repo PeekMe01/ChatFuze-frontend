@@ -310,7 +310,7 @@ export default function ProfileVisit({ navigation, route }) {
                                             type="text"
                                             placeholder="Type your message..."
                                             value={message}
-                                            onChange={(text) => {
+                                            onChangeText={(text) => {
                                                 setmessage(text);
                                                 setinvalidtext(false);
                                             }}

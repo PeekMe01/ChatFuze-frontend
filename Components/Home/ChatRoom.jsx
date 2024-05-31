@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ButtonText, ButtonGroup, Heading, AlertDialogHeader, AlertDialogContent, AlertDialog, AlertDialogBackdrop, Select, SelectTrigger, SelectItem, SelectDragIndicator, SelectIcon, SelectInput, SelectContent, SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, ChevronDownIcon, Image, ImageBackground, Text, View, Input, HStack, Spinner, Center, AlertDialogCloseButton, CloseIcon, AlertDialogBody, AlertDialogFooter, Button, Toast, useToast, ToastTitle, ToastDescription, VStack, Pressable, Icon } from "@gluestack-ui/themed";
+import {InputField, ButtonText, ButtonGroup, Heading, AlertDialogHeader, AlertDialogContent, AlertDialog, AlertDialogBackdrop, Select, SelectTrigger, SelectItem, SelectDragIndicator, SelectIcon, SelectInput, SelectContent, SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, ChevronDownIcon, Image, ImageBackground, Text, View, Input, HStack, Spinner, Center, AlertDialogCloseButton, CloseIcon, AlertDialogBody, AlertDialogFooter, Button, Toast, useToast, ToastTitle, ToastDescription, VStack, Pressable, Icon } from "@gluestack-ui/themed";
 import React, { useRef, useState, useCallback, useEffect, useLayoutEffect } from "react";
 import { GiftedChat } from "react-native-gifted-chat";
 import { AntDesign, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
@@ -733,28 +733,22 @@ export default function ChatRoom({ navigation, route }) {
                                                 </SelectContent>
                                             </SelectPortal>
                                         </Select>
-                                        <TextInput
+                                        <Input
+                                        marginTop={10}
+                                        borderColor={invalidtext ? 'red' : '#ccc'}
+                                        borderWidth={2}
+                                        borderRadius={5}
+                                    >
+                                        <InputField
+                                            type="text"
                                             placeholder="Type your message..."
-                                            multiline
-                                            numberOfLines={4}
-                                            style={{
-                                                marginVertical: 10,
-                                                borderWidth: 1,
-                                                borderColor: invalidtext ? 'red' : '#ccc',
-                                                borderRadius: 10,
-                                                paddingHorizontal: 10,
-                                                paddingVertical: 8,
-                                                fontSize: 16,
-                                                minHeight: 100,
-                                                textAlignVertical: 'top',
-                                            }}
-                                            blurOnSubmit={true}
                                             value={message}
                                             onChangeText={(text) => {
                                                 setmessage(text);
                                                 setinvalidtext(false);
                                             }}
                                         />
+                                    </Input>
                                     </AlertDialogBody>
                                     <AlertDialogFooter>
                                         <ButtonGroup space="lg">

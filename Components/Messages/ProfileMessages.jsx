@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import {Icon, AlertDialogContent,AlertDialogHeader ,AlertDialogCloseButton,RefreshControl,Toast,Select,ChevronDownIcon,SelectTrigger,SelectItem,SelectDragIndicator,SelectIcon,SelectInput,SelectContent,SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, VStack, View, AddIcon, Center, Divider, HStack, Image, ImageBackground, Spinner, Text ,useToast,ToastTitle,ToastDescription,AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogFooter,Heading,CloseIcon,ButtonGroup,ButtonText,Button, Pressable} from '@gluestack-ui/themed';
+import {Icon,Input,InputField, AlertDialogContent,AlertDialogHeader ,AlertDialogCloseButton,RefreshControl,Toast,Select,ChevronDownIcon,SelectTrigger,SelectItem,SelectDragIndicator,SelectIcon,SelectInput,SelectContent,SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, VStack, View, AddIcon, Center, Divider, HStack, Image, ImageBackground, Spinner, Text ,useToast,ToastTitle,ToastDescription,AlertDialog, AlertDialogBackdrop, AlertDialogBody, AlertDialogFooter,Heading,CloseIcon,ButtonGroup,ButtonText,Button, Pressable} from '@gluestack-ui/themed';
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -299,28 +299,22 @@ export default function ProfileMessages({navigation, route}) {
                                         </SelectContent>
                                     </SelectPortal>
                                 </Select>
-                                <TextInput
-                                    placeholder="Type your message..."
-                                    multiline
-                                    numberOfLines={4}
-                                    style={{
-                                        marginVertical:10,
-                                        borderWidth: 1,
-                                        borderColor: invalidtext?'red':'#ccc',
-                                        borderRadius: 10,
-                                        paddingHorizontal: 10,
-                                        paddingVertical: 8,
-                                        fontSize: 16,
-                                        minHeight: 100,
-                                        textAlignVertical: 'top',
-                                    }}
-                                    blurOnSubmit = {true}
-                                    value={message}
-                                    onChangeText={(text) => {
-                                        setmessage(text);
-                                        setinvalidtext(false);
-                                        }}
-                                />
+                                <Input
+                                        marginTop={10}
+                                        borderColor={invalidtext ? 'red' : '#ccc'}
+                                        borderWidth={2}
+                                        borderRadius={5}
+                                    >
+                                        <InputField
+                                            type="text"
+                                            placeholder="Type your message..."
+                                            value={message}
+                                            onChangeText={(text) => {
+                                                setmessage(text);
+                                                setinvalidtext(false);
+                                            }}
+                                        />
+                                    </Input>
                             </AlertDialogBody>
                             <AlertDialogFooter>
                                 <ButtonGroup space="lg">
