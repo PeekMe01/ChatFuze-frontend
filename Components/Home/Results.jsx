@@ -57,7 +57,9 @@ export default function Results({ navigation, route }) {
                     setTimeout(() => {
                         setShowAlertDialog(false)
                         setBackToHomePressed(false)
-                        navigation.navigate('HomeScreen')
+                        navigation.navigate('HomeScreen', {
+                            roomID: roomID
+                        });
                     }, 1000);
                 }
             }
@@ -101,7 +103,9 @@ export default function Results({ navigation, route }) {
 
                 if (response) {
                     setTimeout(() => {
-                        navigation.navigate('HomeScreen')
+                        navigation.navigate('HomeScreen', {
+                            roomID: roomID
+                        });
                         setBackToHomePressed(false)
                     }, 1000);
                 }
@@ -245,7 +249,9 @@ export default function Results({ navigation, route }) {
                                         if (response) {
                                             setShowAlertDialog(false)
                                             setBackToHomePressed(false)
-                                            navigation.navigate('HomeScreen')
+                                            navigation.navigate('HomeScreen', {
+                                                roomID: roomID
+                                            });
                                         }
                                     } catch (error) {
                                         console.log(error)

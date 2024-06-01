@@ -1,4 +1,4 @@
-import { AppState, ImageBackground, Platform, StatusBar, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { AppState, ImageBackground, Platform, StatusBar, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { GluestackUIProvider, View, Text, AlertDialogBody, AlertDialog, AlertDialogFooter, ButtonGroup, Button, ButtonText, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, Heading } from '@gluestack-ui/themed';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -152,16 +152,31 @@ export default function App() {
     const unsubscribesRef = useRef([]);
     const appState = useRef(AppState.currentState);
     const { updateUnreadCounts } = useUnreadMessages();
+    const { roomIDForListeners, setRoomIDForListeners} = useUnreadMessages();
+
+    // Define the unsubscribeAll function in the component scope
+    const unsubscribeAll = () => {
+      if(unsubscribesRef.current.length>0){
+        unsubscribesRef.current.forEach((unsub) => unsub());
+        unsubscribesRef.current = [];
+      }
+    };
 
     useEffect(() => {
       if (loggedIn) {
+        // Unsubscribe from previous listeners
+        unsubscribeAll();
+  
         setupTotalMessages(updateUnreadCounts);
+  
         const unsubscribeListeners = setupListeners();
+        unsubscribesRef.current = unsubscribeListeners;
+  
         return () => {
-          // unsubscribeListeners.forEach((unsub) => unsub());
+          unsubscribeAll();
         };
       }
-    }, [loggedIn]);
+    }, [loggedIn, roomIDForListeners]);
 
     const setupTotalMessages = async (updateUnreadCounts) => {
       try {
@@ -223,64 +238,64 @@ export default function App() {
     };
 
     return (
-      <NavigationContainer>
-        <AppLifecycleMonitor />
-        <StatusBar translucent backgroundColor="transparent" />
-        <Tab.Navigator screenOptions={{ headerShown: false }}>
-          <Tab.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{
-              tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-              tabBarIcon: () => <MaterialIcons name="home" size={30} color="white" />,
-              tabBarActiveTintColor: "white",
-              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>,
-            }}
-          />
-          <Tab.Screen
-            name="Messages"
-            component={MessagesScreen}
-            options={({ route }) => ({
-              tabBarStyle: {
-                backgroundColor: 'transparent',
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                bottom: 0,
-                elevation: 0,
-                marginTop: 10,
-                marginBottom: 20,
-                borderTopColor: 'transparent'
-              },
-              tabBarIcon: ({ focused }) => (
-                <CustomBadge focused={focused} totalUnreadMessages={totalUnreadMessages} />
-              ),
-              tabBarActiveTintColor: "white",
-              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : null,
-            })}
-          />
-          <Tab.Screen
-            name="Leaderboard"
-            component={LeaderboardScreen}
-            options={{
-              tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-              tabBarIcon: () => <MaterialIcons name="leaderboard" size={30} color="white" />,
-              tabBarActiveTintColor: "white",
-              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>
-            }}
-          />
-          <Tab.Screen
-            name="Profile"
-            component={ProfileScreen}
-            options={{
-              tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
-              tabBarIcon: () => <MaterialIcons name="person" size={30} color="white" />,
-              tabBarActiveTintColor: "white",
-              title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>
-            }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
+        <NavigationContainer>
+          <AppLifecycleMonitor />
+          <StatusBar translucent backgroundColor="transparent" />
+          <Tab.Navigator screenOptions={{ headerShown: false }}>
+            <Tab.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{
+                tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
+                tabBarIcon: () => <MaterialIcons name="home" size={30} color="white" />,
+                tabBarActiveTintColor: "white",
+                title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>,
+              }}
+            />
+            <Tab.Screen
+              name="Messages"
+              component={MessagesScreen}
+              options={({ route }) => ({
+                tabBarStyle: {
+                  backgroundColor: 'transparent',
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  elevation: 0,
+                  marginTop: 10,
+                  marginBottom: 20,
+                  borderTopColor: 'transparent'
+                },
+                tabBarIcon: ({ focused }) => (
+                  <CustomBadge focused={focused} totalUnreadMessages={totalUnreadMessages} />
+                ),
+                tabBarActiveTintColor: "white",
+                title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : null,
+              })}
+            />
+            <Tab.Screen
+              name="Leaderboard"
+              component={LeaderboardScreen}
+              options={{
+                tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
+                tabBarIcon: () => <MaterialIcons name="leaderboard" size={30} color="white" />,
+                tabBarActiveTintColor: "white",
+                title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>
+              }}
+            />
+            <Tab.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{
+                tabBarStyle: { backgroundColor: 'transparent', position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 0, marginTop: 10, marginBottom: 20, borderTopColor: 'transparent' },
+                tabBarIcon: () => <MaterialIcons name="person" size={30} color="white" />,
+                tabBarActiveTintColor: "white",
+                title: ({ focused }) => focused ? <Octicons name="dot-fill" size={15} color="#512095" /> : <></>
+              }}
+            />
+          </Tab.Navigator>
+        </NavigationContainer>
     );
   };
 
@@ -566,13 +581,15 @@ export default function App() {
     };
 
     return (
-      <View style={{ flex: 1 }}>
-        <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
-          <Stack.Screen name="MessagesStack" component={Messages} />
-          <Stack.Screen name="Chat" component={Chat} />
-          <Stack.Screen name="ProfileMessages" component={ProfileMessages} />
-        </Stack.Navigator>
-      </View>
+      // <KeyboardAvoidingView style={{ flex: 1}} behavior='height' keyboardVerticalOffset={-500}>
+        <View style={{ flex: 1 }}>
+          <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
+            <Stack.Screen name="MessagesStack" component={Messages} />
+            <Stack.Screen name="Chat" component={Chat} />
+            <Stack.Screen name="ProfileMessages" component={ProfileMessages} />
+          </Stack.Navigator>
+        </View>
+      // </KeyboardAvoidingView>
     );
   }
 

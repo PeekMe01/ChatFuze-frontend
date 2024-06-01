@@ -6,7 +6,7 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import userimg from '../../assets/img/user.png'
 import { useHeaderHeight } from '@react-navigation/elements';
-import { TextInput, StyleSheet } from "react-native";
+import { TextInput, StyleSheet, Platform, KeyboardAvoidingView } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { database } from "../../config/firebase";

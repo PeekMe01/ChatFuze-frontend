@@ -28,12 +28,19 @@ import {
   Roboto_900Black,
   Roboto_900Black_Italic,
 } from '@expo-google-fonts/roboto';
+import { useUnreadMessages } from '../UnreadMessages/UnreadMessagesProvider';
 
 const Home = ({ navigation }) => {
   // Get the route object
   const route = useRoute();
   // Extract parameters from the route
   const { disconnetedDueToMatchLeaving, disconnetedDueToMeLeaving ,roomID } = route.params || {};
+
+  const { roomIDForListeners, setRoomIDForListeners } = useUnreadMessages();
+
+  useEffect(() => {
+    console.log('it did change')
+  }, [roomIDForListeners])
 
   useEffect(() => {
     if (disconnetedDueToMatchLeaving) {
@@ -44,6 +51,10 @@ const Home = ({ navigation }) => {
       alert("You have disconnected from the room. your rank has descreased by 2%.")
     }
 
+    if(roomID){
+      console.log('ihihihih')
+      setRoomIDForListeners(roomID)
+    }
   }, [roomID])
 
 

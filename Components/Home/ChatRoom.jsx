@@ -176,17 +176,21 @@ export default function ChatRoom({ navigation, route }) {
                                 if (!matchDisconnectedRef.current) {
                                     setShowAlertDialog(true)
                                 } else {
-                                    const data = {
-                                        roomId: roomID,
-                                        receiverId: receiverID,
-                                        senderId: loggedInUserID
-                                    };
-                                    socket.emit('roomDestroyed', data);
-                                    navigation.navigate('HomeScreen', {
-                                        disconnetedDueToMatchLeaving: true,
-                                        roomID: roomID,
+                                    try {
+                                       const data = {
+                                            roomId: roomID,
+                                            receiverId: receiverID,
+                                            senderId: loggedInUserID
+                                        };
+                                        socket.emit('roomDestroyed', data);
+                                        navigation.navigate('HomeScreen', {
+                                            disconnetedDueToMatchLeaving: true,
+                                            roomID: roomID,
+                                        }
+                                        ); 
+                                    } catch (error) {
+                                        console.log('Reject error: ' + error);
                                     }
-                                    );
                                 }
                             }
                         }
