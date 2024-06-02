@@ -21,7 +21,10 @@ export default function Insights({ navigation }) {
                 const response = await api.get(`/settings/getinsight/${idusers}`);
                 const data = await response.data;
                 setInsights(data);
-                setPercentage(((1 - data.roomCount / data.maxRoomCountPerUser) * 100).toFixed(2));
+				if(data.maxRoomCountPerUser==0)
+					setPercentage(0.00)
+				else
+					setPercentage(((1 - data.roomCount / data.maxRoomCountPerUser) * 100).toFixed(2));
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
