@@ -155,7 +155,7 @@ export default function FriendsList({navigation}) {
                     </Text>
                 </View>
             <ScrollView style={{ marginTop: friendsList?0:250 }} fadingEdgeLength={100} showsVerticalScrollIndicator = {false} >
-                <View w="$80" alignSelf='center' marginVertical={50}>
+                <View style={{width:'100%'}} alignSelf='center' marginVertical={50}>
                     {friendsList&&friendsList.length>0?friendsList.map((user)=>(
                 <React.Fragment key={user.idusers}>
                     <TouchableHighlight onPress={()=>{handleProfileVisit(user)}} underlayColor={'#ffffff50'} style={{ padding:10 }} disabled={clickedButton}>

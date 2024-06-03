@@ -11,7 +11,7 @@ import * as MediaLibrary from 'expo-media-library';
 import axios from 'axios';
 import { API_URL } from '../../Config';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-
+import { AntDesign } from '@expo/vector-icons';
 export default function Verification({ navigation }) {
 
     const toast = useToast()
@@ -234,7 +234,7 @@ export default function Verification({ navigation }) {
                             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false}>
                                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                                     <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton}>
-                                        <MaterialIcons name="arrow-back" size={25} color="white" />
+                                    <AntDesign  name="arrowleft" size={25} color="white"   />
                                     </TouchableHighlight>
                                     <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                                         Verification

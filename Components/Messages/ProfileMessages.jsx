@@ -348,7 +348,7 @@ export default function ProfileMessages({navigation, route}) {
                 <View margin={30}>
                     <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                         <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                            <MaterialIcons name="arrow-back" size={25} color="white"/>
+                        <AntDesign name="arrowleft" size={25} color="white"   />
                         </TouchableHighlight>
                         <Text size='4xl' color='white' fontFamily='Roboto_500Medium'>
                             Profile

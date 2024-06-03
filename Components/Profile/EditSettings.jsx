@@ -9,6 +9,7 @@ import SocialMedia from './SocialMedia';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { database } from "../../config/firebase";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import {
     Roboto_100Thin,
     Roboto_100Thin_Italic,
@@ -240,13 +241,13 @@ export default function EditSettings({ navigation, setLoggedIn, setLoginPage, se
                     <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false}>
                         <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                             <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton}>
-                                <Icon name="arrow-back" size={25} color="white" />
+                            <AntDesign name="arrowleft" size={25}  color="white"  />
                             </TouchableHighlight>
                             <Text size='4xl' color='white' fontFamily='Roboto_500Medium'>
                                 Edit Settings
                             </Text>
                         </View>
-                        <View w="$80" alignSelf='center' marginVertical={100}>
+                        <View style={{width:'100%'}} alignSelf='center' marginVertical={100}>
                             <TouchableHighlight onPress={() => { handleChangePasswordPage() }} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                                 <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                                     <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{ paddingLeft: 10 }}>

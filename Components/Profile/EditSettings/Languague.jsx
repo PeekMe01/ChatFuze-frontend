@@ -47,13 +47,13 @@ export default function Language({ navigation }) {
                     <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false}>
                         <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                             <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton}>
-                                <Icon name="arrow-back" size={25} color="white" />
+                            <AntDesign name="arrowleft" size={25} color="white"   />
                             </TouchableHighlight>
                             <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                                 Language
                             </Text>
                         </View>
-                        <View w="$80" alignSelf='center' marginVertical={100}>
+                        <View style={{width:'100%'}} alignSelf='center' marginVertical={100}>
                             <TouchableHighlight onPress={() => { }} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }} disabled={clickedButton}>
                                 <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                                     <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>

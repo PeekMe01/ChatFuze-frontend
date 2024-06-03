@@ -5,7 +5,7 @@ import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, ScrollView, TouchableHighlight } from 'react-native';
 import SocialMedia from './SocialMedia';
-
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 export default function EditProfile({ navigation, route }) {
 
     const [changePage, setChangePage] = useState(0);
@@ -94,13 +94,13 @@ export default function EditProfile({ navigation, route }) {
                     <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false}>
                         <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                             <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton}>
-                                <Icon name="arrow-back" size={25} color="white" />
+                            <AntDesign name="arrowleft" size={25}  color="white"  />
                             </TouchableHighlight>
                             <Text size='4xl' color='white' fontFamily='Roboto_500Medium'>
                                 Edit Profile
                             </Text>
                         </View>
-                        <View w="$80" alignSelf='center' marginVertical={100}>
+                        <View style={{width:'100%'}} alignSelf='center' marginVertical={100}>
                             <TouchableHighlight onPress={() => { handleChangeUsernamePage() }} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
                                 <View justifyContent='space-between' alignItems='center' flexDirection='row'>
                                     <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{ paddingLeft: 10 }}>

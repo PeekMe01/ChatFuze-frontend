@@ -11,7 +11,7 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Dimensions, StyleSheet } from 'react-native';
 import userimg from '../../../assets/img/user.png'
-
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 var img = null;
 
 const ChangeProfilePicture = ({ navigation }) => {
@@ -165,7 +165,7 @@ const ChangeProfilePicture = ({ navigation }) => {
             <View margin={30} marginBottom={100}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton}>
-                        <MaterialIcons name="arrow-back" size={25} color="white" />
+                    <AntDesign name="arrowleft" size={25}  color="white"  />
                     </TouchableHighlight>
                     <Text size='2xl' color='white' fontFamily='Roboto_500Medium'>
                         Change Profile Picture

@@ -7,7 +7,7 @@ import { Pressable, ScrollView, TouchableHighlight, Keyboard, TouchableWithoutFe
 import api from '../../Config'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
-
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 export default function EditBio({ navigation, route }) {
 
     const toast = useToast()
@@ -170,7 +170,7 @@ export default function EditBio({ navigation, route }) {
                     <View margin={30} marginBottom={100}>
                         <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                             <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton}>
-                                <MaterialIcons name="arrow-back" size={25} color="white" />
+                            <AntDesign name="arrowleft" size={25}  color="white"  />
                             </TouchableHighlight>
                             <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                                 Edit Bio

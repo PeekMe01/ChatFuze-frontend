@@ -12,7 +12,7 @@ import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri } from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../Config'
-
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 WebBrowser.maybeCompleteAuthSession();
 
 
@@ -232,7 +232,7 @@ export default function EditSocials({ navigation, route }) {
                     <View margin={30} marginBottom={100}>
                         <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                             <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton}>
-                                <MaterialIcons name="arrow-back" size={25} color="white" />
+                            <AntDesign name="arrowleft" size={25}  color="white"  />
                             </TouchableHighlight>
                             <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                                 Edit Socials

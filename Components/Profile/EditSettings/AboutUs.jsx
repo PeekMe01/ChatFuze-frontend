@@ -5,7 +5,7 @@ import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, ScrollView, TouchableHighlight } from 'react-native';
 import logo from '../../../assets/img/Logo/Logo_WithoutBackground.png';
-
+import { AntDesign } from '@expo/vector-icons';
 export default function AboutUs({navigation}) {
 
     const [changingPage, setChangingPage] = useState(false)
@@ -45,7 +45,7 @@ export default function AboutUs({navigation}) {
             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
                 <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                     <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={25} color="white"/>
+                    <AntDesign  name="arrowleft" size={25} color="white"   />
                     </TouchableHighlight>
                     <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                         About us

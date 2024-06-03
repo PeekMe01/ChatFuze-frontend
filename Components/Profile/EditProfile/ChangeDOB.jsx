@@ -217,7 +217,7 @@ const ChangeDOB = ({ navigation }) => {
                     <View margin={30} marginBottom={100}>
                         <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                             <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton}>
-                                <MaterialIcons name="arrow-back" size={25} color="white" />
+                            <AntDesign name="arrowleft" size={25}  color="white"  />
                             </TouchableHighlight>
                             <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                                 Change Date of Birth

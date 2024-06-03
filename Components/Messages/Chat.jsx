@@ -195,7 +195,7 @@ export default function Chat({ navigation, route }) {
             headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomColor: 'white', paddingTop: 30, width: '100%', borderBottomWidth: .5, paddingBottom: 10 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-                        <AntDesign name="arrowleft" size={25} color="white" onPress={() => navigation.goBack()} padding={10} />
+                        <AntDesign name="arrowleft" size={25} color="white"  onPress={() => navigation.goBack()} padding={15} />
                         {receivingUser.imageurl ? <Image
                             alt='profilePic'
                             w={140}

@@ -7,7 +7,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView, TouchableHighlight, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../Config'
-
+import { AntDesign } from '@expo/vector-icons';
 
 
 export default function Feedback({ navigation }) {
@@ -139,7 +139,7 @@ export default function Feedback({ navigation }) {
                         <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false}>
                             <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
                                 <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton}>
-                                    <MaterialIcons name="arrow-back" size={25} color="white" />
+                                <AntDesign name="arrowleft" size={25} color="white"   />
                                 </TouchableHighlight>
                                 <Text size='3xl' color='white' fontFamily='Roboto_500Medium'>
                                     Feedback

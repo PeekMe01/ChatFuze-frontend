@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, ScrollView, TouchableHighlight } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../Config'
+import { AntDesign } from '@expo/vector-icons';
 export default function Insights({ navigation }) {
 
     const [changePage, setChangePage] = useState(0);
@@ -66,7 +67,7 @@ export default function Insights({ navigation }) {
                     <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false}>
                         <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10} style={{ marginBottom: '20%' }}>
                             <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton} >
-                                <Icon name="arrow-back" size={25} color="white" />
+                            <AntDesign name="arrowleft" size={25} color="white"   />
                             </TouchableHighlight>
                             <Text size='4xl' color='white' fontFamily='Roboto_500Medium' >
                                 Insights
