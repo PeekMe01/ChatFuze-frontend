@@ -491,7 +491,7 @@ const Home = ({ navigation }) => {
             </Box>}
             {userHasAnIdVerificationRequest && !userAlreadyVerified && <View alignItems='center' justifyContent='center' margin={10} marginTop={'20%'}>
               <Text size='xl' color='white' textAlign='center' fontFamily='Roboto_400Regular'>
-                You're ID verification request is being proccessed...
+                You're ID verification request is being processed...
               </Text>
             </View>}
             {!userHasAnIdVerificationRequest && !userAlreadyVerified &&
