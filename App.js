@@ -492,7 +492,10 @@ export default function App() {
       <RequestProvider>
         <View style={{ flex: 1 }}>
           <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
-            <Stack.Screen name="HomeScreen" component={Home} />
+           
+			<Stack.Screen name="HomeScreen">
+            {({ navigation }) => <Home navigation={navigation} setLoggedIn={setLoggedIn} setLoginPage={setLoginPage} setSignupPage={setSignupPage} />}
+          </Stack.Screen>
             <Stack.Screen name="MatchMakingScreen" component={MatchMakingScreen} />
             <Stack.Screen name="ChatRoom" component={ChatRoom} />
             <Stack.Screen name="HomeVerification" component={Verification} />

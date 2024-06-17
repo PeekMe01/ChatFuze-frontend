@@ -13,7 +13,7 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import { RequestContext } from './RequestProvider';
 import userimg from '../../assets/img/user.png'
 import { database } from "../../config/firebase";
-import { query, collection, getDocs, where } from 'firebase/firestore';
+import { query, collection, getDocs, where,doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import {
   Roboto_100Thin,
   Roboto_100Thin_Italic,
@@ -30,7 +30,7 @@ import {
 } from '@expo-google-fonts/roboto';
 import { useUnreadMessages } from '../UnreadMessages/UnreadMessagesProvider';
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation , setLoggedIn, setLoginPage, setSignupPage}) => {
   // Get the route object
   const route = useRoute();
   // Extract parameters from the route
@@ -89,7 +89,25 @@ const Home = ({ navigation }) => {
 
   const [userHasAnIdVerificationRequest, setUserHasAnIdVerificationRequest] = useState(false);
   const [userAlreadyVerified, setUserAlreadyVerified] = useState(false);
+ function getCurrentDateTime() {
+        let currentDate = new Date();
+        let day = currentDate.getDate();
+        let month = currentDate.getMonth() + 1; // Months are zero-indexed, so we add 1
+        let year = currentDate.getFullYear();
+        let hours = currentDate.getHours();
+        let minutes = currentDate.getMinutes();
+        let seconds = currentDate.getSeconds();
 
+        // Format the date and time
+        let formattedDate = `${year}-${month}-${day}`;
+        let formattedTime = `${hours}:${minutes}:${seconds}`;
+
+        // Concatenate date and time
+        let dateTime = `${formattedDate} ${formattedTime}`;
+
+        // Return the concatenated date and time
+        return dateTime;
+    }
   const checkIfUserHasAnIdVerificationRequest = async () => {
     const data = {
       userid: await AsyncStorage.getItem('id'),
@@ -302,7 +320,61 @@ const Home = ({ navigation }) => {
               </View>
             </ScrollView>
             <Divider backgroundColor='white' marginVertical={10} />
-            {userAlreadyVerified && <Box style={{ display: 'flex', gap: 20, marginVertical: '2%' }} >
+			
+			{user.isbanned && <Box style={{ display: 'flex', gap: 20, marginVertical: '2%' }}>
+  <Text style={{ alignSelf: 'center', fontSize: 24, color: 'white', fontFamily: 'Roboto_300Light' }}>
+    Your Account Has Been Banned! 😢
+  </Text>
+  <Text style={{ alignSelf: 'flex-start', marginBottom: '1%', fontSize: 20, color: 'white', fontFamily: 'Roboto_300Light' }}>
+     Please check your email for more info about your ban.
+  </Text>
+    <Button
+                                    bg="rgba(81, 32, 149,1)"
+									$active={{
+                bg: "rgba(81, 32, 149,0.5)",
+              }}
+                                    onPress={async () => {
+                                        try {
+                                            const userToken = await AsyncStorage.getItem('userToken');
+                                            const userId = await AsyncStorage.getItem('id');
+                                            if (userToken) {
+                                                let active;
+                                                active = false;
+                                                try {
+                                                    // Check if the document already exists
+                                                    const docRef = doc(database, 'status', userId);
+                                                    const docSnapshot = await getDoc(docRef);
+
+                                                    if (docSnapshot.exists()) {
+                                                        // Update the existing document
+                                                        let datetime = getCurrentDateTime();
+                                                        await updateDoc(docRef, { active, datetime });
+                                                    } else {
+                                                        // If the document doesn't exist, create it
+                                                      let datetime = getCurrentDateTime();
+														await setDoc(docRef, { active, datetime });
+                                                    }
+
+                                                } catch (error) {
+                                                    console.error('Error occurred while updating user status:', error);
+                                                }
+                                            }
+											await AsyncStorage.removeItem('userToken');
+                                            await AsyncStorage.removeItem('id');
+											setLoggedIn(false);
+                                            setLoginPage(true);
+                                            setSignupPage(false);
+
+                                        } catch (error) {
+                                            console.error('Logout failed:', error);
+                                        }
+                                    }}
+                                >
+                                    <ButtonText>Logout</ButtonText>
+                                </Button>
+</Box>
+}
+            {userAlreadyVerified && !user.isbanned && <Box style={{ display: 'flex', gap: 20, marginVertical: '2%' }} >
               <Text alignSelf='center' size='xl' color='white' fontFamily='Roboto_300Light' >
                 Ready to join a room?
               </Text>
@@ -489,12 +561,12 @@ const Home = ({ navigation }) => {
                 </ButtonText>
               </Button>
             </Box>}
-            {userHasAnIdVerificationRequest && !userAlreadyVerified && <View alignItems='center' justifyContent='center' margin={10} marginTop={'20%'}>
+            {userHasAnIdVerificationRequest && !userAlreadyVerified && !user.isbanned && <View alignItems='center' justifyContent='center' margin={10} marginTop={'20%'}>
               <Text size='xl' color='white' textAlign='center' fontFamily='Roboto_400Regular'>
                 You're ID verification request is being processed...
               </Text>
             </View>}
-            {!userHasAnIdVerificationRequest && !userAlreadyVerified &&
+            {!userHasAnIdVerificationRequest && !userAlreadyVerified && !user.isbanned &&
               <View w={'$full'} margin={50}>
                 <Text size='xl' color='white' textAlign='center' fontFamily='Roboto_400Regular'>
                   You need to be verified in order to join rooms.
