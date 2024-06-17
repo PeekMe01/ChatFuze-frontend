@@ -1,16 +1,9 @@
-import { AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, View, Select, SelectTrigger, ChevronDownIcon, SelectContent, SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, RadioGroup, HStack, RadioIndicator, RadioIcon, RadioLabel, Image } from '@gluestack-ui/themed';
+import {CircleIcon,Radio,SelectDragIndicator,SelectItem,Icon,SelectIcon, SelectInput,AlertCircleIcon, Box, Button, ButtonText, Center, Divider, EyeIcon, EyeOffIcon, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText, ImageBackground, Input, InputField, InputIcon, InputSlot, Text, View, Select, SelectTrigger, ChevronDownIcon, SelectContent, SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, RadioGroup, HStack, RadioIndicator, RadioIcon, RadioLabel, Image } from '@gluestack-ui/themed';
 import React, { useEffect, useRef, useState } from 'react';
 import * as Progress from 'react-native-progress';
-import * as Animatable from 'react-native-animatable';
-import { SelectInput } from '@gluestack-ui/themed';
-import { SelectIcon } from '@gluestack-ui/themed';
-import { Icon } from '@gluestack-ui/themed';
-import { SelectItem } from '@gluestack-ui/themed';
-import { SelectDragIndicator } from '@gluestack-ui/themed';
+import * as Animatable from 'react-native-animatable'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { Platform, StyleSheet } from 'react-native';
-import { Radio } from '@gluestack-ui/themed';
-import { CircleIcon } from '@gluestack-ui/themed';
 import { Camera, CameraType, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import Buttons from './Buttons';
@@ -40,7 +33,6 @@ export default function SecondPage(props) {
             isDisabled={false}
             size="lg"
             mb="$4"
-            // borderRadius={40}
             hardShadow='1'
             bgColor="#2cb5d6"
             $hover={{
@@ -78,11 +70,8 @@ export default function SecondPage(props) {
           borderRadius={30}
           flex={1}
           w={'$full'}
-          // size='2xl'
-          // rotation={90}
           source={image}
           alt='photo_id'
-          // aspectRatio={16/9}
           />
         </View>
        

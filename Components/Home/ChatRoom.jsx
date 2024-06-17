@@ -1,27 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Image, ImageBackground, Text, View, Input, HStack, Spinner, Center, AlertDialogCloseButton, CloseIcon, AlertDialogBody, AlertDialogFooter, Button, Toast, useToast, ToastTitle, ToastDescription, VStack, Pressable, Icon } from "@gluestack-ui/themed";
-import React, { useRef } from "react";
+import {InputField, ButtonText, ButtonGroup, Heading, AlertDialogHeader, AlertDialogContent, AlertDialog, AlertDialogBackdrop, Select, SelectTrigger, SelectItem, SelectDragIndicator, SelectIcon, SelectInput, SelectContent, SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, ChevronDownIcon, Image, ImageBackground, Text, View, Input, HStack, Spinner, Center, AlertDialogCloseButton, CloseIcon, AlertDialogBody, AlertDialogFooter, Button, Toast, useToast, ToastTitle, ToastDescription, VStack, Pressable, Icon } from "@gluestack-ui/themed";
+import React, { useRef, useState, useCallback, useEffect, useLayoutEffect } from "react";
 import { GiftedChat } from "react-native-gifted-chat";
-import { useState, useCallback, useEffect, useLayoutEffect } from 'react'
 import { AntDesign, FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import userimg from '../../assets/img/user.png'
 import api from '../Config'
 import { useHeaderHeight } from '@react-navigation/elements';
-import { Alert, AppState, KeyboardAvoidingView, Platform, TextInput } from "react-native";
+import { Alert, AppState, KeyboardAvoidingView, Platform, TextInput, BackHandler, ToastAndroid, TouchableHighlight, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc, getDocs, deleteDoc } from 'firebase/firestore';
 import { database } from "../../config/firebase";
 import { API_URL } from '../Config'
-import { BackHandler, ToastAndroid, TouchableHighlight, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import io from 'socket.io-client';
-import { AlertDialog } from '@gluestack-ui/themed';
-import { AlertDialogBackdrop, Select, SelectTrigger, SelectItem, SelectDragIndicator, SelectIcon, SelectInput, SelectContent, SelectDragIndicatorWrapper, SelectPortal, SelectBackdrop, ChevronDownIcon } from '@gluestack-ui/themed';
-import { AlertDialogContent } from '@gluestack-ui/themed';
-import { AlertDialogHeader } from '@gluestack-ui/themed';
-import { Heading } from '@gluestack-ui/themed';
-import { ButtonGroup } from '@gluestack-ui/themed';
-import { ButtonText } from '@gluestack-ui/themed';
+
 const error = console.error; console.error = (...args) => { if (/defaultProps/.test(args[0])) return; error(...args); };
 const socket = io.connect(`${API_URL}`);
 
@@ -37,7 +29,6 @@ export default function ChatRoom({ navigation, route }) {
     const [typing, setTyping] = useState(false)
     const [receiverTyping, setReceiverTyping] = useState(false);
     const { receiverID, roomID } = route.params;
-    // const [timeLeft,setTimeLeft]=useState({})
     const [remainderTime, setRemainderTime] = useState({})
 
     const [showAlertDialog, setShowAlertDialog] = useState(false)
@@ -146,11 +137,9 @@ export default function ChatRoom({ navigation, route }) {
 
                     // Update the document
                     await updateDoc(doc.ref, updatedData);
-                    console.log(`Document with ID ${doc.id} updated successfully`);
 
                     // Delete the document
                     await deleteDoc(doc.ref);
-                    console.log(`Document with ID ${doc.id} deleted successfully`);
                 }
             }
         } catch (error) {
@@ -162,10 +151,6 @@ export default function ChatRoom({ navigation, route }) {
         // Set up the listener only when matchDisconnected changes to true
         if (matchDisconnected) {
             // Define the query to find documents with the specified criteria
-            console.log('listening to changes on the invite sent')
-            console.log(loggedInUserID)
-            console.log(receiverID)
-            console.log(roomID)
             const q = query(
                 collection(database, 'validRejoins'),
                 where('inviteSender', '==', parseInt(loggedInUserID)),
@@ -186,25 +171,26 @@ export default function ChatRoom({ navigation, route }) {
                             // Handle the change to "auto" status as needed
                         } else {
                             if (status === 'rejected') {
-                                console.log('Your match has abandoned the room.')
                                 updateAllRoomStatus();
                                 deleteRejoinInvite();
-                                console.log("Room Done");
                                 if (!matchDisconnectedRef.current) {
                                     setShowAlertDialog(true)
                                 } else {
-                                    const data = {
-                                        roomId: roomID,
-                                        receiverId: receiverID,
-                                        senderId: loggedInUserID
-                                    };
-                                    console.log(data)
-                                    console.log('we are here')
-                                    socket.emit('roomDestroyed', data);
-                                    navigation.navigate('HomeScreen', {
-                                        disconnetedDueToMatchLeaving: true,
+                                    try {
+                                       const data = {
+                                            roomId: roomID,
+                                            receiverId: receiverID,
+                                            senderId: loggedInUserID
+                                        };
+                                        socket.emit('roomDestroyed', data);
+                                        navigation.navigate('HomeScreen', {
+                                            disconnetedDueToMatchLeaving: true,
+                                            roomID: roomID,
+                                        }
+                                        ); 
+                                    } catch (error) {
+                                        console.log('Reject error: ' + error);
                                     }
-                                    );
                                 }
                             }
                         }
@@ -243,6 +229,7 @@ export default function ChatRoom({ navigation, route }) {
                 console.log('All rooms with the given roomID have roomStatus as false, navigating to HomeScreen');
                 navigation.navigate('HomeScreen', {
                     disconnetedDueToMeLeaving: true,
+                    roomID: roomID,
                 }
                 );
             } else {
@@ -285,7 +272,6 @@ export default function ChatRoom({ navigation, route }) {
                 if (newtime.minutes === 0 && newtime.seconds === 0) {
                     updateAllRoomStatus();
                     deleteRejoinInvite();
-                    console.log("Room Done");
                     if (!matchDisconnectedRef.current) {
                         setShowAlertDialog(true)
                     } else {
@@ -294,11 +280,10 @@ export default function ChatRoom({ navigation, route }) {
                             receiverId: receiverID,
                             senderId: loggedInUserID
                         };
-                        console.log(data)
-                        console.log('we are here')
                         socket.emit('roomDestroyed', data);
                         navigation.navigate('HomeScreen', {
                             disconnetedDueToMatchLeaving: true,
+                            roomID: roomID,
                         }
                         );
                     }
@@ -316,26 +301,9 @@ export default function ChatRoom({ navigation, route }) {
         };
     }, [socket, roomID, loggedInUserID]);
 
-    // useEffect( () => {
-    //     const backHandler = BackHandler.addEventListener(
-    //         "hardwareBackPress",
-    //         () => { return true}
-    //       );
-
-    //       return () => backHandler.remove();
-    // }, [])
 
     useEffect(() => {
         const onBackPress = () => {
-            const now = Date.now();
-            if (lastBackPressed.current && now - lastBackPressed.current < 2000) {
-                // If back button is pressed within 2 seconds, exit the app
-                BackHandler.exitApp();
-                return false;
-            }
-
-            lastBackPressed.current = now;
-            ToastAndroid.show('Press again to exit', ToastAndroid.SHORT);
             return true;
         };
 
@@ -347,17 +315,6 @@ export default function ChatRoom({ navigation, route }) {
     }, []);
 
 
-    // useEffect(() => {
-    //     let st = new Date(startingTime);
-    //     let t = new Date(st.getTime() + 5 * 60000);
-
-    //     const interval = setInterval(() => {
-    //         setTimeLeft(calculateTimeDifference(st, t));
-    //         st = new Date(new Date(st).getTime() + 1000).toISOString();
-    //     }, 1000);
-
-    //     return () => clearInterval(interval);
-    // }, []);
     const timeoutRef = useRef(null);
     const clearTypingTimeout = () => {
         if (timeoutRef.current) {
@@ -369,9 +326,6 @@ export default function ChatRoom({ navigation, route }) {
         try {
             let senderid = loggedInUserID
             let receiverid = receiverID
-            console.log(senderid)
-            console.log(receiverid)
-            console.log(typing)
             const docId = `${senderid}_${receiverid}`;
             const docRef = doc(database, 'typing', docId);
 
@@ -389,7 +343,6 @@ export default function ChatRoom({ navigation, route }) {
                 });
             }
 
-            console.log('User typing status updated successfully.');
         } catch (error) {
             console.error('Error occurred while updating user typing status:', error);
         }
@@ -430,7 +383,6 @@ export default function ChatRoom({ navigation, route }) {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === 'added' || change.type === 'modified') {
                     const data = change.doc.data();
-                    console.log(data.typing);
                     setReceiverTyping(data.typing);
                 }
             });
@@ -457,7 +409,6 @@ export default function ChatRoom({ navigation, route }) {
                 });
             });
 
-            console.log(`All room with ID ${roomID} statuses updated to false`);
         } catch (error) {
             console.error('Error updating room statuses:', error);
         }
@@ -466,11 +417,11 @@ export default function ChatRoom({ navigation, route }) {
     useEffect(() => {
         const handleRoomDestroyed = (data) => {
             if (data.roomId == roomID) {
-                console.log('Room ended because a user disconnected.')
                 deleteRejoinInvite()
                 updateAllRoomStatus()
                 navigation.navigate('HomeScreen', {
                     disconnetedDueToMatchLeaving: true,
+                    roomID: roomID,
                 }
                 );
             }
@@ -503,22 +454,21 @@ export default function ChatRoom({ navigation, route }) {
                     socket.emit('roomDestroyed', data);
                     updateAllRoomStatus()
                     deleteRejoinInvite()
-                    console.log(`User ${receiverID} disconnected for 60 seconds`);
+                    navigation.navigate('HomeScreen', {
+                        disconnetedDueToMatchLeaving: true,
+                        roomID: roomID,
+                    })
                 }
             } else {
                 clearInterval(intervalIdRef.current);
                 intervalIdRef.current = null;
-                console.log(`User ${receiverID} reconnected within 60 seconds`);
             }
         }, 1000);
     };
 
     const deleteRejoinInvite = async () => {
         try {
-            // Query for the document(s) to be deleted
-            console.log(parseInt(receiverID))
-            console.log(parseInt(loggedInUserID))
-            console.log(roomID)
+
             const q = query(
                 collection(database, 'validRejoins'),
                 where('inviteReceiver', '==', parseInt(receiverID)),
@@ -530,13 +480,11 @@ export default function ChatRoom({ navigation, route }) {
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
-                console.log("No matching documents found to delete");
             } else {
                 // Iterate over each document and delete it
                 for (const doc of querySnapshot.docs) {
                     await deleteDoc(doc.ref);
                 }
-                console.log("Matching document(s) deleted successfully");
             }
         } catch (error) {
             console.log("Error deleting document(s): ", error);
@@ -553,7 +501,7 @@ export default function ChatRoom({ navigation, route }) {
                 createdAt: new Date()
             });
         } catch (error) {
-            console.log(error)
+            console.log("valid"+error)
         }
     }
 
@@ -565,11 +513,9 @@ export default function ChatRoom({ navigation, route }) {
 
         // Set up a real-time listener for friend status
         const unsubscribeStatus = onSnapshot(friendStatusQuery, (snapshot) => {
-            console.log(`Snapshot received for friend ${receiverID}`);
             snapshot.docChanges().forEach(async (change) => {
                 if (change.type === 'added' || change.type === 'modified') {
                     const friendData = change.doc.data();
-                    console.log(`Friend ${friendData.userId} status changed to ${friendData.active}`);
                     if (!friendData.active) {
                         setMatchDisconnected(true);
                         createRejoinInvite();
@@ -610,16 +556,6 @@ export default function ChatRoom({ navigation, route }) {
     }
 
 
-    //   function calculateTimeDifference(st, t) {
-    //     const startDate = new Date(st);
-    //     const endDate = new Date(t);
-
-    //     const difference = Math.abs(endDate - startDate);
-    //     const minutesDifference = Math.floor(difference / 60000);
-    //     const secondsDifference = Math.floor((difference % 60000) / 1000);
-
-    //     return { minutes: minutesDifference, seconds: secondsDifference };
-    // }
 
 
 
@@ -636,9 +572,15 @@ export default function ChatRoom({ navigation, route }) {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomColor: 'white', paddingTop: 30, width: '100%', borderBottomWidth: .5, paddingBottom: 10 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                         <Image source={userimg} alt='' style={{ borderRadius: 50, width: 50, height: 50, marginLeft: 1 }} />
-                        <Text size='xl' color='white' fontFamily='Roboto_400Regular'>
-                            Anonymous
-                        </Text>
+                        <View>
+                            <Text size='xl' color='white' fontFamily='Roboto_400Regular'>
+                                Anonymous
+                            </Text>
+                            <Text size='sm' color='white' fontFamily='Roboto_300Light'>
+                                {matchDisconnected?"Disconnected":"Connected"}
+                            </Text>
+                        </View>
+                        
                         <TouchableHighlight onPress={() => {
                             if (!sendReport) {
                                 setshowAlertReport(true);
@@ -651,8 +593,7 @@ export default function ChatRoom({ navigation, route }) {
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
                         <Text size='xl' color='white' fontFamily='Roboto_300Light'>Time: </Text>
-                        {/* <Text size='xl' color='white' fontFamily='Roboto_300Light'>{startingTime} </Text> */}
-                        {/* {console.log(startingTime)} */}
+
                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <Text size='xl' color='white' fontFamily='Roboto_300Light'>
                                 {remainderTime.minutes}:{remainderTime.seconds < 10 ? `0${remainderTime.seconds}` : remainderTime.seconds}
@@ -673,8 +614,7 @@ export default function ChatRoom({ navigation, route }) {
         const currentUserID = loggedInUserID; // Example current user ID
 
         if (loggedInUserID) {
-            console.log(parseInt(receivingUserId))
-            console.log(parseInt(currentUserID))
+
             // const q = query(collectionRef, ref => ref.orderBy('createdAt', 'desc'));
             const q = query(
                 collectionRef,
@@ -684,11 +624,10 @@ export default function ChatRoom({ navigation, route }) {
                 orderBy('createdAt', 'desc')
             );
 
-            console.log(q)
+
 
             const unsubscribe = onSnapshot(q, snapshot => {
-                console.log('snapshot');
-                console.log("snap docs: " + snapshot.docs)
+
                 setMessages(
                     snapshot.docs.map(doc => ({
                         _id: doc.id,
@@ -798,28 +737,22 @@ export default function ChatRoom({ navigation, route }) {
                                                 </SelectContent>
                                             </SelectPortal>
                                         </Select>
-                                        <TextInput
+                                        <Input
+                                        marginTop={10}
+                                        borderColor={invalidtext ? 'red' : '#ccc'}
+                                        borderWidth={2}
+                                        borderRadius={5}
+                                    >
+                                        <InputField
+                                            type="text"
                                             placeholder="Type your message..."
-                                            multiline
-                                            numberOfLines={4}
-                                            style={{
-                                                marginVertical: 10,
-                                                borderWidth: 1,
-                                                borderColor: invalidtext ? 'red' : '#ccc',
-                                                borderRadius: 10,
-                                                paddingHorizontal: 10,
-                                                paddingVertical: 8,
-                                                fontSize: 16,
-                                                minHeight: 100,
-                                                textAlignVertical: 'top',
-                                            }}
-                                            blurOnSubmit={true}
                                             value={message}
                                             onChangeText={(text) => {
                                                 setmessage(text);
                                                 setinvalidtext(false);
                                             }}
                                         />
+                                    </Input>
                                     </AlertDialogBody>
                                     <AlertDialogFooter>
                                         <ButtonGroup space="lg">
@@ -854,9 +787,7 @@ export default function ChatRoom({ navigation, route }) {
 
                     <AlertDialog
                         isOpen={showAlertDialog}
-                    // onClose={() => {
-                    // setShowAlertDialog(false)
-                    // }}
+
                     >
                         <AlertDialogBackdrop />
                         <AlertDialogContent>
@@ -882,7 +813,6 @@ export default function ChatRoom({ navigation, route }) {
                             _id: parseInt(loggedInUserID),
                         }}
                         messageContainerRef={messageContainerRef}
-                        // renderAvatarOnTop={true}
                         renderAvatar={null}
                         onInputTextChanged={onInputTextChanged}
                         isTyping={receiverTyping}

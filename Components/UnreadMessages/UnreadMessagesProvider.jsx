@@ -3,8 +3,9 @@ import React, { createContext, useContext, useState } from 'react';
 const UnreadMessagesContext = createContext();
 
 export const UnreadMessagesProvider = ({ children }) => {
-    const [friendUnreadCounts, setFriendUnreadCounts] = useState({});
+  const [friendUnreadCounts, setFriendUnreadCounts] = useState({});
   const [totalUnreadMessages, setTotalUnreadMessages] = useState(0);
+  const [roomIDForListeners, setRoomIDForListeners] = useState(0);
 
   const updateUnreadCounts = (friendId, count) => {
     setFriendUnreadCounts(prevCounts => {
@@ -16,7 +17,7 @@ export const UnreadMessagesProvider = ({ children }) => {
   };
 
   return (
-    <UnreadMessagesContext.Provider value={{ friendUnreadCounts, totalUnreadMessages, setTotalUnreadMessages, updateUnreadCounts }}>
+    <UnreadMessagesContext.Provider value={{ friendUnreadCounts, totalUnreadMessages, setTotalUnreadMessages, updateUnreadCounts, roomIDForListeners, setRoomIDForListeners }}>
       {children}
     </UnreadMessagesContext.Provider>
   );

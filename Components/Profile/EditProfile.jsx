@@ -1,32 +1,30 @@
-import { AddIcon, Divider, HStack, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
-import { View } from '@gluestack-ui/themed';
-import React from 'react'
-import { useState } from 'react';
+import { View, AddIcon, Divider, HStack, Image, ImageBackground, Spinner, Text } from '@gluestack-ui/themed';
+import React, { useState } from 'react'
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, ScrollView, TouchableHighlight } from 'react-native';
 import SocialMedia from './SocialMedia';
-
-export default function EditProfile({navigation, route }) {
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+export default function EditProfile({ navigation, route }) {
 
     const [changePage, setChangePage] = useState(0);
     const [changingPage, setChangingPage] = useState(false)
     const [clickedButton, setClickedButton] = useState(false);
     const [fontsLoaded] = useFonts({
-        'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), // Assuming your font file is in assets/fonts directory
+        'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'),
     });
     if (!fontsLoaded) {
         return (
             <ImageBackground
                 source={require('../../assets/img/HomePage1.png')}
-                style={{ flex:1 ,resizeMode: 'cover'}}
+                style={{ flex: 1, resizeMode: 'cover' }}
             >
-                    <HStack space="sm">
-                        <Text>LOADING...</Text><Spinner size="large" color="#321bb9" />
-                    </HStack>
+                <HStack space="sm">
+                    <Text>LOADING...</Text><Spinner size="large" color="#321bb9" />
+                </HStack>
             </ImageBackground>
-        ) 
+        )
     }
 
     const handleChangeUsernamePage = () => {
@@ -61,7 +59,7 @@ export default function EditProfile({navigation, route }) {
         }, 1000);
     }
 
-    
+
     const handleChangeSocialsPage = () => {
         navigation.push('EditSocials');
         setClickedButton(true);
@@ -86,81 +84,81 @@ export default function EditProfile({navigation, route }) {
         }, 1000);
     }
 
-  return (
-    <ImageBackground
-        source={require('../../assets/img/HomePage1.png')}
-        style={{ flex:1 ,resizeMode: 'cover'}}
-    >
-        <Animatable.View animation={changingPage?"fadeOut":"fadeIn"} duration={500}>
-            <View margin={30} marginBottom={100}>
-            <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator = {false}>
-                <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
-                    <TouchableHighlight onPress={()=>{handleGoBackPressed()}} underlayColor={'transparent'} disabled={clickedButton}>
-                        <Icon name="arrow-back" size={25} color="white"/>
-                    </TouchableHighlight>
-                    <Text size='4xl' color='white' fontFamily='Roboto_500Medium'>
-                        Edit Profile
-                    </Text>
+    return (
+        <ImageBackground
+            source={require('../../assets/img/HomePage1.png')}
+            style={{ flex: 1, resizeMode: 'cover' }}
+        >
+            <Animatable.View animation={changingPage ? "fadeOut" : "fadeIn"} duration={500}>
+                <View margin={30} marginBottom={100}>
+                    <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false}>
+                        <View paddingTop={30} display='flex' flexDirection='row' alignItems='center' gap={10}>
+                            <TouchableHighlight onPress={() => { handleGoBackPressed() }} underlayColor={'transparent'} disabled={clickedButton}>
+                            <AntDesign name="arrowleft" size={25}  color="white"  />
+                            </TouchableHighlight>
+                            <Text size='4xl' color='white' fontFamily='Roboto_500Medium'>
+                                Edit Profile
+                            </Text>
+                        </View>
+                        <View style={{width:'100%'}} alignSelf='center' marginVertical={100}>
+                            <TouchableHighlight onPress={() => { handleChangeUsernamePage() }} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                                <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{ paddingLeft: 10 }}>
+                                        Change Username
+                                    </Text>
+                                    <Icon name="keyboard-arrow-right" size={30} color="white" />
+                                </View>
+                            </TouchableHighlight>
+                            <Divider />
+                            <TouchableHighlight onPress={() => { handleChangeProfilePicturePage() }} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                                <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{ paddingLeft: 10 }}>
+                                        Change Profile Picture
+                                    </Text>
+                                    <Icon name="keyboard-arrow-right" size={30} color="white" />
+                                </View>
+                            </TouchableHighlight>
+                            <Divider />
+                            <TouchableHighlight onPress={() => { handleChangeCountryPage() }} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                                <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{ paddingLeft: 10 }}>
+                                        Change Country
+                                    </Text>
+                                    <Icon name="keyboard-arrow-right" size={30} color="white" />
+                                </View>
+                            </TouchableHighlight>
+                            <Divider />
+                            <TouchableHighlight onPress={() => { handleChangeDOBPage() }} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                                <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{ paddingLeft: 10 }}>
+                                        Change Date of Birth
+                                    </Text>
+                                    <Icon name="keyboard-arrow-right" size={30} color="white" />
+                                </View>
+                            </TouchableHighlight>
+                            <Divider />
+                            <TouchableHighlight onPress={() => { handleChangeBioPage() }} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                                <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{ paddingLeft: 10 }}>
+                                        Edit Bio
+                                    </Text>
+                                    <Icon name="keyboard-arrow-right" size={30} color="white" />
+                                </View>
+                            </TouchableHighlight>
+                            <Divider />
+                            <TouchableHighlight onPress={() => { handleChangeSocialsPage() }} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
+                                <View justifyContent='space-between' alignItems='center' flexDirection='row'>
+                                    <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{ paddingLeft: 10 }}>
+                                        Edit Social Media Links
+                                    </Text>
+                                    <Icon name="keyboard-arrow-right" size={30} color="white" />
+                                </View>
+                            </TouchableHighlight>
+                            <Divider />
+                        </View>
+                    </ScrollView>
                 </View>
-                <View w="$80" alignSelf='center' marginVertical={100}>
-                    <TouchableHighlight onPress={()=>{handleChangeUsernamePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
-                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
-                                Change Username
-                            </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                    <Divider/>
-                    <TouchableHighlight onPress={()=>{handleChangeProfilePicturePage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
-                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
-                                Change Profile Picture
-                            </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                    <Divider/>
-                    <TouchableHighlight onPress={()=>{handleChangeCountryPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
-                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
-                                Change Country
-                            </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                    <Divider/>
-                    <TouchableHighlight onPress={()=>{handleChangeDOBPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
-                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
-                                Change Date of Birth
-                            </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                    <Divider/>
-                    <TouchableHighlight onPress={()=>{handleChangeBioPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
-                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
-                                Edit Bio
-                            </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                    <Divider/>
-                    <TouchableHighlight onPress={()=>{handleChangeSocialsPage()}} underlayColor={'#ffffff50'} style={{ paddingVertical: 10 }}>
-                        <View justifyContent='space-between' alignItems='center' flexDirection='row'>
-                            <Text size='2xl' color='white' fontFamily='Roboto_400Regular' style={{paddingLeft:10}}>
-                                Edit Social Media Links
-                            </Text>
-                            <Icon name="keyboard-arrow-right" size={30} color="white"/>
-                        </View>
-                    </TouchableHighlight>
-                    <Divider/>
-                </View>
-            </ScrollView>
-            </View>
-        </Animatable.View>
-    </ImageBackground>
-  )
+            </Animatable.View>
+        </ImageBackground>
+    )
 }
