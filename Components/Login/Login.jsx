@@ -485,17 +485,18 @@ export default function Login(props) {
                 </FormControlHelper> */}
               </FormControl>
               <TouchableHighlight underlayColor='transparent' onPress={() => handleForgotPasswordPageChange()}>
-                <Text paddingVertical={10} marginTop={-10} color='#2cb5d6'>
+                <Text paddingBottom={10} marginTop={-10} color='#2cb5d6'>
                   Forgot Password?
                 </Text>
               </TouchableHighlight>
             </Box>
 
-            <FormControl m={10} mt={40}>
+            <FormControl m={10} mt={40}  >
               <Button
                 isDisabled={attemptingLogin}
                 size="lg"
                 mb="$4"
+				 marginTop={5}
                 borderRadius={40}
                 hardShadow='1'
                 bgColor="#2cb5d6"
