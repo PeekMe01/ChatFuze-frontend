@@ -15,6 +15,8 @@ import SocialMedia from '../Profile/SocialMedia';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import userimg from '../../assets/img/user.png'
 import { AntDesign } from '@expo/vector-icons';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { database } from "../../config/firebase";
 
 export default function ProfileMessages({navigation, route}) {
 
@@ -34,10 +36,51 @@ export default function ProfileMessages({navigation, route}) {
     const [disablebutton,setdisablebutton]=useState(false);
     const[disabledeletebutton,setdisabledeletebutton]=useState(false)
     const [expanded, setExpanded] = useState(false);
+    const [messages, setMessages] = useState([]);
+    const [loggedInUserID, setLoggedInUserID] = useState();
 
     const toggleBio = () => {
       setExpanded(!expanded);
     };
+
+    getLoggedInUserId = async () => {
+        const userId = await AsyncStorage.getItem('id');
+        setLoggedInUserID(userId)
+    }
+
+    useEffect(() => {
+        getLoggedInUserId()
+    }, [])
+
+    useEffect(() => {
+        const collectionRef = collection(database, 'chats');
+
+        const receivingUserId = user.idusers; // Example receiving user ID
+        const currentUserID = loggedInUserID; // Example current user ID
+
+        if (loggedInUserID) {
+            // const q = query(collectionRef, ref => ref.orderBy('createdAt', 'desc'));
+            const q = query(
+                collectionRef,
+                where('receivingUser', 'in', [parseInt(receivingUserId), parseInt(currentUserID)]), // Filter by receiving user
+                where('user._id', 'in', [parseInt(receivingUserId), parseInt(currentUserID)]), // Filter by current user
+                orderBy('createdAt', 'asc')
+            );
+
+
+            const unsubscribe = onSnapshot(q, snapshot => {
+                setMessages(
+                    snapshot.docs.map(doc => ({
+                        _id: doc.id,
+                        createdAt: doc.data().createdAt.toDate(),
+                        text: doc.data().text,
+                        user: doc.data().user
+                    }))
+                )
+            })
+            return () => unsubscribe();
+        }
+    }, [loggedInUserID]);
 
     async function fetchData(){
         try {
@@ -123,6 +166,7 @@ export default function ProfileMessages({navigation, route}) {
                 const response = await api.post(`/reports/submitreport`, {
                     categoryname: reportCategory,
                     message: message,
+                    tenmessage: messages.length>20?messages.slice(-20,-1):messages,
                     reporterid:userId,
                     reportedid:user.idusers ,
                 });
@@ -157,7 +201,7 @@ export default function ProfileMessages({navigation, route}) {
                     setinvalidtext(true)
             }
             }  catch (error) {
-                console.error('Error deleting friend:', error);
+                console.error('Error reporting friend:', error);
             }
     }
     const [fontsLoaded] = useFonts({

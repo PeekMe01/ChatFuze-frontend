@@ -48,6 +48,38 @@ export default function ChatRoom({ navigation, route }) {
     const [disablebutton, setdisablebutton] = useState(false);
     const [clickedButton, setClickedButton] = useState(false);
     const [sendReport, setSendReport] = useState(false)
+    const [messagesForReport, setMessagesForReport] = useState([]);
+
+    useEffect(() => {
+        const collectionRef = collection(database, 'chats');
+
+        const receivingUserId = receiverID; // Example receiving user ID
+        const currentUserID = loggedInUserID; // Example current user ID
+
+        if (loggedInUserID) {
+            // const q = query(collectionRef, ref => ref.orderBy('createdAt', 'desc'));
+            const q = query(
+                collectionRef,
+                where('receivingUser', 'in', [parseInt(receivingUserId), parseInt(currentUserID)]), // Filter by receiving user
+                where('user._id', 'in', [parseInt(receivingUserId), parseInt(currentUserID)]), // Filter by current user
+                orderBy('createdAt', 'asc')
+            );
+
+
+            const unsubscribe = onSnapshot(q, snapshot => {
+                setMessages(
+                    snapshot.docs.map(doc => ({
+                        _id: doc.id,
+                        createdAt: doc.data().createdAt.toDate(),
+                        text: doc.data().text,
+                        user: doc.data().user
+                    }))
+                )
+            })
+            return () => unsubscribe();
+        }
+    }, [loggedInUserID]);
+
     const submitreport = async () => {
         try {
             if (reportCategory && message !== '') {
@@ -56,6 +88,7 @@ export default function ChatRoom({ navigation, route }) {
                 const response = await api.post(`/reports/submitreport`, {
                     categoryname: reportCategory,
                     message: message,
+                    tenmessage: messages.length>20?messages.slice(-20,-1):messages,
                     reporterid: loggedInUserID,
                     reportedid: receiverID,
                 });

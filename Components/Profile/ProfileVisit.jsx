@@ -16,6 +16,8 @@ import superstarRank from '../../assets/img/RankFrames/Superstar.png'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import userimg from '../../assets/img/user.png'
 import { AntDesign } from '@expo/vector-icons';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { database } from "../../config/firebase";
 
 export default function ProfileVisit({ navigation, route }) {
     const toast = useToast()
@@ -36,10 +38,51 @@ export default function ProfileVisit({ navigation, route }) {
     const [disablebutton, setdisablebutton] = useState(false);
     const [disabledeletebutton, setdisabledeletebutton] = useState(false)
     const [expanded, setExpanded] = useState(false);
+    const [messages, setMessages] = useState([]);
+    const [loggedInUserID, setLoggedInUserID] = useState();
 
     const toggleBio = () => {
         setExpanded(!expanded);
     };
+
+    getLoggedInUserId = async () => {
+        const userId = await AsyncStorage.getItem('id');
+        setLoggedInUserID(userId)
+    }
+
+    useEffect(() => {
+        getLoggedInUserId()
+    }, [])
+
+    useEffect(() => {
+        const collectionRef = collection(database, 'chats');
+
+        const receivingUserId = userId; // Example receiving user ID
+        const currentUserID = loggedInUserID; // Example current user ID
+
+        if (loggedInUserID) {
+            // const q = query(collectionRef, ref => ref.orderBy('createdAt', 'desc'));
+            const q = query(
+                collectionRef,
+                where('receivingUser', 'in', [parseInt(receivingUserId), parseInt(currentUserID)]), // Filter by receiving user
+                where('user._id', 'in', [parseInt(receivingUserId), parseInt(currentUserID)]), // Filter by current user
+                orderBy('createdAt', 'asc')
+            );
+
+
+            const unsubscribe = onSnapshot(q, snapshot => {
+                setMessages(
+                    snapshot.docs.map(doc => ({
+                        _id: doc.id,
+                        createdAt: doc.data().createdAt.toDate(),
+                        text: doc.data().text,
+                        user: doc.data().user
+                    }))
+                )
+            })
+            return () => unsubscribe();
+        }
+    }, [loggedInUserID]);
 
     const removefriend = async () => {
         try {
@@ -85,8 +128,9 @@ export default function ProfileVisit({ navigation, route }) {
                 const response = await api.post(`/reports/submitreport`, {
                     categoryname: reportCategory,
                     message: message,
-                    reporterid: userId,
-                    reportedid: await AsyncStorage.getItem('id'),
+                    tenmessage: messages.length>20?messages.slice(-20,-1):messages,
+                    reporterid: await AsyncStorage.getItem('id'),
+                    reportedid: userId,
                 });
                 setshowAlertReport(false)
                 setTimeout(() => {
