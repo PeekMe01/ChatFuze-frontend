@@ -7,6 +7,21 @@ import { Platform, StyleSheet } from 'react-native';
 import { Camera, CameraType, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import Buttons from './Buttons';
+import { useFonts } from 'expo-font';
+import {
+  Roboto_100Thin,
+  Roboto_100Thin_Italic,
+  Roboto_300Light,
+  Roboto_300Light_Italic,
+  Roboto_400Regular,
+  Roboto_400Regular_Italic,
+  Roboto_500Medium,
+  Roboto_500Medium_Italic,
+  Roboto_700Bold,
+  Roboto_700Bold_Italic,
+  Roboto_900Black,
+  Roboto_900Black_Italic,
+} from '@expo-google-fonts/roboto';
 
 export default function SecondPage(props) {
 
@@ -25,10 +40,35 @@ export default function SecondPage(props) {
     requestPermission,
   } = props;
 
+  const [fontsLoaded] = useFonts({
+    'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'),
+    Roboto_100Thin,
+    Roboto_100Thin_Italic,
+    Roboto_300Light,
+    Roboto_300Light_Italic,
+    Roboto_400Regular,
+    Roboto_400Regular_Italic,
+    Roboto_500Medium,
+    Roboto_500Medium_Italic,
+    Roboto_700Bold,
+    Roboto_700Bold_Italic,
+    Roboto_900Black,
+    Roboto_900Black_Italic,
+  });
+
   return (
     <Box h='$48' w="$72" mb={50} style={{ display: 'flex', gap: 10 }}>
       <FormControl isDisabled={false} isInvalid={invalidImage} isReadOnly={false} isRequired={true}>
-        <Animatable.View animation={null}>
+        <Animatable.View animation={null} style={{ gap:10 }}>
+          {!image&&
+          <>
+            <Text size='xl' color='white' fontFamily='Roboto_400Regular'>
+              Please upload your ID photo
+            </Text>
+            <Text color='white' fontFamily='Roboto_300Light'>
+              We need your ID to verify your age and country.
+            </Text>
+          </>}
           <Button
             isDisabled={false}
             size="lg"

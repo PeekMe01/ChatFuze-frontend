@@ -257,6 +257,9 @@ export default function Verification({ navigation }) {
                                             <Text size='xl' color='white' fontFamily='Roboto_400Regular'>
                                                 Please upload your ID photo and submit it
                                             </Text>
+                                            <Text color='white' fontFamily='Roboto_300Light'>
+                                                We need your ID to verify your age and country.
+                                            </Text>
                                             <Button
                                                 isDisabled={false}
                                                 size="lg"

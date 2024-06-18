@@ -321,58 +321,57 @@ const Home = ({ navigation , setLoggedIn, setLoginPage, setSignupPage}) => {
             </ScrollView>
             <Divider backgroundColor='white' marginVertical={10} />
 			
-			{user.isbanned && <Box style={{ display: 'flex', gap: 20, marginVertical: '2%' }}>
-  <Text style={{ alignSelf: 'center', fontSize: 24, color: 'white', fontFamily: 'Roboto_300Light' }}>
-    Your Account Has Been Banned! 😢
-  </Text>
-  <Text style={{ alignSelf: 'flex-start', marginBottom: '1%', fontSize: 20, color: 'white', fontFamily: 'Roboto_300Light' }}>
-     Please check your email for more info about your ban.
-  </Text>
-    <Button
-                                    bg="rgba(81, 32, 149,1)"
-									$active={{
-                bg: "rgba(81, 32, 149,0.5)",
-              }}
-                                    onPress={async () => {
-                                        try {
-                                            const userToken = await AsyncStorage.getItem('userToken');
-                                            const userId = await AsyncStorage.getItem('id');
-                                            if (userToken) {
-                                                let active;
-                                                active = false;
-                                                try {
-                                                    // Check if the document already exists
-                                                    const docRef = doc(database, 'status', userId);
-                                                    const docSnapshot = await getDoc(docRef);
+			{user.isbanned &&
+        <Box style={{ display: 'flex', gap: 20, marginVertical: '2%' }}>
+          <Text style={{ alignSelf: 'center', fontSize: 24, color: 'white', fontFamily: 'Roboto_300Light' }}>
+            Your Account Has Been Banned!
+          </Text>
+          <Text style={{ alignSelf: 'flex-start', marginBottom: '1%', fontSize: 20, color: 'white', fontFamily: 'Roboto_300Light' }}>
+            Please check your email for more info about your ban.
+          </Text>
+          <Button
+                    bg="rgba(81, 32, 149,1)"
+                    $active={{
+                      bg: "rgba(81, 32, 149,0.5)",
+                    }}
+                    onPress={async () => {
+                        try {
+                          const userToken = await AsyncStorage.getItem('userToken');
+                          const userId = await AsyncStorage.getItem('id');
+                          if (userToken) {
+                            let active;
+                            active = false;
+                              try {
+                                // Check if the document already exists
+                                const docRef = doc(database, 'status', userId);
+                                const docSnapshot = await getDoc(docRef);
 
-                                                    if (docSnapshot.exists()) {
-                                                        // Update the existing document
-                                                        let datetime = getCurrentDateTime();
-                                                        await updateDoc(docRef, { active, datetime });
-                                                    } else {
-                                                        // If the document doesn't exist, create it
-                                                      let datetime = getCurrentDateTime();
-														await setDoc(docRef, { active, datetime });
-                                                    }
-
-                                                } catch (error) {
-                                                    console.error('Error occurred while updating user status:', error);
-                                                }
-                                            }
-											await AsyncStorage.removeItem('userToken');
-                                            await AsyncStorage.removeItem('id');
-											setLoggedIn(false);
-                                            setLoginPage(true);
-                                            setSignupPage(false);
-
-                                        } catch (error) {
-                                            console.error('Logout failed:', error);
-                                        }
-                                    }}
-                                >
-                                    <ButtonText>Logout</ButtonText>
-                                </Button>
-</Box>
+                                if (docSnapshot.exists()) {
+                                  // Update the existing document
+                                  let datetime = getCurrentDateTime();
+                                  await updateDoc(docRef, { active, datetime });
+                                } else {
+                                  // If the document doesn't exist, create it
+                                  let datetime = getCurrentDateTime();
+                                  await setDoc(docRef, { active, datetime });
+                                }
+                              } catch (error) {
+                                console.error('Error occurred while updating user status:', error);
+                              }
+                            }
+                            await AsyncStorage.removeItem('userToken');
+                            await AsyncStorage.removeItem('id');
+                            setLoggedIn(false);
+                            setLoginPage(true);
+                            setSignupPage(false);
+                          } catch (error) {
+                              console.error('Logout failed:', error);
+                          }
+                        }}
+          >
+            <ButtonText>Logout</ButtonText>
+          </Button>
+        </Box>
 }
             {userAlreadyVerified && !user.isbanned && <Box style={{ display: 'flex', gap: 20, marginVertical: '2%' }} >
               <Text alignSelf='center' size='xl' color='white' fontFamily='Roboto_300Light' >

@@ -71,6 +71,7 @@ export default function App() {
   const [signupPage, setSignupPage] = useState(false);
   const [welcomePage, setWelcomePage] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     checkUserLogin();
@@ -86,6 +87,19 @@ export default function App() {
       setLoggedIn(false)
     }
   }
+
+  async function fetchData() {
+    try {
+      const data = await AsyncStorage.getItem('id')
+      const response = await api.get(`/settings/getinsight/${data}`);
+      setUser(response.data.user);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  useEffect(() => {
+    fetchData();
+  }, [!user]);
 
   const [fontsLoaded] = useFonts({
     'ArialRoundedMTBold': require('./assets/fonts/ARLRDBD.ttf'),
@@ -323,7 +337,7 @@ export default function App() {
         const leafRouteName = getCurrentRouteName(currentRoute);
 
 
-        if (leafRouteName === "MatchMakingScreen" || leafRouteName === "ChatRoom" || leafRouteName === "HomeVerification" || leafRouteName === "Results") {
+        if (leafRouteName === "MatchMakingScreen" || leafRouteName === "ChatRoom" || leafRouteName === "HomeVerification" || leafRouteName === "Results" || user?user.isbanned:false) {
           navigation.setOptions({
             tabBarStyle: { display: 'none' }
           });
