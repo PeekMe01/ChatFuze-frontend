@@ -1,4 +1,4 @@
-import { VStack, Toast, AlertCircleIcon, InputField, Input, Box, View, AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Pressable, CloseIcon, Icon } from '@gluestack-ui/themed';
+import { VStack, Toast, AlertCircleIcon, InputField,InputSlot,InputIcon, Input,EyeOffIcon,EyeIcon, Box, View, AddIcon, Divider, FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, HStack, Image, ImageBackground, Spinner, Text, Center, ButtonText, Button, ToastTitle, ToastDescription, useToast, Pressable, CloseIcon, Icon } from '@gluestack-ui/themed';
 import React, { useState } from 'react'
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
@@ -20,14 +20,17 @@ export default function ChangePassword({ navigation }) {
 
 
     const [currentPassword, setCurrentPassword] = useState();
+	const [showCurrentPassword,setShowCurrentPassword]=useState(false);
     const [invalidCurrentPassword, setInvalidCurrentPassword] = useState(false);
     const [invalidCurrentPasswordErrorMessage, setInvalidCurrentPasswordErrorMessage] = useState("Error Message Current Password");
 
     const [newPassword, setNewPassword] = useState();
+		const [showNewPassword,setShowNewPassword]=useState(false);
     const [invalidNewPassword, setInvalidNewPassword] = useState(false);
     const [invalidNewPasswordErrorMessage, setInvalidNewPasswordErrorMessage] = useState("Error Message New Password");
 
     const [confirmNewPassword, setConfirmNewPassword] = useState();
+		const [showConfirmNewPassword,setShowConfirmNewPassword]=useState(false);
     const [invalidConfirmNewPassword, setInvalidConfirmNewPassword] = useState(false);
     const [invalidConfirmNewPasswordErrorMessage, setInvalidConfirmNewPasswordErrorMessage] = useState("Error Message Confirm New Password");
 
@@ -59,14 +62,14 @@ export default function ChangePassword({ navigation }) {
             setInvalidNewPasswordErrorMessage("Error Message New Password");
         }
 
-        if (!confirmNewPassword || confirmNewPassword.length < 8) {
+        if (!confirmNewPassword || confirmNewPassword.length < 8 || confirmNewPassword!=newPassword) {
             setInvalidConfirmNewPassword(true);
             setInvalidConfirmNewPasswordErrorMessage("Password mismatch");
             goodConfirmNewPassword = false;
         } else {
             setInvalidConfirmNewPassword(false);
             goodConfirmNewPassword = true;
-            setInvalidConfirmNewPasswordErrorMessage("Error Message New Password");
+            setInvalidConfirmNewPasswordErrorMessage("Error Message confirm Password");
         }
         if (goodCurrentPassword && goodNewPassword && goodConfirmNewPassword) {
             const data = {
@@ -194,7 +197,7 @@ export default function ChangePassword({ navigation }) {
                                                 $invalid-borderColor='#512095'
                                             >
                                                 <InputField
-                                                    type={"password"}
+                                                     type={showCurrentPassword ? "text" : "password"}
                                                     fontFamily='Roboto_400Regular'
                                                     placeholder="Current Password"
                                                     fontSize={'$xl'}
@@ -208,6 +211,12 @@ export default function ChangePassword({ navigation }) {
                                                         setSaveDisabled(false)
                                                     }}
                                                 />
+												 <InputSlot pr="$3" onPress={()=>setShowCurrentPassword(!showCurrentPassword)}>
+                      <InputIcon
+                        as={showCurrentPassword ? EyeIcon : EyeOffIcon}
+                        color="white"
+                      />
+                    </InputSlot>
                                             </Input>
                                         </Animatable.View>
                                         <FormControlError mb={-24}>
@@ -233,7 +242,7 @@ export default function ChangePassword({ navigation }) {
                                                 $invalid-borderColor='#512095'
                                             >
                                                 <InputField
-                                                    type={"password"}
+                                                    type={showNewPassword ? "text" : "password"}
                                                     placeholder="New Password"
                                                     fontFamily='Roboto_400Regular'
                                                     fontSize={'$xl'}
@@ -247,6 +256,12 @@ export default function ChangePassword({ navigation }) {
                                                         setSaveDisabled(false)
                                                     }}
                                                 />
+												 <InputSlot pr="$3" onPress={()=>setShowNewPassword(!showNewPassword)}>
+                      <InputIcon
+                        as={showNewPassword ? EyeIcon : EyeOffIcon}
+                        color="white"
+                      />
+                    </InputSlot>
                                             </Input>
                                         </Animatable.View>
                                         <FormControlError mb={-24}>
@@ -272,7 +287,7 @@ export default function ChangePassword({ navigation }) {
                                                 $invalid-borderColor='#512095'
                                             >
                                                 <InputField
-                                                    type={"password"}
+                                                    type={showConfirmNewPassword ? "text" : "password"}
                                                     placeholder="Confirm New Password"
                                                     fontSize={'$xl'}
                                                     autoCapitalize='none'
@@ -286,6 +301,12 @@ export default function ChangePassword({ navigation }) {
                                                         setSaveDisabled(false)
                                                     }}
                                                 />
+												 <InputSlot pr="$3" onPress={()=>setShowConfirmNewPassword(!showConfirmNewPassword)}>
+                      <InputIcon
+                        as={showConfirmNewPassword ? EyeIcon : EyeOffIcon}
+                        color="white"
+                      />
+                    </InputSlot>
                                             </Input>
                                         </Animatable.View>
                                         <FormControlError mb={-24}>
