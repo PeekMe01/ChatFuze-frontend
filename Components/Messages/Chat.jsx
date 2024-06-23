@@ -81,8 +81,8 @@ export default function Chat({ navigation, route }) {
 
         const typingStatusQuery = query(
             collection(database, 'typing'),
-            where('receiverid', '==', senderid),
-            where('senderid', '==', receiverid)
+            where('receiverid', '==', parseInt(senderid)),
+            where('senderid', '==', parseInt(receiverid))
         );
 
         // Set up a real-time listener for the query
