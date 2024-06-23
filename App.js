@@ -1,6 +1,6 @@
 import { AppState, ImageBackground, Platform, StatusBar, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { GluestackUIProvider, View, Text, AlertDialogBody, AlertDialog, AlertDialogFooter, ButtonGroup, Button, ButtonText, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, Heading } from '@gluestack-ui/themed';
+import { GluestackUIProvider, View, Text, AlertDialogBody, AlertDialog, AlertDialogFooter, ButtonGroup, Button, ButtonText, AlertDialogBackdrop, AlertDialogContent, AlertDialogHeader, Heading, Spinner, ScrollView } from '@gluestack-ui/themed';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -59,6 +59,9 @@ import {
   Roboto_900Black,
   Roboto_900Black_Italic,
 } from '@expo-google-fonts/roboto';
+import { Box } from '@gluestack-ui/themed';
+import { Center } from '@gluestack-ui/themed';
+import { HStack } from '@gluestack-ui/themed';
 
 
 
@@ -279,7 +282,7 @@ export default function App() {
                   elevation: 0,
                   marginTop: 10,
                   marginBottom: 20,
-                  borderTopColor: 'transparent'
+                  borderTopColor: 'transparent',
                 },
                 tabBarIcon: ({ focused }) => (
                   <CustomBadge focused={focused} totalUnreadMessages={totalUnreadMessages} />
@@ -337,7 +340,7 @@ export default function App() {
         const leafRouteName = getCurrentRouteName(currentRoute);
 
 
-        if (leafRouteName === "MatchMakingScreen" || leafRouteName === "ChatRoom" || leafRouteName === "HomeVerification" || leafRouteName === "Results" || user?user.isbanned:false) {
+        if (leafRouteName === "MatchMakingScreen" || leafRouteName === "ChatRoom" || leafRouteName === "HomeVerification" || leafRouteName === "Results") {
           navigation.setOptions({
             tabBarStyle: { display: 'none' }
           });
@@ -601,7 +604,9 @@ export default function App() {
       // <KeyboardAvoidingView style={{ flex: 1}} behavior='height' keyboardVerticalOffset={-500}>
         <View style={{ flex: 1 }}>
           <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='MessagesStack'>
-            <Stack.Screen name="MessagesStack" component={Messages} />
+            <Stack.Screen name="MessagesStack">
+              {({ navigation }) => <Messages navigation={navigation} setLoggedIn={setLoggedIn} setLoginPage={setLoginPage} setSignupPage={setSignupPage}/>}
+            </Stack.Screen>
             <Stack.Screen name="Chat" component={Chat} />
             <Stack.Screen name="ProfileMessages" component={ProfileMessages} />
           </Stack.Navigator>
@@ -613,7 +618,7 @@ export default function App() {
 
   function LeaderboardScreen() {
     return (
-      <Leaderboard />
+      <Leaderboard setLoggedIn={setLoggedIn} setLoginPage={setLoginPage} setSignupPage={setSignupPage}/>
     );
   }
 
@@ -649,7 +654,9 @@ export default function App() {
     return (
       <View style={{ flex: 1 }}>
         <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }} initialRouteName='ProfileMain'>
-          <Stack.Screen name="ProfileMain" component={Profile} />
+          <Stack.Screen name="ProfileMain">
+            {({ navigation }) => <Profile navigation={navigation} setLoggedIn={setLoggedIn} setLoginPage={setLoginPage} setSignupPage={setSignupPage}/>}
+          </Stack.Screen>
           <Stack.Screen name="EditSettings">
             {({ navigation }) => <EditSettings navigation={navigation} setLoggedIn={setLoggedIn} setLoginPage={setLoginPage} setSignupPage={setSignupPage} />}
           </Stack.Screen>

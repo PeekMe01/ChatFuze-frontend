@@ -107,9 +107,9 @@ export default function Insights({ navigation }) {
                                         </Text>
                                         <View display='flex' flexDirection='column' justifyContent='center' gap={10} alignItems='center'>
                                             <Text color='white' fontFamily='Roboto_300Light' size='lg'>
-                                                You rank in the top {((insights.leaderboardnumber / insights.users.length) * 100).toFixed(2)}% of users!
+                                                You rank in the top { insights.leaderboardnumber=== 1 ? '0.01' :( ((insights.leaderboardnumber * 100) / insights.users.length).toFixed(2))}% of users!
                                             </Text>
-                                            <Progress value={100 - ((insights.leaderboardnumber / insights.users.length) * 100).toFixed(2)} w={300} size="md">
+                                            <Progress value={insights.leaderboardnumber=== 1 ? '100' : (100 - ((insights.leaderboardnumber * 100) / insights.users.length).toFixed(2))} w={300} size="md">
                                                 <ProgressFilledTrack bgColor='#7478d4' />
                                             </Progress>
                                         </View>

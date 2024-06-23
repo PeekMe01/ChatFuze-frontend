@@ -4,11 +4,13 @@ import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import api from '../Config'
 import { ScrollView, TouchableOpacity, FlatList } from 'react-native';
-import { Image, HStack, Center, Divider, ImageBackground, Text, View, Spinner } from '@gluestack-ui/themed';
+import { Image, HStack, Center, Divider, ImageBackground, Text, View, Spinner, Box, Button, ButtonText } from '@gluestack-ui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { collection, addDoc, orderBy, query, onSnapshot, where, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { database } from "../../config/firebase";
 
-const Leaderboard = () => {
+const Leaderboard = ({setLoggedIn, setLoginPage, setSignupPage}) => {
     const isFocused = useIsFocused();
     const [user, setUser] = useState();
     const [option, setOption] = useState('local');
@@ -29,9 +31,27 @@ const Leaderboard = () => {
 
     useEffect(() => {
         fetchData();
-    }, [!user]);
+    }, [!user||isFocused]);
 
+    function getCurrentDateTime() {
+        let currentDate = new Date();
+        let day = currentDate.getDate();
+        let month = currentDate.getMonth() + 1; // Months are zero-indexed, so we add 1
+        let year = currentDate.getFullYear();
+        let hours = currentDate.getHours();
+        let minutes = currentDate.getMinutes();
+        let seconds = currentDate.getSeconds();
 
+        // Format the date and time
+        let formattedDate = `${year}-${month}-${day}`;
+        let formattedTime = `${hours}:${minutes}:${seconds}`;
+
+        // Concatenate date and time
+        let dateTime = `${formattedDate} ${formattedTime}`;
+
+        // Return the concatenated date and time
+        return dateTime;
+    }
 
     if (!fontsLoaded) {
         return (
@@ -183,6 +203,86 @@ const Leaderboard = () => {
             />
         );
     }
+
+    if(user){
+        if(user.isbanned){
+            return(
+                <ImageBackground
+                    source={require('../../assets/img/HomePage1.png')}
+                    style={{ flex: 1, resizeMode: 'cover' }}
+                >
+                    <Animatable.View animation={changingPage ? "fadeOut" : "fadeIn"} duration={500}>
+                        <View margin={30}>
+                            <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false} style={{ marginBottom: 0}}>
+                                <Text size='4xl' color='white' fontFamily='Roboto_500Medium' paddingTop={10}>
+                                    Leaderboard
+                                </Text>
+                            </ScrollView>
+                        </View>
+                        <View justifyContent='center' alignItems='center'>
+                            <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false} >
+                                <View gap={5} display='flex' flexDirection='row' >
+                                <Box style={{ display: 'flex', gap: 20, marginVertical: '2%' }}>
+                                <Text style={{ alignSelf: 'center', fontSize: 24, color: 'white', fontFamily: 'Roboto_300Light' }}>
+                                    Your Account Has Been Banned!
+                                </Text>
+                                <Text style={{ alignSelf: 'flex-start', marginBottom: '1%', fontSize: 20, color: 'white', fontFamily: 'Roboto_300Light' }}>
+                                    Please check your email for more info about your ban.
+                                </Text>
+                                <Button
+                                            bg="rgba(81, 32, 149,1)"
+                                            $active={{
+                                            bg: "rgba(81, 32, 149,0.5)",
+                                            }}
+                                            onPress={async () => {
+                                                try {
+                                                const userToken = await AsyncStorage.getItem('userToken');
+                                                const userId = await AsyncStorage.getItem('id');
+                                                if (userToken) {
+                                                    let active;
+                                                    active = false;
+                                                    try {
+                                                        // Check if the document already exists
+                                                        const docRef = doc(database, 'status', userId);
+                                                        const docSnapshot = await getDoc(docRef);
+
+                                                        if (docSnapshot.exists()) {
+                                                        // Update the existing document
+                                                        let datetime = getCurrentDateTime();
+                                                        await updateDoc(docRef, { active, datetime });
+                                                        } else {
+                                                        // If the document doesn't exist, create it
+                                                        let datetime = getCurrentDateTime();
+                                                        await setDoc(docRef, { active, datetime });
+                                                        }
+                                                    } catch (error) {
+                                                        console.error('Error occurred while updating user status:', error);
+                                                    }
+                                                    }
+                                                    await AsyncStorage.removeItem('userToken');
+                                                    await AsyncStorage.removeItem('id');
+                                                    setLoggedIn(false);
+                                                    setLoginPage(true);
+                                                    setSignupPage(false);
+                                                } catch (error) {
+                                                    console.error('Logout failed:', error);
+                                                }
+                                                }}
+                                >
+                                    <ButtonText>Logout</ButtonText>
+                                </Button>
+                                </Box>
+                                </View>
+                            </ScrollView>
+                        </View>
+                        
+                        
+                    </Animatable.View>
+                </ImageBackground>
+            )
+        }
+    }
+
     return (
         <ImageBackground
             source={require('../../assets/img/HomePage1.png')}

@@ -88,10 +88,11 @@ export default function ChatRoom({ navigation, route }) {
                 const response = await api.post(`/reports/submitreport`, {
                     categoryname: reportCategory,
                     message: message,
-                    tenmessage: messages.length>20?messages.slice(-20,-1):messages,
+                    tenmessage: messages.length>20?messages.reverse().slice(-20,-1):messages.reverse(),
                     reporterid: loggedInUserID,
                     reportedid: receiverID,
                 });
+                console.log(messages)
                 setshowAlertReport(false)
                 setTimeout(() => {
                     setdisablebutton(false);
