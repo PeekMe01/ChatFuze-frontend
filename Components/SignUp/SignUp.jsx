@@ -86,7 +86,7 @@ export default function Login(props) {
 
   const validateUsername = async (tmpUsername) => {
     setAttemptingSignup(true)
-    if (tmpUsername && tmpUsername.length > 3) {
+    if (tmpUsername && tmpUsername.length >= 3) {
       const data = { tmpUsername }
       try {
         const response = await api.post(`/Accounts/validate_username`, data);
