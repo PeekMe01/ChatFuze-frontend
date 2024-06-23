@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useRef } from 'react'
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import api from '../Config'
@@ -18,6 +18,8 @@ const Messages = ({ navigation, setLoggedIn, setLoginPage, setSignupPage }) => {
     const [friendsuser, setfriendsuser] = useState([]);
     const [loading, setIsLoading] = useState(true)
     const [user, setUser] = useState(null);
+    const [pendingSnapchot,setPendingSnapchot]=useState()
+    const pendingSnapchotRef = useRef(0); 
 
     async function fetchUserData() {
         try {
@@ -90,6 +92,12 @@ const Messages = ({ navigation, setLoggedIn, setLoginPage, setSignupPage }) => {
 
 
     const updateFriendStatus = (userId, newStatus, dateTime) => {
+        if (pendingSnapchotRef.current > 0) {
+            pendingSnapchotRef.current -= 1;
+          }
+          if(pendingSnapchotRef.current == 0){
+            setPendingSnapchot(pendingSnapchotRef.current);
+          }
         setfriendsuser(prevFriendsList => (
             prevFriendsList.map(friend => {
                 if (friend.idusers === userId) { // Assuming `userId` uniquely identifies each friend
@@ -108,6 +116,8 @@ const Messages = ({ navigation, setLoggedIn, setLoginPage, setSignupPage }) => {
         try {
             const userId = await AsyncStorage.getItem('id');
             const response = await api.get(`/messages/friends/${userId}`);
+            setPendingSnapchot(response.data.length)
+             pendingSnapchotRef.current = response.data.length; 
             setfriendsuser(response.data);
             setIsLoading(false);
             // Create an array to store all listener unsubscribe functions
@@ -183,13 +193,13 @@ const Messages = ({ navigation, setLoggedIn, setLoginPage, setSignupPage }) => {
                             <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                                 {item.username.length <= 10 ? item.username : item.username.substring(0, 10) + '...'}
                             </Text>
-                            <Text size='sm' color={item.active ? '#2cd6d3' : '#727386'} fontFamily='Roboto_400Regular'>
+                          {pendingSnapchot==0 ?  <Text size='sm' color={item.active ? '#2cd6d3' : '#727386'} fontFamily='Roboto_400Regular'>
                                 {item.active === true
                                     ? 'Active'
                                     : getFormattedTimeDifference(item.datetime) === "just now"
                                         ? 'last seen just now'
                                         : 'last seen ' + getFormattedTimeDifference(item.datetime) + ' ago'}
-                            </Text>
+                            </Text> :<Text size='sm' color={item.active ? '#2cd6d3' : '#727386'} fontFamily='Roboto_400Regular'></Text> }
                         </View>
                     </View>
                     {friendUnreadCounts[item.idusers] != undefined &&
@@ -209,7 +219,7 @@ const Messages = ({ navigation, setLoggedIn, setLoginPage, setSignupPage }) => {
         'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'),
     });
     const [changingPage, setChangingPage] = useState(false)
-    if (!fontsLoaded) {
+    if (!fontsLoaded ) {
         return (
             <ImageBackground
                 source={require('../../assets/img/HomePage1.png')}

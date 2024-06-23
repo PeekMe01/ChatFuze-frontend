@@ -1,5 +1,5 @@
 import { View,AddIcon, Center, Divider, HStack, Image, ImageBackground, RefreshControl, Spinner, Text } from '@gluestack-ui/themed';
-import React, { useEffect ,useState} from 'react'
+import React, { useEffect ,useState,useRef} from 'react'
 import * as Animatable from 'react-native-animatable';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -16,8 +16,15 @@ export default function FriendsList({navigation}) {
     const [clickedButton, setClickedButton] = useState(false);
     const [friendsList, setFriendsList] = useState();
     const isFocused = useIsFocused();
-
+    const [pendingSnapchot,setPendingSnapchot]=useState()
+    const pendingSnapchotRef = useRef(0); 
     const updateFriendStatus = (userId, newStatus,datetime) => {
+        if (pendingSnapchotRef.current > 0) {
+            pendingSnapchotRef.current -= 1;
+          }
+          if(pendingSnapchotRef.current == 0){
+            setPendingSnapchot(pendingSnapchotRef.current);
+          }
         setFriendsList(prevFriendsList => (
             prevFriendsList.map(friend => {
                 if (friend.idusers === userId) { 
@@ -30,7 +37,9 @@ export default function FriendsList({navigation}) {
                 return friend;
             })
         ));
+       
     };
+    
     function getFormattedTimeDifference(datetime) {
         let givenDatetime = new Date(datetime);
         let currentDate = new Date();
@@ -57,6 +66,8 @@ export default function FriendsList({navigation}) {
         try {
              const data = await AsyncStorage.getItem('id')
              const response = await api.get(`/messages/friends/${data}`);
+             setPendingSnapchot(response.data.length)
+             pendingSnapchotRef.current = response.data.length; 
              setFriendsList(response.data)
              // Create an array to store all listener unsubscribe functions
             const unsubscribeFunctions = [];
@@ -124,7 +135,7 @@ export default function FriendsList({navigation}) {
     const [fontsLoaded] = useFonts({
         'ArialRoundedMTBold': require('../../assets/fonts/ARLRDBD.ttf'), 
     });
-    if (!fontsLoaded) {
+    if (!fontsLoaded || pendingSnapchot!=0) {
         return (
             <ImageBackground
                 source={require('../../assets/img/HomePage1.png')}
@@ -184,7 +195,7 @@ export default function FriendsList({navigation}) {
                             <Text size='2xl' color='white' fontFamily='Roboto_400Regular'>
                                 {user.username}
                             </Text>
-                            <Text size='sm' color={user.active?'#2cd6d3':'#727386'} fontFamily='Roboto_400Regular'>
+                         <Text size='sm' color={user.active?'#2cd6d3':'#727386'} fontFamily='Roboto_400Regular'>
                             {user.active === true
                                 ? 'Active'
                                 : getFormattedTimeDifference(user.datetime) === "just now"
