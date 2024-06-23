@@ -161,7 +161,7 @@ export default function Profile({ navigation, setLoggedIn, setLoginPage, setSign
                         <View margin={30}>
                             <ScrollView fadingEdgeLength={100} showsVerticalScrollIndicator={false} style={{ marginBottom: 0}}>
                                 <Text size='4xl' color='white' fontFamily='Roboto_500Medium' paddingTop={10}>
-                                    Leaderboard
+                                    Profile
                                 </Text>
                             </ScrollView>
                         </View>
