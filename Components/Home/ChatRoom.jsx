@@ -50,35 +50,35 @@ export default function ChatRoom({ navigation, route }) {
     const [sendReport, setSendReport] = useState(false)
     const [messagesForReport, setMessagesForReport] = useState([]);
 
-    useEffect(() => {
-        const collectionRef = collection(database, 'chats');
+    // useEffect(() => {
+    //     const collectionRef = collection(database, 'chats');
 
-        const receivingUserId = receiverID; // Example receiving user ID
-        const currentUserID = loggedInUserID; // Example current user ID
+    //     const receivingUserId = receiverID; // Example receiving user ID
+    //     const currentUserID = loggedInUserID; // Example current user ID
 
-        if (loggedInUserID) {
-            // const q = query(collectionRef, ref => ref.orderBy('createdAt', 'desc'));
-            const q = query(
-                collectionRef,
-                where('receivingUser', 'in', [parseInt(receivingUserId), parseInt(currentUserID)]), // Filter by receiving user
-                where('user._id', 'in', [parseInt(receivingUserId), parseInt(currentUserID)]), // Filter by current user
-                orderBy('createdAt', 'asc')
-            );
+    //     if (loggedInUserID) {
+    //         // const q = query(collectionRef, ref => ref.orderBy('createdAt', 'desc'));
+    //         const q = query(
+    //             collectionRef,
+    //             where('receivingUser', 'in', [parseInt(receivingUserId), parseInt(currentUserID)]), // Filter by receiving user
+    //             where('user._id', 'in', [parseInt(receivingUserId), parseInt(currentUserID)]), // Filter by current user
+    //             orderBy('createdAt', 'asc')
+    //         );
 
 
-            const unsubscribe = onSnapshot(q, snapshot => {
-                setMessages(
-                    snapshot.docs.map(doc => ({
-                        _id: doc.id,
-                        createdAt: doc.data().createdAt.toDate(),
-                        text: doc.data().text,
-                        user: doc.data().user
-                    }))
-                )
-            })
-            return () => unsubscribe();
-        }
-    }, [loggedInUserID]);
+    //         const unsubscribe = onSnapshot(q, snapshot => {
+    //             setMessages(
+    //                 snapshot.docs.map(doc => ({
+    //                     _id: doc.id,
+    //                     createdAt: doc.data().createdAt.toDate(),
+    //                     text: doc.data().text,
+    //                     user: doc.data().user
+    //                 }))
+    //             )
+    //         })
+    //         return () => unsubscribe();
+    //     }
+    // }, [loggedInUserID]);
 
     const submitreport = async () => {
         try {
