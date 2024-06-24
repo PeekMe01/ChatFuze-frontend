@@ -398,7 +398,7 @@ export default function ChatRoom({ navigation, route }) {
         timeoutRef.current = setTimeout(() => {
             setTyping(false);
             updateTyping(false);
-        }, 3000);
+        }, 500);
     };
 
     useEffect(() => {
@@ -470,10 +470,12 @@ export default function ChatRoom({ navigation, route }) {
     }, [socket, loggedInUserID]);
 
     const checkFor60Seconds = () => {
+
         let tries = 60;
         if (intervalIdRef.current) return; // Prevent starting multiple intervals
 
         intervalIdRef.current = setInterval(() => {
+            console.log(tries)
             if (matchDisconnectedRef.current) {
                 tries--;
 

@@ -68,7 +68,7 @@ export default function Chat({ navigation, route }) {
         timeoutRef.current = setTimeout(() => {
             setTyping(false);
             updateTyping(false);
-        }, 3000);
+        }, 500);
     };
     useEffect(() => {
         if (!loggedInUserID || !receivingUser?.idusers) {
