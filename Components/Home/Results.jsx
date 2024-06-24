@@ -313,7 +313,7 @@ export default function Results({ navigation, route }) {
                             onPress={handleBackToHome}
                         >
                             <ButtonText fontSize="$xl" fontWeight="$medium" >
-                                Back to home
+                                Submit Rating
                             </ButtonText>
                         </Button>
                     </View>
